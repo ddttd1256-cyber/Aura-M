@@ -34,7 +34,7 @@
             height: 100vh; 
             display: flex; 
             overflow: hidden; 
-            backdrop-filter: blur(10px);
+            /* УБРАЛИ backdrop-filter отсюда, чтобы не мылило на телефонах */
             position: relative;
         }
 
@@ -412,7 +412,6 @@
     </div>
 
     <script>
-        // API URL (замени на IP своего ПК, если хочешь зайти с телефона, например http://192.168.1.5:8000)
         const API_URL = "https://aura-server-lzxy.onrender.com";
 
         let USER = localStorage.getItem('auraUser') || "Player1"; 
@@ -760,7 +759,7 @@
             display.style.backgroundImage = ''; display.innerText = '📷';
             display.style.borderStyle = 'dashed'; display.style.borderColor = 'var(--text-muted)';
             document.getElementById('newChatTarget').value = ''; 
-            document.getElementById('addChatStatus').innerText = ''; // Очищаем ошибку
+            document.getElementById('addChatStatus').innerText = ''; 
             
             document.getElementById('chatType').value = 'user';
             toggleAvatarUploadVisibility();
@@ -784,7 +783,6 @@
             closeModal('profileModal');
         }
 
-        // --- ПРОВЕРКА ЮЗЕРНЕЙМА ЧЕРЕЗ БАЗУ --- //
         let usernameTimeout;
         async function checkUsername() {
             clearTimeout(usernameTimeout);
@@ -806,7 +804,6 @@
                     const res = await fetch(`${API_URL}/check_user/${newUsername}`);
                     const data = await res.json();
                     
-                    // Если аккаунт уже есть, и это не ТЫ сам, то занято
                     if (data.exists && newUsername !== localStorage.getItem('auraUser')) {
                         statusLabel.style.color = 'var(--danger)';
                         statusLabel.innerText = dict.statusTaken;
@@ -821,7 +818,6 @@
             }, 500);
         }
 
-        // --- ДОБАВЛЕНИЕ ЧАТА С ПРОВЕРКОЙ В БАЗЕ --- //
         async function addNewChat() {
             const target = document.getElementById('newChatTarget').value.trim();
             const type = document.getElementById('chatType').value;
@@ -830,7 +826,6 @@
             
             if(!target) return;
 
-            // Если добавляем пользователя, проверяем, существует ли он в БД
             if(type === 'user') {
                 statusLabel.style.color = 'var(--text-muted)';
                 statusLabel.innerText = dict.statusCheck;
@@ -840,12 +835,11 @@
                     if (!data.exists) {
                         statusLabel.style.color = 'var(--danger)';
                         statusLabel.innerText = dict.userNotFound;
-                        return; // Прерываем добавление
+                        return; 
                     }
                 } catch (e) {
                     statusLabel.style.color = 'var(--danger)';
                     statusLabel.innerText = dict.statusErr + " (Только локально)";
-                    // Позволяем добавить локально, если сервер оффлайн
                 }
             }
 
@@ -874,7 +868,6 @@
 
         function handleKeyPress(e) { if (e.key === 'Enter') send(); }
 
-        // --- ИНТЕГРАЦИЯ С PYTHON БЭКЕНДОМ --- //
         async function registerUser(username, name) {
             try {
                 await fetch(`${API_URL}/register`, {
