@@ -112,13 +112,25 @@
 
         .chat-list { flex: 1; overflow-y: auto; overflow-x: hidden; padding-top: 10px; }
         
-        /* СВАЙП КОНТЕЙНЕР (Исправленный для ПК и Телефонов) */
+        /* СВАЙП КОНТЕЙНЕР (Скрытые кнопки до момента свайпа) */
         .swipe-container { position: relative; overflow: hidden; margin: 5px 10px; border-radius: 15px; }
         .swipe-actions {
             position: absolute; right: 0; top: 0; height: 100%; display: flex;
             align-items: center; justify-content: flex-end; padding-right: 15px; gap: 10px;
             background: var(--bg-element); width: 100%; z-index: 1; border-radius: 15px;
+            
+            /* КНОПКИ СКРЫТЫ ПО УМОЛЧАНИЮ */
+            opacity: 0; 
+            pointer-events: none;
+            transition: opacity 0.2s ease;
         }
+        /* ПОКАЗЫВАЕМ ТОЛЬКО ПРИ СВАЙПЕ */
+        .swipe-container.is-swiping .swipe-actions,
+        .swipe-container.swiped-open .swipe-actions {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
         .swipe-btn {
             background: rgba(0,0,0,0.2); border: none; width: 42px; height: 42px; border-radius: 50%;
             display: flex; justify-content: center; align-items: center; color: white;
@@ -140,11 +152,7 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1), inset 0 0 0 1px var(--accent-glow);
         }
 
-        /* Логика выезда кнопок при наведении мышкой (ПК) */
-        @media (pointer: fine) {
-            .swipe-container:hover .chat-item { transform: translateX(-110px); }
-        }
-        /* Класс для фиксации свайпа (Телефоны) */
+        /* Класс для фиксации открытого свайпа */
         .chat-item.swiped-open { transform: translateX(-110px) !important; }
         
         .avatar-mini { 
@@ -281,7 +289,6 @@
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; margin-bottom: 8px; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;}
         
-        /* Стилизация выпадающих списков, чтобы они выглядели лучше */
         .form-group input, .form-group select, .form-group textarea { 
             width: 100%; border-radius: 12px; padding: 12px 15px; background: var(--bg-element); border: 1px solid var(--glass-border); 
             color: var(--text-main); outline: none; transition: var(--transition); font-family: inherit; resize: none;
@@ -586,16 +593,17 @@
         const iconChannel = `<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>`;
 
         let USER = localStorage.getItem('auraUser') || "Player1"; 
+        
+        // --- ДИНАМИЧЕСКИЕ КЛЮЧИ ХРАНИЛИЩА (Привязка к аккаунту) ---
+        let localChats = JSON.parse(localStorage.getItem('auraChats_' + USER)) || [];
+        let localMessages = JSON.parse(localStorage.getItem('auraMessages_' + USER)) || {};
+        let localProfile = JSON.parse(localStorage.getItem('auraProfile_' + USER)) || { name: USER, avatar: null, bio: "Нет описания" };
+        let localSettings = JSON.parse(localStorage.getItem('auraSettings')) || { lang: "ru", themeColor: "#00d2ff", themeMode: "dark", wallpaper: "none" };
+        
         let currentTarget = "Избранное";
         let chatLoop;
         let currentGroupAvatar = null;
         let isArchiveOpen = false;
-
-        let localChats = JSON.parse(localStorage.getItem('auraChats')) || [];
-        let localMessages = JSON.parse(localStorage.getItem('auraMessages')) || {};
-        let localProfile = JSON.parse(localStorage.getItem('auraProfile')) || { name: "Player1", avatar: null, bio: "Нет описания" };
-        let localSettings = JSON.parse(localStorage.getItem('auraSettings')) || { lang: "ru", themeColor: "#00d2ff", themeMode: "dark", wallpaper: "none" };
-        
         let mediaRecorder;
         let audioChunks = [];
 
@@ -648,7 +656,6 @@
             const display = document.getElementById('profileAvatarDisplay');
             const miniDisplay = document.getElementById('sidebarMyAvatar');
             
-            // Удаляем старый текст иконки если был
             for(let el of display.childNodes) if(el.nodeType === 3) display.removeChild(el);
             
             if (localProfile.avatar) {
@@ -661,7 +668,6 @@
             }
         }
 
-        /* --- НАСТРОЙКИ ТЕМ И ЯЗЫКА --- */
         function changeThemeMode(isInit = false) {
             localSettings.themeMode = document.getElementById('themeMode').value;
             document.body.setAttribute('data-theme', localSettings.themeMode);
@@ -715,19 +721,96 @@
 
         function saveSettings() { localStorage.setItem('auraSettings', JSON.stringify(localSettings)); }
 
-        /* --- ВАЛИДАЦИЯ ЮЗЕРНЕЙМА (ТОЛЬКО АНГЛ) --- */
-        function validateUsername(input) {
-            input.value = input.value.replace(/[^a-zA-Z0-9_]/g, '');
+        function validateUsername(input) { input.value = input.value.replace(/[^a-zA-Z0-9_]/g, ''); }
+
+        /* --- ЛОГИКА ДРАГА И СВАЙПА (МЫШЬ И ТЕЛЕФОН) --- */
+        let swipeStartX = 0;
+        let isSwiping = false;
+        let currentSwipeEl = null;
+        let wasSwiped = false;
+
+        function getX(e) {
+            if (e.type.includes('mouse')) return e.pageX;
+            if (e.type.includes('touchend') || e.type.includes('touchcancel')) return e.changedTouches[0].screenX;
+            return e.touches[0].screenX;
         }
 
-        /* --- РЕНДЕР ЧАТОВ И СВАЙПЫ --- */
+        function handleSwipeStart(e) {
+            if(e.type === 'mousedown' && e.button !== 0) return; 
+            isSwiping = true;
+            wasSwiped = false;
+            swipeStartX = getX(e);
+            currentSwipeEl = e.currentTarget;
+            currentSwipeEl.style.transition = 'none'; 
+            currentSwipeEl.parentElement.classList.add('is-swiping');
+        }
+
+        function handleSwipeMove(e) {
+            if(!isSwiping || !currentSwipeEl) return;
+            let currentX = getX(e);
+            let diffX = currentX - swipeStartX;
+            
+            if (diffX < 5 && diffX > -120) { 
+                currentSwipeEl.style.transform = `translateX(${diffX}px)`;
+            }
+        }
+
+        function handleSwipeEnd(e) {
+            if(!isSwiping || !currentSwipeEl) return;
+            isSwiping = false;
+            let endX = getX(e);
+            let diffX = endX - swipeStartX;
+            
+            if(Math.abs(diffX) > 10) wasSwiped = true;
+
+            currentSwipeEl.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)';
+            currentSwipeEl.parentElement.classList.remove('is-swiping');
+
+            if(diffX < -40) {
+                currentSwipeEl.style.transform = `translateX(-110px)`;
+                currentSwipeEl.classList.add('swiped-open');
+                currentSwipeEl.parentElement.classList.add('swiped-open');
+                
+                // Закрываем остальные
+                document.querySelectorAll('.chat-item.swiped-open').forEach(el => {
+                    if(el !== currentSwipeEl) {
+                        el.style.transform = '';
+                        el.classList.remove('swiped-open');
+                        if(el.parentElement) el.parentElement.classList.remove('swiped-open');
+                    }
+                });
+            } else {
+                currentSwipeEl.style.transform = '';
+                currentSwipeEl.classList.remove('swiped-open');
+                currentSwipeEl.parentElement.classList.remove('swiped-open');
+            }
+            currentSwipeEl = null;
+        }
+
+        /* Клик вне чата закрывает открытые свайпы */
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.chat-options-btn') && !e.target.closest('.dropdown-menu')) {
+                document.getElementById('chatDropdown').style.display = 'none';
+            }
+            if (!e.target.closest('.stickers-panel') && !e.target.closest('.media-btn')) {
+                document.getElementById('stickersPanel').style.display = 'none';
+            }
+            if (!e.target.closest('.swipe-container')) {
+                document.querySelectorAll('.chat-item.swiped-open').forEach(el => {
+                    el.style.transform = '';
+                    el.classList.remove('swiped-open');
+                    if(el.parentElement) el.parentElement.classList.remove('swiped-open');
+                });
+            }
+        });
+
+        /* --- РЕНДЕР ЧАТОВ --- */
         function renderSidebarChats() {
             const list = document.getElementById('chatList');
             const archiveList = document.getElementById('archivedChatsList');
             const dict = translations[localSettings.lang];
             list.innerHTML = ''; archiveList.innerHTML = '';
 
-            // Избранное
             const favName = dict.fav;
             list.innerHTML += `
                 <div class="chat-item ${currentTarget === favName ? 'active' : ''}" onclick="selectChat('${favName}', 'favorites')">
@@ -756,6 +839,7 @@
                         </div>
                         <div class="chat-item ${currentTarget === chat.name ? 'active' : ''}" 
                              onclick="selectChat('${chat.name}', '${chat.type}')"
+                             onmousedown="handleSwipeStart(event)" onmousemove="handleSwipeMove(event)" onmouseup="handleSwipeEnd(event)" onmouseleave="handleSwipeEnd(event)"
                              ontouchstart="handleSwipeStart(event)" ontouchmove="handleSwipeMove(event)" ontouchend="handleSwipeEnd(event)">
                             ${iconHtml}
                             <div style="font-weight: 500; flex:1;">${chat.name}</div>
@@ -782,31 +866,6 @@
             }
         }
 
-        /* --- ЛОГИКА СВАЙПОВ (Для телефонов) --- */
-        let touchStartX = 0;
-        function handleSwipeStart(e) { touchStartX = e.changedTouches[0].screenX; }
-        function handleSwipeMove(e) {
-            let diffX = e.changedTouches[0].screenX - touchStartX;
-            if(diffX < -20) {
-                e.currentTarget.style.transform = `translateX(-110px)`;
-            } else if (diffX > 20) {
-                e.currentTarget.style.transform = `translateX(0px)`;
-            }
-        }
-        function handleSwipeEnd(e) {
-            let diffX = e.changedTouches[0].screenX - touchStartX;
-            if(diffX < -40) {
-                e.currentTarget.style.transform = '';
-                e.currentTarget.classList.add('swiped-open');
-                document.querySelectorAll('.swiped-open').forEach(el => {
-                    if(el !== e.currentTarget) el.classList.remove('swiped-open');
-                });
-            } else {
-                e.currentTarget.style.transform = '';
-                e.currentTarget.classList.remove('swiped-open');
-            }
-        }
-
         function toggleArchiveFolder() {
             isArchiveOpen = !isArchiveOpen;
             document.getElementById('archiveArrow').classList.toggle('open', isArchiveOpen);
@@ -817,7 +876,7 @@
             if(e) e.stopPropagation();
             let chat = localChats.find(c => c.name === name);
             if(chat) chat.isArchived = !chat.isArchived;
-            localStorage.setItem('auraChats', JSON.stringify(localChats));
+            localStorage.setItem('auraChats_' + USER, JSON.stringify(localChats));
             renderSidebarChats();
         }
 
@@ -825,14 +884,16 @@
             if(e) e.stopPropagation();
             localChats = localChats.filter(c => c.name !== name);
             delete localMessages[name];
-            localStorage.setItem('auraChats', JSON.stringify(localChats));
-            localStorage.setItem('auraMessages', JSON.stringify(localMessages));
+            localStorage.setItem('auraChats_' + USER, JSON.stringify(localChats));
+            localStorage.setItem('auraMessages_' + USER, JSON.stringify(localMessages));
             if(currentTarget === name) selectChat(translations[localSettings.lang].fav, 'favorites');
             renderSidebarChats();
         }
 
         /* --- ВЫБОР ЧАТА И ШАПКА --- */
         function selectChat(targetName, type) {
+            if(wasSwiped) { wasSwiped = false; return; }
+
             currentTarget = targetName;
             document.getElementById('currentChatName').innerText = targetName;
             
@@ -881,23 +942,10 @@
             }
         }
 
-        function deleteCurrentChat(mode) {
-            deleteTargetChat(currentTarget);
-            document.getElementById('chatDropdown').style.display = 'none';
-            if(window.innerWidth <= 768) closeChatMobile();
-        }
+        function deleteCurrentChat(mode) { deleteTargetChat(currentTarget); document.getElementById('chatDropdown').style.display = 'none'; if(window.innerWidth <= 768) closeChatMobile(); }
         function archiveCurrentChat() { toggleChatArchive(currentTarget); document.getElementById('chatDropdown').style.display = 'none'; if(window.innerWidth <= 768) closeChatMobile(); }
         function unarchiveCurrentChat() { toggleChatArchive(currentTarget); document.getElementById('chatDropdown').style.display = 'none'; }
         
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.chat-options-btn') && !e.target.closest('.dropdown-menu')) {
-                document.getElementById('chatDropdown').style.display = 'none';
-            }
-            if (!e.target.closest('.stickers-panel') && !e.target.closest('.media-btn')) {
-                document.getElementById('stickersPanel').style.display = 'none';
-            }
-        });
-
         function closeChatMobile(e) { if(e) e.stopPropagation(); document.body.classList.remove('chat-active'); }
 
         /* --- ФОТО И МЕДИА --- */
@@ -920,9 +968,7 @@
                 reader.onload = function(event) {
                     currentGroupAvatar = event.target.result;
                     const display = document.getElementById('groupAvatarDisplay');
-                    
                     for(let el of display.childNodes) if(el.nodeName === 'SVG') display.removeChild(el);
-                    
                     display.style.backgroundImage = `url(${currentGroupAvatar})`;
                     display.style.borderStyle = 'solid'; display.style.borderColor = 'var(--accent)';
                 }
@@ -943,7 +989,6 @@
             e.target.value = '';
         }
 
-        /* --- ГОЛОСОВЫЕ СООБЩЕНИЯ --- */
         async function startVoiceRecord() {
             document.getElementById('micBtn').classList.add('recording');
             try {
@@ -964,15 +1009,12 @@
                 mediaRecorder.addEventListener("stop", () => {
                     const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
                     const reader = new FileReader();
-                    reader.onload = function(event) {
-                        send('[audio]' + event.target.result);
-                    };
+                    reader.onload = function(event) { send('[audio]' + event.target.result); };
                     reader.readAsDataURL(audioBlob);
                 });
             }
         }
 
-        /* --- 2D СТИКЕРЫ --- */
         function toggleStickers(e) {
             e.stopPropagation();
             const panel = document.getElementById('stickersPanel');
@@ -984,7 +1026,6 @@
             if(type === 'heart') svgStr = `<svg viewBox="0 0 24 24" stroke="#ff4a4a" fill="#ff4a4a" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
             if(type === 'star') svgStr = `<svg viewBox="0 0 24 24" stroke="#00d2ff" fill="#00d2ff" fill-opacity="0.2" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
             if(type === 'cool') svgStr = `<svg viewBox="0 0 24 24" stroke="#00e676" fill="#00e676" fill-opacity="0.2" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M8 15h8"></path><rect x="6" y="8" width="12" height="3" rx="1.5"></rect></svg>`;
-            
             send('[sticker]' + svgStr); 
             document.getElementById('stickersPanel').style.display = 'none';
         }
@@ -1047,15 +1088,29 @@
         }
 
         function saveProfile() {
-            USER = document.getElementById('profileUsername').value || "Player1";
+            const newUsername = document.getElementById('profileUsername').value || "Player1";
+            
+            // Если юзернейм изменился, загружаем его личную базу данных
+            if(newUsername !== USER) {
+                USER = newUsername;
+                localStorage.setItem('auraUser', USER);
+                
+                localChats = JSON.parse(localStorage.getItem('auraChats_' + USER)) || [];
+                localMessages = JSON.parse(localStorage.getItem('auraMessages_' + USER)) || {};
+                localProfile = JSON.parse(localStorage.getItem('auraProfile_' + USER)) || { name: USER, avatar: null, bio: "Нет описания" };
+                currentTarget = translations[localSettings.lang].fav;
+            }
+            
             localProfile.name = document.getElementById('profileName').value || "Player1";
             localProfile.bio = document.getElementById('profileBio').value;
             
-            localStorage.setItem('auraUser', USER);
-            localStorage.setItem('auraProfile', JSON.stringify(localProfile));
+            localStorage.setItem('auraProfile_' + USER, JSON.stringify(localProfile));
             updateMyAvatarDisplay();
             registerUser(USER, localProfile.name);
             closeModal('profileModal');
+            
+            renderSidebarChats();
+            selectChat(currentTarget, 'favorites');
         }
 
         let usernameTimeout;
@@ -1107,7 +1162,7 @@
 
             if (!localChats.find(c => c.name === target)) {
                 localChats.push({ name: target, type: type, avatar: currentGroupAvatar, bio: bio, isArchived: false });
-                localStorage.setItem('auraChats', JSON.stringify(localChats));
+                localStorage.setItem('auraChats_' + USER, JSON.stringify(localChats));
             }
             
             closeModal('addModal');
@@ -1136,7 +1191,7 @@
 
             if (!localMessages[currentTarget]) localMessages[currentTarget] = [];
             localMessages[currentTarget].push({sender: USER, text: text});
-            localStorage.setItem('auraMessages', JSON.stringify(localMessages));
+            localStorage.setItem('auraMessages_' + USER, JSON.stringify(localMessages));
 
             try {
                 await fetch(`${API_URL}/send`, {
@@ -1158,7 +1213,7 @@
                 data.messages.forEach(m => renderMessage(m.sender, m.text));
                 
                 localMessages[currentTarget] = data.messages;
-                localStorage.setItem('auraMessages', JSON.stringify(localMessages));
+                localStorage.setItem('auraMessages_' + USER, JSON.stringify(localMessages));
                 chatDiv.scrollTop = chatDiv.scrollHeight;
             } catch (e) {
                 const msgs = localMessages[currentTarget] || [];
