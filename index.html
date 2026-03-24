@@ -47,7 +47,7 @@
             background: var(--bg-main); 
             color: var(--text-main); 
             height: 100vh; 
-            height: 100dvh; /* ИСПРАВЛЕНИЕ: Динамическая высота для мобильных браузеров */
+            height: 100dvh;
             display: flex; 
             overflow: hidden; 
             position: relative;
@@ -316,7 +316,6 @@
         .form-group select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a0aabf' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 15px center; }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); }
         
-        /* ИСПРАВЛЕНИЕ: Темный фон для опций внутри выпадающих списков */
         select option { background-color: #1a1b26; color: #ffffff; }
         [data-theme="light"] select option { background-color: #ffffff; color: #000000; }
         
@@ -342,7 +341,6 @@
             position: absolute; bottom: 0; right: 0; background: var(--bg-element); border-radius: 50%; padding: 8px; border: 1px solid var(--glass-border); color: var(--text-main); display: flex; justify-content: center; align-items: center;
         }
         
-        /* ИСПРАВЛЕНИЕ: Выравнивание текста в профиле (align-items: center вместо flex-end) */
         .profile-line-input { width: 100%; display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
         .profile-line-input span { font-size: 0.85rem; color: var(--text-muted); min-width: 40px; text-align: right; }
         .profile-line-input .line-field {
@@ -368,9 +366,8 @@
 
         /* АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ */
         @media (max-width: 768px) {
-            /* ИСПРАВЛЕНИЕ: Добавлен сплошной фон (var(--bg-main)), чтобы окно ввода сзади не просвечивалось */
-            .sidebar { width: 100%; z-index: 20; position: absolute; height: 100%; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); background: var(--bg-main); }
-            .main-area { width: 100%; height: 100%; position: absolute; z-index: 15; }
+            .sidebar { width: 100vw !important; max-width: 100vw !important; z-index: 20; position: absolute; left: 0; top: 0; height: 100%; background: var(--bg-main); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
+            .main-area { width: 100vw !important; height: 100%; position: absolute; left: 0; top: 0; z-index: 15; }
             body.chat-active .sidebar { transform: translateX(-100%); }
             .mobile-back-btn { display: flex; align-items: center; }
             .msg { max-width: 85%; }
@@ -406,11 +403,13 @@
                 
                 <div class="form-group" style="width: 100%; text-align: left;">
                     <label>Имя <span style="color:var(--danger)">*</span></label>
-                    <input type="text" id="regName" placeholder="Пример: Артём"> </div>
+                    <input type="text" id="regName" placeholder="Например: Артём">
+                </div>
                 
                 <div class="form-group" style="width: 100%; text-align: left;">
                     <label>Юзернейм (Только англ) <span style="color:var(--danger)">*</span></label>
-                    <input type="text" id="regUsername" placeholder="Пример: artem" oninput="validateUsername(this)"> </div>
+                    <input type="text" id="regUsername" placeholder="Например: artem" oninput="validateUsername(this)">
+                </div>
                 
                 <div class="form-group" style="width: 100%; text-align: left;">
                     <label>О себе (по желанию)</label>
@@ -629,7 +628,8 @@
             </div>
             <div class="form-group">
                 <label data-i18n="addTarget">Юзернейм или Название</label>
-                <input type="text" id="newChatTarget" data-i18n-ph="placeholderTarget" placeholder="Пример: admin"> <div id="addChatStatus" class="status-msg" style="text-align: right; min-height: 20px;"></div>
+                <input type="text" id="newChatTarget" data-i18n-ph="placeholderTarget" placeholder="Например: admin">
+                <div id="addChatStatus" class="status-msg" style="text-align: right; min-height: 20px;"></div>
             </div>
             
             <div id="groupExtraFields" style="display: none;">
@@ -639,7 +639,8 @@
                 </div>
                 <div class="form-group">
                     <label>Участники (юзернеймы)</label>
-                    <input type="text" id="newGroupMembers" placeholder="Пример: artem, max"> </div>
+                    <input type="text" id="newGroupMembers" placeholder="Например: artem, max">
+                </div>
             </div>
 
             <div class="modal-actions">
@@ -680,7 +681,7 @@
                 setColor: "Цвет акцента", optYes: "Да", optNo: "Нет",
                 btnClose: "Закрыть", addTitle: "Новый чат", addType: "Тип", optUser: "Пользователь", 
                 optGroup: "Группа", optChannel: "Канал", addTarget: "Юзернейм или Название",
-                placeholderTarget: "Пример: admin", btnAdd: "Создать", statusCheck: "Проверка...", /* ИСПРАВЛЕНИЕ */
+                placeholderTarget: "Например: admin", btnAdd: "Создать", statusCheck: "Проверка...", 
                 statusShort: "Слишком короткий", statusTaken: "Уже занят!", statusFree: "Свободен",
                 statusErr: "Ошибка сети", archiveTab: "Архив", menuArchive: "В архив", menuUnarchive: "Из архива", 
                 menuDeleteLocal: "Удалить у себя", menuDeleteAll: "Удалить у всех", userNotFound: "Аккаунт не найден"
@@ -692,7 +693,7 @@
                 setColor: "Accent Color", optYes: "Yes", optNo: "No",
                 btnClose: "Close", addTitle: "New Chat", addType: "Type", optUser: "User", 
                 optGroup: "Group", optChannel: "Channel", addTarget: "Username or Title",
-                placeholderTarget: "e.g., admin", btnAdd: "Create", statusCheck: "Checking...", /* ИСПРАВЛЕНИЕ */
+                placeholderTarget: "e.g., admin", btnAdd: "Create", statusCheck: "Checking...", 
                 statusShort: "Too short", statusTaken: "Taken!", statusFree: "Available",
                 statusErr: "Network error", archiveTab: "Archive", menuArchive: "Archive", menuUnarchive: "Unarchive", 
                 menuDeleteLocal: "Delete for me", menuDeleteAll: "Delete for all", userNotFound: "Account not found"
@@ -1063,10 +1064,10 @@
                     // Первичная проверка онлайна при открытии
                     let lastSeen = localStorage.getItem('auraOnline_' + targetName);
                     if(lastSeen && (Date.now() - parseInt(lastSeen) < 15000)) {
-                        statusDiv.innerText = "В сети";
+                        statusDiv.innerHTML = `<span style="display:inline-block; width:8px; height:8px; background:var(--success); border-radius:50%; margin-right:5px;"></span>В сети`;
                         statusDiv.style.color = "var(--success)";
                     } else {
-                        statusDiv.innerText = "Был(а) недавно";
+                        statusDiv.innerHTML = "Был(а) недавно";
                         statusDiv.style.color = "var(--text-muted)";
                     }
                 }
@@ -1486,10 +1487,10 @@
                     if(chatObj && chatObj.type === 'user') {
                         let lastSeen = localStorage.getItem('auraOnline_' + currentTarget);
                         if(lastSeen && (Date.now() - parseInt(lastSeen) < 15000)) {
-                            statusDiv.innerText = "В сети";
+                            statusDiv.innerHTML = `<span style="display:inline-block; width:8px; height:8px; background:var(--success); border-radius:50%; margin-right:5px;"></span>В сети`;
                             statusDiv.style.color = "var(--success)";
                         } else {
-                            statusDiv.innerText = "Был(а) недавно";
+                            statusDiv.innerHTML = "Был(а) недавно";
                             statusDiv.style.color = "var(--text-muted)";
                         }
                     }
