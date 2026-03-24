@@ -287,7 +287,13 @@
         
         .modal h2 { margin-bottom: 25px; font-size: 1.5rem; text-align: center; color: var(--text-main); }
         .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;}
+        
+        /* ИСПРАВЛЕНИЕ ДЛЯ ТЕКСТА: Обрезание троеточием (text-overflow) */
+        .form-group label { 
+            display: block; margin-bottom: 8px; font-size: 0.85rem; color: var(--text-muted); 
+            text-transform: uppercase; letter-spacing: 1px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+        }
         
         .form-group input, .form-group select, .form-group textarea { 
             width: 100%; border-radius: 12px; padding: 12px 15px; background: var(--bg-element); border: 1px solid var(--glass-border); 
@@ -353,11 +359,46 @@
             .send-btn { padding: 10px 15px; }
             .stickers-panel { grid-template-columns: repeat(3, 1fr); left: 10px; right: 10px; }
         }
+        
+        /* Стили окна Регистрации (перекрывает весь фон) */
+        #registrationModal { z-index: 99999; background: var(--bg-main); }
     </style>
 </head>
 <body>
 
     <div id="splash"><div class="splash-logo"></div></div>
+
+    <div class="modal-overlay" id="registrationModal">
+        <div class="modal" style="pointer-events: auto;">
+            <h2 style="color: var(--accent); margin-bottom: 10px;">Добро пожаловать!</h2>
+            <p style="text-align: center; color: var(--text-muted); margin-bottom: 25px; font-size: 0.9rem;">Создайте свой профиль Aura</p>
+            
+            <div class="profile-layout">
+                <label for="regAvatarUpload" class="profile-avatar-large" id="regAvatarDisplay" title="Установить фото">
+                    <div class="cam-icon"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></div>
+                </label>
+                <input type="file" id="regAvatarUpload" accept="image/*" style="display: none;" onchange="handleRegAvatar(event)">
+                
+                <div class="form-group" style="width: 100%; text-align: left;">
+                    <label>Имя <span style="color:var(--danger)">*</span></label>
+                    <input type="text" id="regName" placeholder="Например: Артём">
+                </div>
+                
+                <div class="form-group" style="width: 100%; text-align: left;">
+                    <label>Юзернейм (Только англ) <span style="color:var(--danger)">*</span></label>
+                    <input type="text" id="regUsername" placeholder="Например: artem" oninput="validateUsername(this)">
+                </div>
+                
+                <div class="form-group" style="width: 100%; text-align: left;">
+                    <label>О себе (по желанию)</label>
+                    <textarea id="regBio" rows="2" placeholder="Расскажите немного о себе..."></textarea>
+                </div>
+            </div>
+            <div class="modal-actions" style="justify-content: center; margin-top: 10px;">
+                <button class="btn-save" style="width: 100%; padding: 12px; font-size: 1.1rem;" onclick="completeRegistration()">Начать общение</button>
+            </div>
+        </div>
+    </div>
 
     <div class="sidebar">
         <div class="sidebar-header">
@@ -479,12 +520,12 @@
                 
                 <div class="profile-line-input">
                     <span data-i18n="profName">имя</span>
-                    <input type="text" id="profileName" class="line-field" value="Player1">
+                    <input type="text" id="profileName" class="line-field" value="">
                 </div>
                 <div style="width: 100%;">
                     <div class="profile-line-input" style="margin-bottom: 5px;">
                         <span data-i18n="profUser">юзер</span>
-                        <input type="text" id="profileUsername" class="line-field" value="player1" oninput="validateUsername(this)" onkeyup="checkUsername()">
+                        <input type="text" id="profileUsername" class="line-field" value="" oninput="validateUsername(this)" onkeyup="checkUsername()">
                     </div>
                     <div id="usernameStatus" class="status-msg" style="text-align: right; min-height: 20px;"></div>
                 </div>
@@ -561,8 +602,8 @@
                 </select>
             </div>
             <div class="form-group">
-                <label data-i18n="addTarget">Юзернейм (@) или Название</label>
-                <input type="text" id="newChatTarget" data-i18n-ph="placeholderTarget" placeholder="Например: admin (только англ)">
+                <label data-i18n="addTarget">Юзернейм или Название</label>
+                <input type="text" id="newChatTarget" data-i18n-ph="placeholderTarget" placeholder="Например: admin">
                 <div id="addChatStatus" class="status-msg" style="text-align: right; min-height: 20px;"></div>
             </div>
             
@@ -572,7 +613,7 @@
                     <textarea id="newGroupBio" rows="2" placeholder="О чем эта группа?"></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Участники (через запятую юзернеймы)</label>
+                    <label>Участники (юзернеймы)</label>
                     <input type="text" id="newGroupMembers" placeholder="Например: artem, max">
                 </div>
             </div>
@@ -592,12 +633,11 @@
         const iconGroup = `<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`;
         const iconChannel = `<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>`;
 
-        let USER = localStorage.getItem('auraUser') || "Player1"; 
+        let USER = localStorage.getItem('auraUser') || ""; 
         
-        // --- ДИНАМИЧЕСКИЕ КЛЮЧИ ХРАНИЛИЩА (Привязка к аккаунту) ---
-        let localChats = JSON.parse(localStorage.getItem('auraChats_' + USER)) || [];
-        let localMessages = JSON.parse(localStorage.getItem('auraMessages_' + USER)) || {};
-        let localProfile = JSON.parse(localStorage.getItem('auraProfile_' + USER)) || { name: USER, avatar: null, bio: "Нет описания" };
+        let localChats = USER ? (JSON.parse(localStorage.getItem('auraChats_' + USER)) || []) : [];
+        let localMessages = USER ? (JSON.parse(localStorage.getItem('auraMessages_' + USER)) || {}) : {};
+        let localProfile = USER ? (JSON.parse(localStorage.getItem('auraProfile_' + USER)) || { name: USER, avatar: null, bio: "Нет описания" }) : {};
         let localSettings = JSON.parse(localStorage.getItem('auraSettings')) || { lang: "ru", themeColor: "#00d2ff", themeMode: "dark", wallpaper: "none" };
         
         let currentTarget = "Избранное";
@@ -614,7 +654,7 @@
                 btnCancel: "Отмена", btnSave: "Сохранить", setTitle: "Оформление", setLang: "Язык",
                 setColor: "Цвет акцента", optYes: "Да", optNo: "Нет",
                 btnClose: "Закрыть", addTitle: "Новый чат", addType: "Тип", optUser: "Пользователь", 
-                optGroup: "Группа", optChannel: "Канал", addTarget: "Юзернейм (@) или Название",
+                optGroup: "Группа", optChannel: "Канал", addTarget: "Юзернейм или Название",
                 placeholderTarget: "Например: admin", btnAdd: "Создать", statusCheck: "Проверка...",
                 statusShort: "Слишком короткий", statusTaken: "Уже занят!", statusFree: "Свободен",
                 statusErr: "Ошибка сети", archiveTab: "Архив", menuArchive: "В архив", menuUnarchive: "Из архива", 
@@ -626,13 +666,76 @@
                 btnCancel: "Cancel", btnSave: "Save", setTitle: "Appearance", setLang: "Language",
                 setColor: "Accent Color", optYes: "Yes", optNo: "No",
                 btnClose: "Close", addTitle: "New Chat", addType: "Type", optUser: "User", 
-                optGroup: "Group", optChannel: "Channel", addTarget: "Username (@) or Title",
+                optGroup: "Group", optChannel: "Channel", addTarget: "Username or Title",
                 placeholderTarget: "e.g., admin", btnAdd: "Create", statusCheck: "Checking...",
                 statusShort: "Too short", statusTaken: "Taken!", statusFree: "Available",
                 statusErr: "Network error", archiveTab: "Archive", menuArchive: "Archive", menuUnarchive: "Unarchive", 
                 menuDeleteLocal: "Delete for me", menuDeleteAll: "Delete for all", userNotFound: "Account not found"
             }
         };
+
+        // --- ЛОГИКА РЕГИСТРАЦИИ ---
+        let tempRegAvatar = null;
+        function handleRegAvatar(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    tempRegAvatar = event.target.result;
+                    const display = document.getElementById('regAvatarDisplay');
+                    for(let el of display.childNodes) if(el.nodeType === 3 || el.nodeName === 'SVG' || el.className==='cam-icon') display.removeChild(el);
+                    display.style.backgroundImage = `url(${tempRegAvatar})`;
+                    display.style.border = '2px solid var(--accent)';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function completeRegistration() {
+            const name = document.getElementById('regName').value.trim();
+            const username = document.getElementById('regUsername').value.trim();
+            const bio = document.getElementById('regBio').value.trim();
+
+            if(name.length < 1 || username.length < 3) {
+                alert("Пожалуйста, введите имя и юзернейм (минимум 3 символа)!");
+                return;
+            }
+
+            USER = username;
+            localStorage.setItem('auraUser', USER);
+            
+            localProfile = { name: name, avatar: tempRegAvatar, bio: bio };
+            localStorage.setItem('auraProfile_' + USER, JSON.stringify(localProfile));
+            
+            localChats = [];
+            localStorage.setItem('auraChats_' + USER, JSON.stringify(localChats));
+            
+            localMessages = {};
+            localStorage.setItem('auraMessages_' + USER, JSON.stringify(localMessages));
+
+            document.getElementById('registrationModal').classList.remove('active');
+            setTimeout(() => {
+                document.getElementById('registrationModal').style.display = 'none';
+                startNormalApp();
+            }, 300);
+        }
+
+        function startNormalApp() {
+            initApp();
+            setTimeout(() => {
+                const splash = document.getElementById('splash');
+                splash.style.opacity = '0';
+                setTimeout(() => {
+                    splash.style.display = 'none';
+                    document.querySelector('.sidebar').style.animation = 'fadeIn 0.5s ease forwards';
+                    document.querySelector('.main-area').style.animation = 'fadeIn 0.8s ease forwards';
+                }, 800);
+            }, 2000);
+            
+            registerUser(USER, localProfile.name);
+            if(window.innerWidth > 768) selectChat(currentTarget, 'favorites');
+            startChatLoop();
+        }
 
         function initApp() {
             document.getElementById('langSelect').value = localSettings.lang || 'ru';
@@ -1250,21 +1353,16 @@
             chatLoop = setInterval(loadChat, 2000);
         }
 
+        // Запуск приложения: проверка на наличие юзера
         window.onload = () => {
-            initApp();
-            setTimeout(() => {
-                const splash = document.getElementById('splash');
-                splash.style.opacity = '0';
-                setTimeout(() => {
-                    splash.style.display = 'none';
-                    document.querySelector('.sidebar').style.animation = 'fadeIn 0.5s ease forwards';
-                    document.querySelector('.main-area').style.animation = 'fadeIn 0.8s ease forwards';
-                }, 800);
-            }, 2000);
-            
-            registerUser(USER, localProfile.name);
-            if(window.innerWidth > 768) selectChat(currentTarget, 'favorites');
-            startChatLoop();
+            if (!localStorage.getItem('auraUser')) {
+                // Если юзера нет, убираем сплеш и показываем регистрацию
+                document.getElementById('splash').style.display = 'none';
+                document.getElementById('registrationModal').style.display = 'flex';
+                setTimeout(() => document.getElementById('registrationModal').classList.add('active'), 50);
+            } else {
+                startNormalApp();
+            }
         };
     </script>
 </body>
