@@ -35,6 +35,7 @@
             display: flex; 
             overflow: hidden; 
             backdrop-filter: blur(10px);
+            position: relative;
         }
 
         /* Анимация загрузки */
@@ -96,7 +97,7 @@
             width: 48px; height: 48px; border-radius: 50%; background: var(--accent-gradient); 
             display: flex; justify-content: center; align-items: center; 
             font-weight: bold; font-size: 1.2rem; color: var(--btn-text);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3); background-size: cover; background-position: center; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3); background-size: cover; background-position: center; flex-shrink: 0;
         }
 
         /* Кнопка скрытия архива */
@@ -118,6 +119,20 @@
             padding: 20px; background: var(--bg-sidebar); border-bottom: 1px solid var(--glass-border); 
             display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(10px);
         }
+
+        /* Кликабельный заголовок для открытия профиля */
+        .chat-header-info {
+            display: flex; align-items: center; gap: 15px; cursor: pointer; 
+            transition: 0.2s; padding: 5px 10px; border-radius: 12px;
+        }
+        .chat-header-info:hover { background: rgba(255,255,255,0.05); }
+
+        /* Кнопка "Назад" для мобилок */
+        .mobile-back-btn {
+            display: none; background: transparent; border: none; color: white; 
+            font-size: 1.8rem; cursor: pointer; margin-right: 10px; padding: 0 10px; transition: 0.2s;
+        }
+        .mobile-back-btn:hover { color: var(--accent); }
         
         /* Меню действий с чатом (3 точки) */
         .chat-options-btn {
@@ -164,7 +179,7 @@
         button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px var(--accent-glow); filter: brightness(1.2); }
         button.icon-btn { 
             padding: 0; border-radius: 50%; width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; 
-            font-size: 1.2rem; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-main);
+            font-size: 1.2rem; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-main); flex-shrink: 0;
         }
         button.icon-btn:hover { background: var(--accent); box-shadow: 0 0 15px var(--accent-glow); color: var(--btn-text); }
 
@@ -230,6 +245,27 @@
         ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* =========================================
+           АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ ТЕЛЕФОНОВ
+           ========================================= */
+        @media (max-width: 768px) {
+            .sidebar { 
+                width: 100%; z-index: 20; position: absolute; height: 100%; 
+                transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            }
+            .main-area { width: 100%; height: 100%; position: absolute; z-index: 15; }
+            
+            /* Когда выбран чат, сайдбар уезжает влево */
+            body.chat-active .sidebar { transform: translateX(-100%); }
+            /* Показываем кнопку назад на мобильных */
+            .mobile-back-btn { display: flex; align-items: center; }
+            .chat-header-info { padding: 0; }
+            .msg { max-width: 85%; }
+            .chat-input-area { padding: 15px; }
+            input[type="text"] { padding: 12px 20px; }
+            button { padding: 10px 15px; }
+        }
     </style>
 </head>
 <body>
@@ -252,13 +288,14 @@
 
     <div class="main-area">
         <div class="chat-header">
-            <div style="display: flex; align-items: center; gap: 15px;">
+            <div class="chat-header-info" onclick="openViewProfile()">
+                <button class="mobile-back-btn" onclick="closeChatMobile(event)">←</button>
                 <h3 id="currentChatName" style="font-size: 1.4rem; font-weight: 600;">Избранное</h3>
                 <div id="statusInfo" style="background: var(--bg-element); padding: 5px 15px; border-radius: 20px; color: var(--accent); font-weight: bold; font-size: 0.9rem; border: 1px solid var(--glass-border);">Level: 0 | XP: 0</div>
             </div>
             
             <div style="position: relative;">
-                <button class="chat-options-btn" onclick="toggleChatMenu()">⋮</button>
+                <button class="chat-options-btn" onclick="toggleChatMenu(event)">⋮</button>
                 <div id="chatDropdown" class="dropdown-menu">
                     <div class="dropdown-item" onclick="archiveCurrentChat()" id="menuArchiveBtn" data-i18n="menuArchive">📦 В архив</div>
                     <div class="dropdown-item" onclick="unarchiveCurrentChat()" id="menuUnarchiveBtn" data-i18n="menuUnarchive" style="display:none;">📤 Достать из архива</div>
@@ -271,6 +308,20 @@
         <div class="chat-input-area">
             <input type="text" id="msgText" data-i18n-ph="placeholderMsg" placeholder="Напишите сообщение..." onkeypress="handleKeyPress(event)">
             <button onclick="send()" data-i18n="btnSend">Отправить</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="viewProfileModal">
+        <div class="modal">
+            <h2 data-i18n="viewProfileTitle">Профиль</h2>
+            <div class="profile-layout" style="margin-bottom: 20px;">
+                <div class="profile-avatar-large" id="viewProfileAvatar" style="cursor: default;">👤</div>
+                <h3 id="viewProfileName" style="margin-bottom: 5px; font-size: 1.5rem;">Name</h3>
+                <p id="viewProfileType" style="color: var(--text-muted); font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;">User</p>
+            </div>
+            <div class="modal-actions" style="justify-content: center;">
+                <button class="btn-cancel" onclick="closeModal('viewProfileModal')" data-i18n="btnClose">Закрыть</button>
+            </div>
         </div>
     </div>
 
@@ -342,11 +393,14 @@
     <div class="modal-overlay" id="addModal">
         <div class="modal">
             <h2 data-i18n="addTitle">Новый чат</h2>
-            <label for="groupAvatarUpload" class="group-avatar-preview" id="groupAvatarDisplay" title="Установить аватар">📷</label>
-            <input type="file" id="groupAvatarUpload" accept="image/*" style="display: none;">
+            <div id="avatarUploadArea" style="display: none;">
+                <label for="groupAvatarUpload" class="group-avatar-preview" id="groupAvatarDisplay" title="Установить аватар">📷</label>
+                <input type="file" id="groupAvatarUpload" accept="image/*" style="display: none;">
+            </div>
+
             <div class="form-group">
                 <label data-i18n="addType">Тип</label>
-                <select id="chatType">
+                <select id="chatType" onchange="toggleAvatarUploadVisibility()">
                     <option value="user" data-i18n="optUser">Пользователь</option>
                     <option value="group" data-i18n="optGroup">Группа</option>
                     <option value="channel" data-i18n="optChannel">Канал</option>
@@ -377,14 +431,13 @@
         let localProfile = JSON.parse(localStorage.getItem('auraProfile')) || { name: "Player1", avatar: null };
         let localSettings = JSON.parse(localStorage.getItem('auraSettings')) || { lang: "ru", theme: "#00d2ff", showArchive: true };
         
-        // Подстраховка для старых сохранений
         if (typeof localSettings.showArchive === 'undefined') localSettings.showArchive = true;
 
         // --- СЛОВАРЬ ПЕРЕВОДА --- //
         const translations = {
             ru: {
                 fav: "Избранное", placeholderMsg: "Напишите сообщение...", btnSend: "Отправить",
-                profTitle: "Профиль", profName: "имя", profUser: "юзер", profSet: "⚙ настройки",
+                profTitle: "Мой Профиль", viewProfileTitle: "Профиль чата", profName: "имя", profUser: "юзер", profSet: "⚙ настройки",
                 btnCancel: "Отмена", btnSave: "Сохранить", setTitle: "Настройки", setLang: "Язык",
                 setColor: "Цвет мессенджера", setShowArchive: "Показывать Архив", optYes: "Да", optNo: "Нет",
                 btnClose: "Закрыть", addTitle: "Новый чат", addType: "Тип", optUser: "Пользователь", 
@@ -396,7 +449,7 @@
             },
             en: {
                 fav: "Saved Messages", placeholderMsg: "Write a message...", btnSend: "Send",
-                profTitle: "Profile", profName: "name", profUser: "user", profSet: "⚙ settings",
+                profTitle: "My Profile", viewProfileTitle: "Chat Profile", profName: "name", profUser: "user", profSet: "⚙ settings",
                 btnCancel: "Cancel", btnSave: "Save", setTitle: "Settings", setLang: "Language",
                 setColor: "Messenger Color", setShowArchive: "Show Archive", optYes: "Yes", optNo: "No",
                 btnClose: "Close", addTitle: "New Chat", addType: "Type", optUser: "User", 
@@ -477,7 +530,7 @@
         }
 
         function hideArchiveFromSidebar(e) {
-            e.stopPropagation(); // Чтобы не кликалось на открытие архива
+            e.stopPropagation(); 
             localSettings.showArchive = false;
             document.getElementById('showArchiveSelect').value = 'false';
             localStorage.setItem('auraSettings', JSON.stringify(localSettings));
@@ -488,9 +541,8 @@
         function renderSidebarChats() {
             const list = document.getElementById('chatList');
             const dict = translations[localSettings.lang];
-            list.innerHTML = ''; // Очищаем
+            list.innerHTML = ''; 
 
-            // 1. АРХИВ (В самом верху, если он не скрыт в настройках и там есть чаты)
             const archivedChats = localChats.filter(c => c.isArchived);
             if (archivedChats.length > 0 && localSettings.showArchive !== false) {
                 list.innerHTML += `
@@ -520,7 +572,6 @@
                 list.innerHTML += archHtml + `</div>`;
             }
 
-            // 2. ИЗБРАННОЕ (Всегда под архивом)
             const favName = dict.fav;
             list.innerHTML += `
                 <div class="chat-item ${currentTarget === favName ? 'active' : ''}" onclick="selectChat('${favName}', 'favorites')">
@@ -529,7 +580,6 @@
                 </div>
             `;
 
-            // 3. АКТИВНЫЕ ЧАТЫ (Все остальные)
             const activeChats = localChats.filter(c => !c.isArchived);
             activeChats.forEach(chat => {
                 let iconHtml = chat.avatar 
@@ -550,12 +600,12 @@
             renderSidebarChats();
         }
 
-        // --- УПРАВЛЕНИЕ ЧАТОМ (УДАЛИТЬ / АРХИВ) --- //
-        function toggleChatMenu() {
+        // --- УПРАВЛЕНИЕ ЧАТОМ (УДАЛИТЬ / АРХИВ / МОБИЛКА) --- //
+        function toggleChatMenu(e) {
+            e.stopPropagation(); // Чтобы не открывался профиль
             const menu = document.getElementById('chatDropdown');
             menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
             
-            // Если это "Избранное", прячем меню
             if(currentTarget === translations[localSettings.lang].fav) {
                 menu.style.display = 'none';
                 return;
@@ -568,12 +618,17 @@
             }
         }
 
-        // Закрываем меню при клике мимо
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.chat-options-btn') && !e.target.closest('.dropdown-menu')) {
                 document.getElementById('chatDropdown').style.display = 'none';
             }
         });
+
+        // МОБИЛЬНАЯ ФУНКЦИЯ: закрыть чат и вернуться в меню
+        function closeChatMobile(e) {
+            if(e) e.stopPropagation();
+            document.body.classList.remove('chat-active');
+        }
 
         function deleteCurrentChat() {
             localChats = localChats.filter(c => c.name !== currentTarget);
@@ -583,13 +638,13 @@
             
             document.getElementById('chatDropdown').style.display = 'none';
             selectChat(translations[localSettings.lang].fav, 'favorites');
+            closeChatMobile(); // Для мобилок выходим в меню при удалении
         }
 
         function archiveCurrentChat() {
             const chatObj = localChats.find(c => c.name === currentTarget);
             if(chatObj) chatObj.isArchived = true;
             
-            // Если архив был скрыт в настройках, автоматически показываем его обратно
             localSettings.showArchive = true;
             document.getElementById('showArchiveSelect').value = 'true';
             localStorage.setItem('auraSettings', JSON.stringify(localSettings));
@@ -597,8 +652,9 @@
             localStorage.setItem('auraChats', JSON.stringify(localChats));
             document.getElementById('chatDropdown').style.display = 'none';
             
-            isArchiveOpen = true; // Открываем папку чтоб юзер видел куда он улетел
+            isArchiveOpen = true; 
             selectChat(translations[localSettings.lang].fav, 'favorites');
+            closeChatMobile();
         }
 
         function unarchiveCurrentChat() {
@@ -609,7 +665,7 @@
             renderSidebarChats();
         }
 
-        // --- АВАТАРКИ ПРОФИЛЯ И СОЗДАНИЯ ЧАТА --- //
+        // --- АВАТАРКИ И СОЗДАНИЕ ЧАТА --- //
         document.getElementById('avatarUpload').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
@@ -639,6 +695,18 @@
             }
         });
 
+        // НОВОЕ: Скрыть кнопку добавления фото, если выбран "Пользователь"
+        function toggleAvatarUploadVisibility() {
+            const type = document.getElementById('chatType').value;
+            const avatarArea = document.getElementById('avatarUploadArea');
+            if(type === 'user') {
+                avatarArea.style.display = 'none';
+                currentGroupAvatar = null; // Сбрасываем выбранное фото, если переключились на юзера
+            } else {
+                avatarArea.style.display = 'block';
+            }
+        }
+
         // Запуск
         window.onload = () => {
             initApp();
@@ -653,7 +721,11 @@
             }, 2500);
             
             registerUser(USER);
-            selectChat(currentTarget, 'favorites');
+            
+            // Если мы не на мобилке, открываем избранное сразу. Если на мобилке, ждем выбора.
+            if(window.innerWidth > 768) {
+                selectChat(currentTarget, 'favorites');
+            }
             startChatLoop();
         };
 
@@ -669,12 +741,53 @@
             setTimeout(() => modal.style.display = 'none', 300);
         }
 
+        // НОВОЕ: Открыть окно просмотра чужого профиля
+        function openViewProfile() {
+            // У избранного нет профиля
+            if(currentTarget === translations[localSettings.lang].fav) return; 
+            
+            const chatObj = localChats.find(c => c.name === currentTarget);
+            if(!chatObj) return;
+
+            const avatarDisplay = document.getElementById('viewProfileAvatar');
+            
+            // Установка аватарки
+            if(chatObj.avatar) {
+                avatarDisplay.style.backgroundImage = `url(${chatObj.avatar})`;
+                avatarDisplay.innerText = '';
+            } else {
+                avatarDisplay.style.backgroundImage = '';
+                // Извлекаем стандартный эмодзи
+                avatarDisplay.innerText = chatObj.type === 'group' ? '👥' : (chatObj.type === 'channel' ? '📢' : '👤');
+            }
+            
+            // Установка имени и типа
+            document.getElementById('viewProfileName').innerText = chatObj.name;
+            const dict = translations[localSettings.lang];
+            const typeText = chatObj.type === 'group' ? dict.optGroup : (chatObj.type === 'channel' ? dict.optChannel : dict.optUser);
+            document.getElementById('viewProfileType').innerText = typeText;
+
+            // Кнопки и курсор для этого окна изменять нельзя
+            avatarDisplay.style.cursor = 'default';
+            avatarDisplay.style.borderStyle = 'solid';
+            
+            // Прячем меню 3-х точек, если оно было открыто
+            document.getElementById('chatDropdown').style.display = 'none';
+
+            openModal('viewProfileModal');
+        }
+
         function openAddModal() {
             currentGroupAvatar = null;
             const display = document.getElementById('groupAvatarDisplay');
             display.style.backgroundImage = ''; display.innerText = '📷';
             display.style.borderStyle = 'dashed'; display.style.borderColor = 'var(--text-muted)';
             document.getElementById('newChatTarget').value = ''; 
+            
+            // Сбрасываем выбор типа на "Пользователь" и прячем аватарку
+            document.getElementById('chatType').value = 'user';
+            toggleAvatarUploadVisibility();
+
             openModal('addModal');
         }
 
@@ -732,7 +845,6 @@
             const type = document.getElementById('chatType').value;
             if(!target) return;
 
-            // Проверка, есть ли уже такой чат
             if (!localChats.find(c => c.name === target)) {
                 localChats.push({ name: target, type: type, avatar: currentGroupAvatar, isArchived: false });
                 localStorage.setItem('auraChats', JSON.stringify(localChats));
@@ -748,6 +860,12 @@
             renderSidebarChats();
             
             document.getElementById('chat').innerHTML = '';
+            
+            // Если это мобильное устройство, активируем режим чата (прячем сайдбар)
+            if(window.innerWidth <= 768) {
+                document.body.classList.add('chat-active');
+            }
+            
             loadChat(); 
         }
 
@@ -768,16 +886,13 @@
             const text = input.value.trim();
             if (!text) return;
 
-            // 1. Показываем в UI
             renderMessage(USER, text);
             input.value = '';
 
-            // 2. Сохраняем ЛОКАЛЬНО навсегда
             if (!localMessages[currentTarget]) localMessages[currentTarget] = [];
             localMessages[currentTarget].push({sender: USER, text: text});
             localStorage.setItem('auraMessages', JSON.stringify(localMessages));
 
-            // 3. Отправляем на бэкенд (если работает)
             try {
                 const res = await fetch('http://127.0.0.1:8000/send', {
                     method: 'POST', headers: {'Content-Type': 'application/json'},
@@ -801,13 +916,11 @@
                 chatDiv.innerHTML = ''; 
                 data.messages.forEach(m => renderMessage(m.sender, m.text));
                 
-                // Синхронизируем локальную базу с бэкендом
                 localMessages[currentTarget] = data.messages;
                 localStorage.setItem('auraMessages', JSON.stringify(localMessages));
                 
                 chatDiv.scrollTop = chatDiv.scrollHeight;
             } catch (e) {
-                // БЭКЕНД НЕ РАБОТАЕТ - Грузим из памяти браузера!
                 const msgs = localMessages[currentTarget] || [];
                 const chatDiv = document.getElementById('chat');
                 chatDiv.innerHTML = '';
