@@ -47,6 +47,7 @@
             background: var(--bg-main); 
             color: var(--text-main); 
             height: 100vh; 
+            height: 100dvh; /* ИСПРАВЛЕНИЕ: Динамическая высота для мобильных браузеров */
             display: flex; 
             overflow: hidden; 
             position: relative;
@@ -224,7 +225,6 @@
         .msg.sent { background: var(--accent-gradient); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 4px 15px var(--accent-glow); }
         
         .msg-media { max-width: 100%; border-radius: 12px; margin-top: 5px; cursor: pointer; }
-        /* ИСПРАВЛЕНИЕ: ГС теперь большие, закругленные и не обрезаются */
         .msg-audio { width: 250px; height: 50px; margin-top: 5px; outline: none; border-radius: 25px; background: rgba(255,255,255,0.1); }
         .msg-sticker { width: 120px; height: 120px; }
 
@@ -303,7 +303,6 @@
         .modal h2 { margin-bottom: 25px; font-size: 1.5rem; text-align: center; color: var(--text-main); }
         .form-group { margin-bottom: 20px; }
         
-        /* ИСПРАВЛЕНИЕ ДЛЯ ТЕКСТА: Обрезание троеточием (text-overflow) */
         .form-group label { 
             display: block; margin-bottom: 8px; font-size: 0.85rem; color: var(--text-muted); 
             text-transform: uppercase; letter-spacing: 1px;
@@ -316,6 +315,10 @@
         }
         .form-group select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a0aabf' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 15px center; }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); }
+        
+        /* ИСПРАВЛЕНИЕ: Темный фон для опций внутри выпадающих списков */
+        select option { background-color: #1a1b26; color: #ffffff; }
+        [data-theme="light"] select option { background-color: #ffffff; color: #000000; }
         
         .wallpaper-options { display: flex; gap: 10px; margin-top: 10px; overflow-x: auto; padding-bottom: 5px; }
         .wp-option { width: 50px; height: 50px; border-radius: 10px; cursor: pointer; border: 2px solid transparent; background-size: cover; background-position: center; flex-shrink: 0;}
@@ -339,8 +342,9 @@
             position: absolute; bottom: 0; right: 0; background: var(--bg-element); border-radius: 50%; padding: 8px; border: 1px solid var(--glass-border); color: var(--text-main); display: flex; justify-content: center; align-items: center;
         }
         
-        .profile-line-input { width: 100%; display: flex; align-items: flex-end; gap: 10px; margin-bottom: 15px; }
-        .profile-line-input span { font-size: 0.85rem; color: var(--text-muted); padding-bottom: 5px; min-width: 40px; text-align: right; }
+        /* ИСПРАВЛЕНИЕ: Выравнивание текста в профиле (align-items: center вместо flex-end) */
+        .profile-line-input { width: 100%; display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .profile-line-input span { font-size: 0.85rem; color: var(--text-muted); min-width: 40px; text-align: right; }
         .profile-line-input .line-field {
             flex: 1; border: none; border-bottom: 2px solid var(--text-muted); background: transparent; color: var(--text-main); font-size: 1.1rem;
             padding: 5px 0; outline: none; transition: 0.3s;
@@ -364,7 +368,8 @@
 
         /* АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ */
         @media (max-width: 768px) {
-            .sidebar { width: 100%; z-index: 20; position: absolute; height: 100%; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
+            /* ИСПРАВЛЕНИЕ: Добавлен сплошной фон (var(--bg-main)), чтобы окно ввода сзади не просвечивалось */
+            .sidebar { width: 100%; z-index: 20; position: absolute; height: 100%; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); background: var(--bg-main); }
             .main-area { width: 100%; height: 100%; position: absolute; z-index: 15; }
             body.chat-active .sidebar { transform: translateX(-100%); }
             .mobile-back-btn { display: flex; align-items: center; }
@@ -401,13 +406,11 @@
                 
                 <div class="form-group" style="width: 100%; text-align: left;">
                     <label>Имя <span style="color:var(--danger)">*</span></label>
-                    <input type="text" id="regName" placeholder="Например: Артём (пример: NAME)">
-                </div>
+                    <input type="text" id="regName" placeholder="Пример: Артём"> </div>
                 
                 <div class="form-group" style="width: 100%; text-align: left;">
                     <label>Юзернейм (Только англ) <span style="color:var(--danger)">*</span></label>
-                    <input type="text" id="regUsername" placeholder="Например: artem (пример: NAME)" oninput="validateUsername(this)">
-                </div>
+                    <input type="text" id="regUsername" placeholder="Пример: artem" oninput="validateUsername(this)"> </div>
                 
                 <div class="form-group" style="width: 100%; text-align: left;">
                     <label>О себе (по желанию)</label>
@@ -626,8 +629,7 @@
             </div>
             <div class="form-group">
                 <label data-i18n="addTarget">Юзернейм или Название</label>
-                <input type="text" id="newChatTarget" data-i18n-ph="placeholderTarget" placeholder="Например: admin (пример: NAME)">
-                <div id="addChatStatus" class="status-msg" style="text-align: right; min-height: 20px;"></div>
+                <input type="text" id="newChatTarget" data-i18n-ph="placeholderTarget" placeholder="Пример: admin"> <div id="addChatStatus" class="status-msg" style="text-align: right; min-height: 20px;"></div>
             </div>
             
             <div id="groupExtraFields" style="display: none;">
@@ -637,8 +639,7 @@
                 </div>
                 <div class="form-group">
                     <label>Участники (юзернеймы)</label>
-                    <input type="text" id="newGroupMembers" placeholder="Например: artem, max (пример: NAME)">
-                </div>
+                    <input type="text" id="newGroupMembers" placeholder="Пример: artem, max"> </div>
             </div>
 
             <div class="modal-actions">
@@ -679,7 +680,7 @@
                 setColor: "Цвет акцента", optYes: "Да", optNo: "Нет",
                 btnClose: "Закрыть", addTitle: "Новый чат", addType: "Тип", optUser: "Пользователь", 
                 optGroup: "Группа", optChannel: "Канал", addTarget: "Юзернейм или Название",
-                placeholderTarget: "Например: admin (пример: NAME)", btnAdd: "Создать", statusCheck: "Проверка...",
+                placeholderTarget: "Пример: admin", btnAdd: "Создать", statusCheck: "Проверка...", /* ИСПРАВЛЕНИЕ */
                 statusShort: "Слишком короткий", statusTaken: "Уже занят!", statusFree: "Свободен",
                 statusErr: "Ошибка сети", archiveTab: "Архив", menuArchive: "В архив", menuUnarchive: "Из архива", 
                 menuDeleteLocal: "Удалить у себя", menuDeleteAll: "Удалить у всех", userNotFound: "Аккаунт не найден"
@@ -691,7 +692,7 @@
                 setColor: "Accent Color", optYes: "Yes", optNo: "No",
                 btnClose: "Close", addTitle: "New Chat", addType: "Type", optUser: "User", 
                 optGroup: "Group", optChannel: "Channel", addTarget: "Username or Title",
-                placeholderTarget: "e.g., admin (example: NAME)", btnAdd: "Create", statusCheck: "Checking...",
+                placeholderTarget: "e.g., admin", btnAdd: "Create", statusCheck: "Checking...", /* ИСПРАВЛЕНИЕ */
                 statusShort: "Too short", statusTaken: "Taken!", statusFree: "Available",
                 statusErr: "Network error", archiveTab: "Archive", menuArchive: "Archive", menuUnarchive: "Unarchive", 
                 menuDeleteLocal: "Delete for me", menuDeleteAll: "Delete for all", userNotFound: "Account not found"
