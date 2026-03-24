@@ -255,10 +255,7 @@
                 transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             }
             .main-area { width: 100%; height: 100%; position: absolute; z-index: 15; }
-            
-            /* Когда выбран чат, сайдбар уезжает влево */
             body.chat-active .sidebar { transform: translateX(-100%); }
-            /* Показываем кнопку назад на мобильных */
             .mobile-back-btn { display: flex; align-items: center; }
             .chat-header-info { padding: 0; }
             .msg { max-width: 85%; }
@@ -282,8 +279,7 @@
                 <button class="icon-btn" onclick="openModal('profileModal')" title="Профиль">👤</button>
             </div>
         </div>
-        <div class="chat-list" id="chatList">
-            </div>
+        <div class="chat-list" id="chatList"></div>
     </div>
 
     <div class="main-area">
@@ -303,8 +299,7 @@
                 </div>
             </div>
         </div>
-        <div class="chat-history" id="chat">
-            </div>
+        <div class="chat-history" id="chat"></div>
         <div class="chat-input-area">
             <input type="text" id="msgText" data-i18n-ph="placeholderMsg" placeholder="Напишите сообщение..." onkeypress="handleKeyPress(event)">
             <button onclick="send()" data-i18n="btnSend">Отправить</button>
@@ -336,7 +331,6 @@
                     <span data-i18n="profName">имя</span>
                     <input type="text" id="profileName" class="line-field" value="Player1">
                 </div>
-                
                 <div style="width: 100%;">
                     <div class="profile-line-input" style="margin-bottom: 5px;">
                         <span data-i18n="profUser">юзер</span>
@@ -344,7 +338,6 @@
                     </div>
                     <div id="usernameStatus" class="status-msg" style="text-align: right; min-height: 20px;"></div>
                 </div>
-
                 <div class="profile-settings-link" onclick="closeModal('profileModal'); openModal('settingsModal')" data-i18n="profSet">
                     ⚙ настройки
                 </div>
@@ -409,6 +402,7 @@
             <div class="form-group">
                 <label data-i18n="addTarget">Юзернейм (@) или Название</label>
                 <input type="text" id="newChatTarget" data-i18n-ph="placeholderTarget" placeholder="Например: admin">
+                <div id="addChatStatus" class="status-msg" style="text-align: right; min-height: 20px;"></div>
             </div>
             <div class="modal-actions">
                 <button class="btn-cancel" onclick="closeModal('addModal')" data-i18n="btnCancel">Отмена</button>
@@ -418,14 +412,15 @@
     </div>
 
     <script>
-        // --- LOCAL STORAGE ИНИЦИАЛИЗАЦИЯ --- //
+        // API URL (замени на IP своего ПК, если хочешь зайти с телефона, например http://192.168.1.5:8000)
+        const API_URL = "http://127.0.0.1:8000";
+
         let USER = localStorage.getItem('auraUser') || "Player1"; 
         let currentTarget = "Избранное";
         let chatLoop;
         let currentGroupAvatar = null;
         let isArchiveOpen = false;
 
-        // Базы данных в LocalStorage
         let localChats = JSON.parse(localStorage.getItem('auraChats')) || [];
         let localMessages = JSON.parse(localStorage.getItem('auraMessages')) || {};
         let localProfile = JSON.parse(localStorage.getItem('auraProfile')) || { name: "Player1", avatar: null };
@@ -433,7 +428,6 @@
         
         if (typeof localSettings.showArchive === 'undefined') localSettings.showArchive = true;
 
-        // --- СЛОВАРЬ ПЕРЕВОДА --- //
         const translations = {
             ru: {
                 fav: "Избранное", placeholderMsg: "Напишите сообщение...", btnSend: "Отправить",
@@ -445,7 +439,7 @@
                 placeholderTarget: "Например: admin", btnAdd: "Добавить", statusCheck: "Проверка...",
                 statusShort: "Слишком короткий", statusTaken: "Юзернейм уже занят!", statusFree: "Юзернейм свободен",
                 statusErr: "Ошибка сети", archiveTab: "Архив", menuArchive: "📦 В архив", menuUnarchive: "📤 Достать из архива", 
-                menuDelete: "🗑 Удалить", hideArchiveTooltip: "Скрыть архив"
+                menuDelete: "🗑 Удалить", hideArchiveTooltip: "Скрыть архив", userNotFound: "Аккаунта не существует"
             },
             en: {
                 fav: "Saved Messages", placeholderMsg: "Write a message...", btnSend: "Send",
@@ -457,11 +451,10 @@
                 placeholderTarget: "e.g., admin", btnAdd: "Add", statusCheck: "Checking...",
                 statusShort: "Too short", statusTaken: "Username is taken!", statusFree: "Username is available",
                 statusErr: "Network error", archiveTab: "Archive", menuArchive: "📦 Archive", menuUnarchive: "📤 Unarchive", 
-                menuDelete: "🗑 Delete", hideArchiveTooltip: "Hide Archive"
+                menuDelete: "🗑 Delete", hideArchiveTooltip: "Hide Archive", userNotFound: "Account does not exist"
             }
         };
 
-        // Загрузка сохраненных настроек при старте
         function initApp() {
             document.getElementById('langSelect').value = localSettings.lang;
             document.getElementById('themeColor').value = localSettings.theme;
@@ -537,7 +530,6 @@
             renderSidebarChats();
         }
 
-        // --- РЕНДЕР БОКОВОЙ ПАНЕЛИ ИЗ LOCAL STORAGE --- //
         function renderSidebarChats() {
             const list = document.getElementById('chatList');
             const dict = translations[localSettings.lang];
@@ -600,9 +592,8 @@
             renderSidebarChats();
         }
 
-        // --- УПРАВЛЕНИЕ ЧАТОМ (УДАЛИТЬ / АРХИВ / МОБИЛКА) --- //
         function toggleChatMenu(e) {
-            e.stopPropagation(); // Чтобы не открывался профиль
+            e.stopPropagation(); 
             const menu = document.getElementById('chatDropdown');
             menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
             
@@ -624,7 +615,6 @@
             }
         });
 
-        // МОБИЛЬНАЯ ФУНКЦИЯ: закрыть чат и вернуться в меню
         function closeChatMobile(e) {
             if(e) e.stopPropagation();
             document.body.classList.remove('chat-active');
@@ -638,7 +628,7 @@
             
             document.getElementById('chatDropdown').style.display = 'none';
             selectChat(translations[localSettings.lang].fav, 'favorites');
-            closeChatMobile(); // Для мобилок выходим в меню при удалении
+            closeChatMobile(); 
         }
 
         function archiveCurrentChat() {
@@ -665,7 +655,6 @@
             renderSidebarChats();
         }
 
-        // --- АВАТАРКИ И СОЗДАНИЕ ЧАТА --- //
         document.getElementById('avatarUpload').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
@@ -695,19 +684,17 @@
             }
         });
 
-        // НОВОЕ: Скрыть кнопку добавления фото, если выбран "Пользователь"
         function toggleAvatarUploadVisibility() {
             const type = document.getElementById('chatType').value;
             const avatarArea = document.getElementById('avatarUploadArea');
             if(type === 'user') {
                 avatarArea.style.display = 'none';
-                currentGroupAvatar = null; // Сбрасываем выбранное фото, если переключились на юзера
+                currentGroupAvatar = null; 
             } else {
                 avatarArea.style.display = 'block';
             }
         }
 
-        // Запуск
         window.onload = () => {
             initApp();
             setTimeout(() => {
@@ -720,16 +707,14 @@
                 }, 800);
             }, 2500);
             
-            registerUser(USER);
+            registerUser(USER, localProfile.name);
             
-            // Если мы не на мобилке, открываем избранное сразу. Если на мобилке, ждем выбора.
             if(window.innerWidth > 768) {
                 selectChat(currentTarget, 'favorites');
             }
             startChatLoop();
         };
 
-        // UI Логика модальных окон 
         function openModal(id) { 
             const modal = document.getElementById(id);
             modal.style.display = 'flex';
@@ -741,9 +726,7 @@
             setTimeout(() => modal.style.display = 'none', 300);
         }
 
-        // НОВОЕ: Открыть окно просмотра чужого профиля
         function openViewProfile() {
-            // У избранного нет профиля
             if(currentTarget === translations[localSettings.lang].fav) return; 
             
             const chatObj = localChats.find(c => c.name === currentTarget);
@@ -751,27 +734,21 @@
 
             const avatarDisplay = document.getElementById('viewProfileAvatar');
             
-            // Установка аватарки
             if(chatObj.avatar) {
                 avatarDisplay.style.backgroundImage = `url(${chatObj.avatar})`;
                 avatarDisplay.innerText = '';
             } else {
                 avatarDisplay.style.backgroundImage = '';
-                // Извлекаем стандартный эмодзи
                 avatarDisplay.innerText = chatObj.type === 'group' ? '👥' : (chatObj.type === 'channel' ? '📢' : '👤');
             }
             
-            // Установка имени и типа
             document.getElementById('viewProfileName').innerText = chatObj.name;
             const dict = translations[localSettings.lang];
             const typeText = chatObj.type === 'group' ? dict.optGroup : (chatObj.type === 'channel' ? dict.optChannel : dict.optUser);
             document.getElementById('viewProfileType').innerText = typeText;
 
-            // Кнопки и курсор для этого окна изменять нельзя
             avatarDisplay.style.cursor = 'default';
             avatarDisplay.style.borderStyle = 'solid';
-            
-            // Прячем меню 3-х точек, если оно было открыто
             document.getElementById('chatDropdown').style.display = 'none';
 
             openModal('viewProfileModal');
@@ -783,8 +760,8 @@
             display.style.backgroundImage = ''; display.innerText = '📷';
             display.style.borderStyle = 'dashed'; display.style.borderColor = 'var(--text-muted)';
             document.getElementById('newChatTarget').value = ''; 
+            document.getElementById('addChatStatus').innerText = ''; // Очищаем ошибку
             
-            // Сбрасываем выбор типа на "Пользователь" и прячем аватарку
             document.getElementById('chatType').value = 'user';
             toggleAvatarUploadVisibility();
 
@@ -803,11 +780,11 @@
             localStorage.setItem('auraUser', USER);
             localStorage.setItem('auraProfile', JSON.stringify(localProfile));
 
-            registerUser(USER);
+            registerUser(USER, localProfile.name);
             closeModal('profileModal');
         }
 
-        // Логика проверки юзернейма
+        // --- ПРОВЕРКА ЮЗЕРНЕЙМА ЧЕРЕЗ БАЗУ --- //
         let usernameTimeout;
         async function checkUsername() {
             clearTimeout(usernameTimeout);
@@ -826,8 +803,11 @@
                 }
                 
                 try {
-                    const isTaken = (newUsername === 'admin' || newUsername === 'aura');
-                    if (isTaken) {
+                    const res = await fetch(`${API_URL}/check_user/${newUsername}`);
+                    const data = await res.json();
+                    
+                    // Если аккаунт уже есть, и это не ТЫ сам, то занято
+                    if (data.exists && newUsername !== localStorage.getItem('auraUser')) {
                         statusLabel.style.color = 'var(--danger)';
                         statusLabel.innerText = dict.statusTaken;
                     } else {
@@ -835,15 +815,39 @@
                         statusLabel.innerText = dict.statusFree;
                     }
                 } catch (e) {
+                    statusLabel.style.color = 'var(--danger)';
                     statusLabel.innerText = dict.statusErr;
                 }
             }, 500);
         }
 
-        function addNewChat() {
-            const target = document.getElementById('newChatTarget').value;
+        // --- ДОБАВЛЕНИЕ ЧАТА С ПРОВЕРКОЙ В БАЗЕ --- //
+        async function addNewChat() {
+            const target = document.getElementById('newChatTarget').value.trim();
             const type = document.getElementById('chatType').value;
+            const statusLabel = document.getElementById('addChatStatus');
+            const dict = translations[localSettings.lang];
+            
             if(!target) return;
+
+            // Если добавляем пользователя, проверяем, существует ли он в БД
+            if(type === 'user') {
+                statusLabel.style.color = 'var(--text-muted)';
+                statusLabel.innerText = dict.statusCheck;
+                try {
+                    const res = await fetch(`${API_URL}/check_user/${target}`);
+                    const data = await res.json();
+                    if (!data.exists) {
+                        statusLabel.style.color = 'var(--danger)';
+                        statusLabel.innerText = dict.userNotFound;
+                        return; // Прерываем добавление
+                    }
+                } catch (e) {
+                    statusLabel.style.color = 'var(--danger)';
+                    statusLabel.innerText = dict.statusErr + " (Только локально)";
+                    // Позволяем добавить локально, если сервер оффлайн
+                }
+            }
 
             if (!localChats.find(c => c.name === target)) {
                 localChats.push({ name: target, type: type, avatar: currentGroupAvatar, isArchived: false });
@@ -861,7 +865,6 @@
             
             document.getElementById('chat').innerHTML = '';
             
-            // Если это мобильное устройство, активируем режим чата (прячем сайдбар)
             if(window.innerWidth <= 768) {
                 document.body.classList.add('chat-active');
             }
@@ -871,12 +874,12 @@
 
         function handleKeyPress(e) { if (e.key === 'Enter') send(); }
 
-        // --- Интеграция с Python API И LocalStorage Fallback --- //
-
-        async function registerUser(username) {
+        // --- ИНТЕГРАЦИЯ С PYTHON БЭКЕНДОМ --- //
+        async function registerUser(username, name) {
             try {
-                await fetch('http://127.0.0.1:8000/register', {
-                    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({username: username})
+                await fetch(`${API_URL}/register`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({username: username, name: name || ""})
                 });
             } catch (e) { console.log("Бэкенд недоступен"); }
         }
@@ -894,22 +897,18 @@
             localStorage.setItem('auraMessages', JSON.stringify(localMessages));
 
             try {
-                const res = await fetch('http://127.0.0.1:8000/send', {
+                await fetch(`${API_URL}/send`, {
                     method: 'POST', headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({sender: USER, recipient: currentTarget, text: text})
                 });
-                const data = await res.json();
-                if(data.sender_update) {
-                    document.getElementById('statusInfo').innerText = `Level: ${data.sender_update.level} | XP: ${data.sender_update.xp}`;
-                }
             } catch (e) {
-                console.log("Бэкенд оффлайн, сообщение сохранено только в браузере.");
+                console.log("Бэкенд оффлайн, сообщение сохранено только локально.");
             }
         }
 
         async function loadChat() {
             try {
-                const res = await fetch(`http://127.0.0.1:8000/chat/${USER}/${currentTarget}`);
+                const res = await fetch(`${API_URL}/chat/${USER}/${currentTarget}`);
                 const data = await res.json();
                 
                 const chatDiv = document.getElementById('chat');
