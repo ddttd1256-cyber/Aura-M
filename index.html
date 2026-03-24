@@ -53,6 +53,12 @@
             transition: background 0.5s ease, color 0.5s ease;
         }
 
+        /* Глобальные стили SVG иконок */
+        svg { display: inline-block; vertical-align: middle; }
+        .icon-btn svg { width: 22px; height: 22px; stroke-width: 2px; }
+        .media-btn svg { width: 24px; height: 24px; stroke-width: 2px; transition: transform 0.2s; }
+        .swipe-btn svg { width: 20px; height: 20px; pointer-events: none; }
+
         /* Анимация загрузки */
         #splash {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -95,7 +101,6 @@
             border-bottom: 1px solid var(--glass-border); background: rgba(0,0,0,0.05);
         }
         
-        /* Измененная шапка сайдбара */
         .sidebar-header-left { display: flex; align-items: center; gap: 10px; }
         .my-mini-avatar {
             width: 40px; height: 40px; border-radius: 50%; background: var(--accent-gradient);
@@ -107,7 +112,7 @@
 
         .chat-list { flex: 1; overflow-y: auto; overflow-x: hidden; padding-top: 10px; }
         
-        /* СВАЙП КОНТЕЙНЕР */
+        /* СВАЙП КОНТЕЙНЕР (Исправленный для ПК и Телефонов) */
         .swipe-container { position: relative; overflow: hidden; margin: 5px 10px; border-radius: 15px; }
         .swipe-actions {
             position: absolute; right: 0; top: 0; height: 100%; display: flex;
@@ -115,24 +120,32 @@
             background: var(--bg-element); width: 100%; z-index: 1; border-radius: 15px;
         }
         .swipe-btn {
-            background: rgba(0,0,0,0.2); border: none; width: 40px; height: 40px; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center; font-size: 1.2rem; color: white;
-            cursor: pointer; transition: 0.2s;
+            background: rgba(0,0,0,0.2); border: none; width: 42px; height: 42px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; color: white;
+            cursor: pointer; transition: 0.2s; position: relative; z-index: 10;
         }
+        .swipe-btn:hover { filter: brightness(1.2); transform: scale(1.1); }
         .swipe-btn.archive { background: #ffb74d; }
         .swipe-btn.delete { background: var(--danger); }
         
         .chat-item { 
             padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 15px; 
-            border-radius: 15px; transition: transform 0.3s ease, background 0.3s; 
-            border: 1px solid transparent; background: transparent; position: relative; z-index: 2;
-            background: var(--bg-sidebar); /* скрывает кнопки под ним */
+            border-radius: 15px; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), background 0.3s; 
+            border: 1px solid transparent; position: relative; z-index: 2;
+            background: var(--bg-sidebar); 
         }
         .chat-item:hover { background: var(--bg-hover); }
         .chat-item.active { 
             background: var(--glass-bg); border: 1px solid var(--glass-border);
             box-shadow: 0 4px 15px rgba(0,0,0,0.1), inset 0 0 0 1px var(--accent-glow);
         }
+
+        /* Логика выезда кнопок при наведении мышкой (ПК) */
+        @media (pointer: fine) {
+            .swipe-container:hover .chat-item { transform: translateX(-110px); }
+        }
+        /* Класс для фиксации свайпа (Телефоны) */
+        .chat-item.swiped-open { transform: translateX(-110px) !important; }
         
         .avatar-mini { 
             width: 48px; height: 48px; border-radius: 50%; background: var(--accent-gradient); 
@@ -148,6 +161,7 @@
             font-size: 0.9rem; transition: 0.3s;
         }
         .archive-header:hover { background: var(--bg-hover); color: var(--text-main); }
+        .archive-header-icon { display: flex; align-items: center; gap: 8px; }
         .archive-arrow { transition: transform 0.3s; }
         .archive-arrow.open { transform: rotate(180deg); }
 
@@ -171,13 +185,13 @@
 
         .mobile-back-btn {
             display: none; background: transparent; border: none; color: var(--text-main); 
-            font-size: 1.8rem; cursor: pointer; margin-right: 10px; padding: 0 10px; transition: 0.2s;
+            cursor: pointer; margin-right: 5px; padding: 0 5px; transition: 0.2s;
         }
         .mobile-back-btn:hover { color: var(--accent); }
         
         .chat-options-btn {
-            background: transparent; border: none; color: var(--text-muted); font-size: 1.5rem; 
-            cursor: pointer; padding: 5px 10px; border-radius: 50%; transition: 0.2s;
+            background: transparent; border: none; color: var(--text-muted);
+            cursor: pointer; padding: 5px; border-radius: 50%; transition: 0.2s; display: flex; align-items: center;
         }
         .chat-options-btn:hover { background: var(--glass-bg); color: var(--text-main); }
         .dropdown-menu {
@@ -186,7 +200,8 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 100; display: none; flex-direction: column; gap: 5px;
             backdrop-filter: blur(15px); min-width: 180px;
         }
-        .dropdown-item { padding: 10px 15px; border-radius: 8px; cursor: pointer; transition: 0.2s; font-size: 0.95rem; color: var(--text-main);}
+        .dropdown-item { padding: 10px 15px; border-radius: 8px; cursor: pointer; transition: 0.2s; font-size: 0.95rem; color: var(--text-main); display: flex; align-items: center; gap: 8px;}
+        .dropdown-item svg { width: 18px; height: 18px; }
         .dropdown-item:hover { background: var(--bg-hover); }
         .dropdown-item.danger { color: var(--danger); }
         .dropdown-item.danger:hover { background: rgba(255, 74, 74, 0.1); }
@@ -200,19 +215,17 @@
         .msg.received { background: var(--bg-element); border: 1px solid var(--glass-border); align-self: flex-start; border-bottom-left-radius: 4px; }
         .msg.sent { background: var(--accent-gradient); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 4px 15px var(--accent-glow); }
         
-        /* Медиа внутри сообщений */
         .msg-media { max-width: 100%; border-radius: 12px; margin-top: 5px; cursor: pointer; }
         .msg-audio { width: 200px; height: 40px; margin-top: 5px; outline: none; }
-        .msg-sticker { width: 120px; height: 120px; background: transparent; box-shadow: none; padding: 0; }
+        .msg-sticker { width: 120px; height: 120px; }
 
         .chat-input-area { 
             padding: 15px 20px; background: var(--bg-sidebar); border-top: 1px solid var(--glass-border); 
             display: flex; gap: 10px; align-items: center; z-index: 5; backdrop-filter: blur(10px);
         }
         
-        /* Кнопки медиа */
         .media-btn {
-            background: transparent; border: none; font-size: 1.4rem; color: var(--text-muted);
+            background: transparent; border: none; color: var(--text-muted);
             cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; padding: 5px;
         }
         .media-btn:hover { color: var(--accent); transform: scale(1.1); }
@@ -222,11 +235,11 @@
         /* Панель стикеров */
         .stickers-panel {
             position: absolute; bottom: 80px; left: 20px; background: var(--bg-element);
-            border: 1px solid var(--glass-border); border-radius: 15px; padding: 10px;
-            display: none; grid-template-columns: repeat(4, 1fr); gap: 10px; z-index: 100;
+            border: 1px solid var(--glass-border); border-radius: 15px; padding: 15px;
+            display: none; grid-template-columns: repeat(4, 1fr); gap: 15px; z-index: 100;
             backdrop-filter: blur(15px); box-shadow: 0 10px 25px rgba(0,0,0,0.3); max-height: 200px; overflow-y: auto;
         }
-        .sticker-item { font-size: 2rem; cursor: pointer; transition: 0.2s; text-align: center; }
+        .sticker-item { width: 50px; height: 50px; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; }
         .sticker-item:hover { transform: scale(1.2); }
 
         input[type="text"] { 
@@ -237,14 +250,15 @@
         input[type="text"]:focus { box-shadow: 0 0 0 2px var(--accent); }
         
         .send-btn { 
-            padding: 12px 20px; background: var(--accent-gradient); color: #fff; border: none; cursor: pointer; border-radius: 20px; font-weight: bold; 
-            font-size: 1rem; transition: var(--transition); box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+            padding: 10px 20px; background: var(--accent-gradient); color: #fff; border: none; cursor: pointer; border-radius: 20px; font-weight: bold; 
+            font-size: 1rem; transition: var(--transition); box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center;
         }
         .send-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px var(--accent-glow); filter: brightness(1.1); }
+        .send-btn svg { width: 20px; height: 20px; stroke-width: 2.5px; }
 
         button.icon-btn { 
             padding: 0; border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; 
-            font-size: 1.2rem; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-main); flex-shrink: 0;
+            background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-main); flex-shrink: 0;
             cursor: pointer; transition: 0.3s;
         }
         button.icon-btn:hover { background: var(--accent); color: #fff; box-shadow: 0 0 10px var(--accent-glow); }
@@ -266,10 +280,13 @@
         .modal h2 { margin-bottom: 25px; font-size: 1.5rem; text-align: center; color: var(--text-main); }
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; margin-bottom: 8px; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;}
+        
+        /* Стилизация выпадающих списков, чтобы они выглядели лучше */
         .form-group input, .form-group select, .form-group textarea { 
-            width: 100%; border-radius: 12px; padding: 12px 15px; background: var(--bg-hover); border: 1px solid var(--glass-border); color: var(--text-main); outline: none; transition: var(--transition);
-            font-family: inherit; resize: none;
+            width: 100%; border-radius: 12px; padding: 12px 15px; background: var(--bg-element); border: 1px solid var(--glass-border); 
+            color: var(--text-main); outline: none; transition: var(--transition); font-family: inherit; resize: none;
         }
+        .form-group select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a0aabf' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 15px center; }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); }
         
         .wallpaper-options { display: flex; gap: 10px; margin-top: 10px; overflow-x: auto; padding-bottom: 5px; }
@@ -290,8 +307,8 @@
             background-color: var(--bg-element); background-size: cover; background-position: center;
             box-shadow: 0 0 20px var(--accent-glow); margin-bottom: 20px; cursor: pointer; position: relative; flex-shrink: 0;
         }
-        .profile-avatar-large::after {
-            content: '📸'; position: absolute; bottom: 0; right: 0; background: var(--bg-element); border-radius: 50%; padding: 6px; font-size: 0.9rem; border: 1px solid var(--glass-border);
+        .profile-avatar-large .cam-icon {
+            position: absolute; bottom: 0; right: 0; background: var(--bg-element); border-radius: 50%; padding: 8px; border: 1px solid var(--glass-border); color: var(--text-main); display: flex; justify-content: center; align-items: center;
         }
         
         .profile-line-input { width: 100%; display: flex; align-items: flex-end; gap: 10px; margin-bottom: 15px; }
@@ -305,9 +322,10 @@
         /* Аватарка для групп */
         .group-avatar-preview {
             width: 70px; height: 70px; border-radius: 50%; border: 2px dashed var(--text-muted);
-            display: flex; justify-content: center; align-items: center; font-size: 1.5rem; color: var(--text-muted);
+            display: flex; justify-content: center; align-items: center; color: var(--text-muted);
             background-size: cover; background-position: center; cursor: pointer; margin: 0 auto 15px auto;
         }
+        .group-avatar-preview svg { width: 30px; height: 30px; }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -321,12 +339,12 @@
             .sidebar { width: 100%; z-index: 20; position: absolute; height: 100%; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
             .main-area { width: 100%; height: 100%; position: absolute; z-index: 15; }
             body.chat-active .sidebar { transform: translateX(-100%); }
-            .mobile-back-btn { display: block; }
+            .mobile-back-btn { display: flex; align-items: center; }
             .msg { max-width: 85%; }
             .chat-input-area { padding: 10px; gap: 5px;}
             input[type="text"] { padding: 10px 15px; }
             .send-btn { padding: 10px 15px; }
-            .media-btn { font-size: 1.2rem; }
+            .stickers-panel { grid-template-columns: repeat(3, 1fr); left: 10px; right: 10px; }
         }
     </style>
 </head>
@@ -341,14 +359,21 @@
                 <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main);">Aura</h3>
             </div>
             <div style="display: flex; gap: 8px;">
-                <button class="icon-btn" onclick="openAddModal()" title="Новый чат">➕</button>
-                <button class="icon-btn" onclick="openModal('settingsModal')" title="Настройки">⚙️</button>
+                <button class="icon-btn" onclick="openAddModal()" title="Новый чат">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                </button>
+                <button class="icon-btn" onclick="openModal('settingsModal')" title="Настройки">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                </button>
             </div>
         </div>
         
         <div class="archive-header" id="archiveToggleBtn" onclick="toggleArchiveFolder()" style="display: none;">
-            <span>📦 <span data-i18n="archiveTab">Архив</span></span>
-            <span class="archive-arrow" id="archiveArrow">▼</span>
+            <div class="archive-header-icon">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                <span data-i18n="archiveTab">Архив</span>
+            </div>
+            <span class="archive-arrow" id="archiveArrow"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
         </div>
         <div id="archivedChatsList" style="display: none; background: rgba(0,0,0,0.1); border-bottom: 1px solid var(--glass-border);"></div>
 
@@ -358,8 +383,12 @@
     <div class="main-area">
         <div class="chat-header">
             <div class="chat-header-info" onclick="openViewProfile()">
-                <button class="mobile-back-btn" onclick="closeChatMobile(event)">←</button>
-                <div class="avatar-mini" id="currentChatAvatar" style="width: 40px; height: 40px; font-size: 1rem;">🔖</div>
+                <button class="mobile-back-btn" onclick="closeChatMobile(event)">
+                    <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2.5" fill="none"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                </button>
+                <div class="avatar-mini" id="currentChatAvatar" style="width: 40px; height: 40px; font-size: 1rem;">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                </div>
                 <div>
                     <h3 id="currentChatName" style="font-size: 1.2rem; font-weight: 600;">Избранное</h3>
                     <div id="statusInfo" style="color: var(--accent); font-size: 0.8rem; font-weight: bold;">User</div>
@@ -367,12 +396,22 @@
             </div>
             
             <div style="position: relative;">
-                <button class="chat-options-btn" onclick="toggleChatMenu(event)">⋮</button>
+                <button class="chat-options-btn" onclick="toggleChatMenu(event)">
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><circle cx="12" cy="12" r="2"></circle><circle cx="12" cy="5" r="2"></circle><circle cx="12" cy="19" r="2"></circle></svg>
+                </button>
                 <div id="chatDropdown" class="dropdown-menu">
-                    <div class="dropdown-item" onclick="archiveCurrentChat()" id="menuArchiveBtn" data-i18n="menuArchive">📦 В архив</div>
-                    <div class="dropdown-item" onclick="unarchiveCurrentChat()" id="menuUnarchiveBtn" data-i18n="menuUnarchive" style="display:none;">📤 Достать из архива</div>
-                    <div class="dropdown-item danger" onclick="deleteCurrentChat('local')" data-i18n="menuDeleteLocal">🗑 Удалить у себя</div>
-                    <div class="dropdown-item danger" onclick="deleteCurrentChat('all')" data-i18n="menuDeleteAll">🗑 Удалить у всех</div>
+                    <div class="dropdown-item" onclick="archiveCurrentChat()" id="menuArchiveBtn">
+                        <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg> <span data-i18n="menuArchive">В архив</span>
+                    </div>
+                    <div class="dropdown-item" onclick="unarchiveCurrentChat()" id="menuUnarchiveBtn" style="display:none;">
+                        <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg> <span data-i18n="menuUnarchive">Достать из архива</span>
+                    </div>
+                    <div class="dropdown-item danger" onclick="deleteCurrentChat('local')">
+                        <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg> <span data-i18n="menuDeleteLocal">Удалить у себя</span>
+                    </div>
+                    <div class="dropdown-item danger" onclick="deleteCurrentChat('all')">
+                        <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg> <span data-i18n="menuDeleteAll">Удалить у всех</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -380,32 +419,38 @@
         <div class="chat-history" id="chat"></div>
         
         <div class="chat-input-area">
-            <button class="media-btn" onclick="document.getElementById('fileInput').click()" title="Прикрепить">📎</button>
+            <button class="media-btn" onclick="document.getElementById('fileInput').click()" title="Прикрепить">
+                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+            </button>
             <input type="file" id="fileInput" accept="image/*,video/*" style="display: none;" onchange="handleFileUpload(event)">
             
-            <button class="media-btn" onclick="toggleStickers(event)" title="Стикеры">😃</button>
+            <button class="media-btn" onclick="toggleStickers(event)" title="Стикеры">
+                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+            </button>
             
             <input type="text" id="msgText" data-i18n-ph="placeholderMsg" placeholder="Напишите сообщение..." onkeypress="handleKeyPress(event)">
             
-            <button class="media-btn" id="micBtn" onmousedown="startVoiceRecord()" onmouseup="stopVoiceRecord()" ontouchstart="startVoiceRecord()" ontouchend="stopVoiceRecord()" title="Голосовое (Удерживать)">🎤</button>
-            <button class="send-btn" onclick="send()" title="Отправить">➤</button>
+            <button class="media-btn" id="micBtn" onmousedown="startVoiceRecord()" onmouseup="stopVoiceRecord()" ontouchstart="startVoiceRecord()" ontouchend="stopVoiceRecord()" title="Голосовое (Удерживать)">
+                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+            </button>
+            <button class="send-btn" onclick="send()" title="Отправить">
+                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
         </div>
 
         <div class="stickers-panel" id="stickersPanel">
-            <div class="sticker-item" onclick="sendSticker('😂')">😂</div>
-            <div class="sticker-item" onclick="sendSticker('❤️')">❤️</div>
-            <div class="sticker-item" onclick="sendSticker('👍')">👍</div>
-            <div class="sticker-item" onclick="sendSticker('🔥')">🔥</div>
-            <div class="sticker-item" onclick="sendSticker('😎')">😎</div>
-            <div class="sticker-item" onclick="sendSticker('😭')">😭</div>
-            <div class="sticker-item" onclick="sendSticker('🎉')">🎉</div>
-            <div class="sticker-item" onclick="sendSticker('😡')">😡</div>
+            <div class="sticker-item" onclick="sendSticker('happy')"><svg viewBox="0 0 24 24" stroke="#ffb74d" fill="#ffb74d" fill-opacity="0.2" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><circle cx="9" cy="9" r="1" fill="#ffb74d"></circle><circle cx="15" cy="9" r="1" fill="#ffb74d"></circle></svg></div>
+            <div class="sticker-item" onclick="sendSticker('heart')"><svg viewBox="0 0 24 24" stroke="#ff4a4a" fill="#ff4a4a" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></div>
+            <div class="sticker-item" onclick="sendSticker('star')"><svg viewBox="0 0 24 24" stroke="#00d2ff" fill="#00d2ff" fill-opacity="0.2" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+            <div class="sticker-item" onclick="sendSticker('cool')"><svg viewBox="0 0 24 24" stroke="#00e676" fill="#00e676" fill-opacity="0.2" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M8 15h8"></path><rect x="6" y="8" width="12" height="3" rx="1.5"></rect></svg></div>
         </div>
     </div>
 
     <div class="modal-overlay" id="viewProfileModal">
         <div class="modal" style="text-align: center;">
-            <div class="profile-avatar-large" id="viewProfileAvatar" style="cursor: default; margin: 0 auto 15px auto;">👤</div>
+            <div class="profile-avatar-large" id="viewProfileAvatar" style="cursor: default; margin: 0 auto 15px auto;">
+                <svg viewBox="0 0 24 24" width="60" height="60" stroke="currentColor" stroke-width="2" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </div>
             <h2 id="viewProfileName" style="margin-bottom: 5px;">Name</h2>
             <p id="viewProfileType" style="color: var(--accent); font-size: 0.9rem; font-weight: bold; margin-bottom: 15px;">User</p>
             <p id="viewProfileBio" style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.4; background: rgba(0,0,0,0.1); padding: 10px; border-radius: 10px;">Нет описания</p>
@@ -420,7 +465,9 @@
         <div class="modal">
             <h2 data-i18n="profTitle">Мой Профиль</h2>
             <div class="profile-layout">
-                <label for="avatarUpload" class="profile-avatar-large" id="profileAvatarDisplay" title="Изменить фото">A</label>
+                <label for="avatarUpload" class="profile-avatar-large" id="profileAvatarDisplay" title="Изменить фото">
+                    <div class="cam-icon"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></div>
+                </label>
                 <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
                 
                 <div class="profile-line-input">
@@ -492,7 +539,9 @@
         <div class="modal">
             <h2 data-i18n="addTitle">Новый чат / Группа</h2>
             <div id="avatarUploadArea" style="display: none;">
-                <label for="groupAvatarUpload" class="group-avatar-preview" id="groupAvatarDisplay" title="Установить аватар">📷</label>
+                <label for="groupAvatarUpload" class="group-avatar-preview" id="groupAvatarDisplay" title="Установить аватар">
+                    <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                </label>
                 <input type="file" id="groupAvatarUpload" accept="image/*" style="display: none;">
             </div>
 
@@ -531,6 +580,11 @@
     <script>
         const API_URL = "https://aura-server-lzxy.onrender.com";
 
+        // SVG Иконки для генерации чатов
+        const iconUser = `<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
+        const iconGroup = `<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`;
+        const iconChannel = `<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>`;
+
         let USER = localStorage.getItem('auraUser') || "Player1"; 
         let currentTarget = "Избранное";
         let chatLoop;
@@ -555,8 +609,8 @@
                 optGroup: "Группа", optChannel: "Канал", addTarget: "Юзернейм (@) или Название",
                 placeholderTarget: "Например: admin", btnAdd: "Создать", statusCheck: "Проверка...",
                 statusShort: "Слишком короткий", statusTaken: "Уже занят!", statusFree: "Свободен",
-                statusErr: "Ошибка сети", archiveTab: "Архив", menuArchive: "📦 В архив", menuUnarchive: "📤 Из архива", 
-                menuDeleteLocal: "🗑 Удалить у себя", menuDeleteAll: "🗑 Удалить у всех", userNotFound: "Аккаунт не найден"
+                statusErr: "Ошибка сети", archiveTab: "Архив", menuArchive: "В архив", menuUnarchive: "Из архива", 
+                menuDeleteLocal: "Удалить у себя", menuDeleteAll: "Удалить у всех", userNotFound: "Аккаунт не найден"
             },
             en: {
                 fav: "Saved Messages", placeholderMsg: "Write a message...", btnSend: "Send",
@@ -567,8 +621,8 @@
                 optGroup: "Group", optChannel: "Channel", addTarget: "Username (@) or Title",
                 placeholderTarget: "e.g., admin", btnAdd: "Create", statusCheck: "Checking...",
                 statusShort: "Too short", statusTaken: "Taken!", statusFree: "Available",
-                statusErr: "Network error", archiveTab: "Archive", menuArchive: "📦 Archive", menuUnarchive: "📤 Unarchive", 
-                menuDeleteLocal: "🗑 Delete for me", menuDeleteAll: "🗑 Delete for all", userNotFound: "Account not found"
+                statusErr: "Network error", archiveTab: "Archive", menuArchive: "Archive", menuUnarchive: "Unarchive", 
+                menuDeleteLocal: "Delete for me", menuDeleteAll: "Delete for all", userNotFound: "Account not found"
             }
         };
 
@@ -593,12 +647,16 @@
         function updateMyAvatarDisplay() {
             const display = document.getElementById('profileAvatarDisplay');
             const miniDisplay = document.getElementById('sidebarMyAvatar');
+            
+            // Удаляем старый текст иконки если был
+            for(let el of display.childNodes) if(el.nodeType === 3) display.removeChild(el);
+            
             if (localProfile.avatar) {
-                display.style.backgroundImage = `url(${localProfile.avatar})`; display.innerText = '';
+                display.style.backgroundImage = `url(${localProfile.avatar})`;
                 miniDisplay.style.backgroundImage = `url(${localProfile.avatar})`; miniDisplay.innerText = '';
             } else {
                 let initial = localProfile.name ? localProfile.name.substring(0, 1).toUpperCase() : 'A';
-                display.innerText = initial; display.style.backgroundImage = '';
+                display.insertBefore(document.createTextNode(initial), display.firstChild); display.style.backgroundImage = '';
                 miniDisplay.innerText = initial; miniDisplay.style.backgroundImage = '';
             }
         }
@@ -659,7 +717,6 @@
 
         /* --- ВАЛИДАЦИЯ ЮЗЕРНЕЙМА (ТОЛЬКО АНГЛ) --- */
         function validateUsername(input) {
-            // Удаляем всё, кроме латиницы, цифр и нижнего подчеркивания
             input.value = input.value.replace(/[^a-zA-Z0-9_]/g, '');
         }
 
@@ -674,7 +731,7 @@
             const favName = dict.fav;
             list.innerHTML += `
                 <div class="chat-item ${currentTarget === favName ? 'active' : ''}" onclick="selectChat('${favName}', 'favorites')">
-                    <div class="avatar-mini" style="background: linear-gradient(135deg, #007bff, #00d2ff);">🔖</div>
+                    <div class="avatar-mini" style="background: linear-gradient(135deg, #007bff, #00d2ff);"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg></div>
                     <div style="font-weight: 600; flex:1;">${favName}</div>
                 </div>
             `;
@@ -682,15 +739,20 @@
             let hasArchive = false;
 
             localChats.forEach(chat => {
+                let defaultIcon = chat.type === 'group' ? iconGroup : (chat.type === 'channel' ? iconChannel : iconUser);
                 let iconHtml = chat.avatar 
                     ? `<div class="avatar-mini" style="background-image: url(${chat.avatar}); color: transparent;"></div>`
-                    : `<div class="avatar-mini">${chat.type === 'group' ? '👥' : (chat.type === 'channel' ? '📢' : (chat.name.substring(0,1).toUpperCase()))}</div>`;
+                    : `<div class="avatar-mini" style="font-size: 0;">${defaultIcon}</div>`;
                 
                 let html = `
                     <div class="swipe-container" data-name="${chat.name}">
                         <div class="swipe-actions">
-                            <button class="swipe-btn archive" onclick="toggleChatArchive('${chat.name}', event)" title="Архив">📦</button>
-                            <button class="swipe-btn delete" onclick="deleteTargetChat('${chat.name}', event)" title="Удалить">🗑</button>
+                            <button class="swipe-btn archive" onclick="toggleChatArchive('${chat.name}', event)" title="Архив">
+                                <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                            </button>
+                            <button class="swipe-btn delete" onclick="deleteTargetChat('${chat.name}', event)" title="Удалить">
+                                <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                            </button>
                         </div>
                         <div class="chat-item ${currentTarget === chat.name ? 'active' : ''}" 
                              onclick="selectChat('${chat.name}', '${chat.type}')"
@@ -720,20 +782,29 @@
             }
         }
 
-        /* --- ЛОГИКА СВАЙПОВ --- */
+        /* --- ЛОГИКА СВАЙПОВ (Для телефонов) --- */
         let touchStartX = 0;
         function handleSwipeStart(e) { touchStartX = e.changedTouches[0].screenX; }
         function handleSwipeMove(e) {
             let diffX = e.changedTouches[0].screenX - touchStartX;
             if(diffX < -20) {
-                e.currentTarget.style.transform = `translateX(-100px)`;
+                e.currentTarget.style.transform = `translateX(-110px)`;
             } else if (diffX > 20) {
                 e.currentTarget.style.transform = `translateX(0px)`;
             }
         }
         function handleSwipeEnd(e) {
             let diffX = e.changedTouches[0].screenX - touchStartX;
-            if(diffX > -50) e.currentTarget.style.transform = `translateX(0px)`;
+            if(diffX < -40) {
+                e.currentTarget.style.transform = '';
+                e.currentTarget.classList.add('swiped-open');
+                document.querySelectorAll('.swiped-open').forEach(el => {
+                    if(el !== e.currentTarget) el.classList.remove('swiped-open');
+                });
+            } else {
+                e.currentTarget.style.transform = '';
+                e.currentTarget.classList.remove('swiped-open');
+            }
         }
 
         function toggleArchiveFolder() {
@@ -771,14 +842,16 @@
             const dict = translations[localSettings.lang];
 
             if (targetName === dict.fav) {
-                avatarDiv.innerText = '🔖'; avatarDiv.style.backgroundImage = '';
+                avatarDiv.innerHTML = `<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>`; 
+                avatarDiv.style.backgroundImage = '';
                 statusDiv.innerText = "Только для вас";
             } else if (chatObj) {
                 if(chatObj.avatar) {
-                    avatarDiv.style.backgroundImage = `url(${chatObj.avatar})`; avatarDiv.innerText = '';
+                    avatarDiv.style.backgroundImage = `url(${chatObj.avatar})`; avatarDiv.innerHTML = '';
                 } else {
                     avatarDiv.style.backgroundImage = ''; 
-                    avatarDiv.innerText = type === 'group' ? '👥' : (type === 'channel' ? '📢' : targetName.substring(0,1).toUpperCase());
+                    let defaultIcon = type === 'group' ? iconGroup : (type === 'channel' ? iconChannel : iconUser);
+                    avatarDiv.innerHTML = defaultIcon;
                 }
                 statusDiv.innerText = type === 'group' ? dict.optGroup : (type === 'channel' ? dict.optChannel : dict.optUser);
             }
@@ -803,13 +876,12 @@
             }
             const chatObj = localChats.find(c => c.name === currentTarget);
             if(chatObj) {
-                document.getElementById('menuArchiveBtn').style.display = chatObj.isArchived ? 'none' : 'block';
-                document.getElementById('menuUnarchiveBtn').style.display = chatObj.isArchived ? 'block' : 'none';
+                document.getElementById('menuArchiveBtn').style.display = chatObj.isArchived ? 'none' : 'flex';
+                document.getElementById('menuUnarchiveBtn').style.display = chatObj.isArchived ? 'flex' : 'none';
             }
         }
 
         function deleteCurrentChat(mode) {
-            // mode = 'local' или 'all'. Для 'all' нужен бэкенд, пока делаем просто локально
             deleteTargetChat(currentTarget);
             document.getElementById('chatDropdown').style.display = 'none';
             if(window.innerWidth <= 768) closeChatMobile();
@@ -848,7 +920,10 @@
                 reader.onload = function(event) {
                     currentGroupAvatar = event.target.result;
                     const display = document.getElementById('groupAvatarDisplay');
-                    display.style.backgroundImage = `url(${currentGroupAvatar})`; display.innerText = ''; 
+                    
+                    for(let el of display.childNodes) if(el.nodeName === 'SVG') display.removeChild(el);
+                    
+                    display.style.backgroundImage = `url(${currentGroupAvatar})`;
                     display.style.borderStyle = 'solid'; display.style.borderColor = 'var(--accent)';
                 }
                 reader.readAsDataURL(file);
@@ -897,13 +972,22 @@
             }
         }
 
-        /* --- СТИКЕРЫ --- */
+        /* --- 2D СТИКЕРЫ --- */
         function toggleStickers(e) {
             e.stopPropagation();
             const panel = document.getElementById('stickersPanel');
             panel.style.display = panel.style.display === 'grid' ? 'none' : 'grid';
         }
-        function sendSticker(emoji) { send('[sticker]' + emoji); document.getElementById('stickersPanel').style.display = 'none';}
+        function sendSticker(type) { 
+            let svgStr = '';
+            if(type === 'happy') svgStr = `<svg viewBox="0 0 24 24" stroke="#ffb74d" fill="#ffb74d" fill-opacity="0.2" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><circle cx="9" cy="9" r="1" fill="#ffb74d"></circle><circle cx="15" cy="9" r="1" fill="#ffb74d"></circle></svg>`;
+            if(type === 'heart') svgStr = `<svg viewBox="0 0 24 24" stroke="#ff4a4a" fill="#ff4a4a" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
+            if(type === 'star') svgStr = `<svg viewBox="0 0 24 24" stroke="#00d2ff" fill="#00d2ff" fill-opacity="0.2" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+            if(type === 'cool') svgStr = `<svg viewBox="0 0 24 24" stroke="#00e676" fill="#00e676" fill-opacity="0.2" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M8 15h8"></path><rect x="6" y="8" width="12" height="3" rx="1.5"></rect></svg>`;
+            
+            send('[sticker]' + svgStr); 
+            document.getElementById('stickersPanel').style.display = 'none';
+        }
 
         /* --- МОДАЛКИ И ПРОФИЛЬ --- */
         function toggleAvatarUploadVisibility() {
@@ -931,10 +1015,11 @@
 
             const avatarDisplay = document.getElementById('viewProfileAvatar');
             if(chatObj.avatar) {
-                avatarDisplay.style.backgroundImage = `url(${chatObj.avatar})`; avatarDisplay.innerText = '';
+                avatarDisplay.style.backgroundImage = `url(${chatObj.avatar})`; avatarDisplay.innerHTML = '';
             } else {
                 avatarDisplay.style.backgroundImage = '';
-                avatarDisplay.innerText = chatObj.type === 'group' ? '👥' : (chatObj.type === 'channel' ? '📢' : chatObj.name.substring(0,1).toUpperCase());
+                let defaultIcon = chatObj.type === 'group' ? iconGroup : (chatObj.type === 'channel' ? iconChannel : iconUser);
+                avatarDisplay.innerHTML = defaultIcon;
             }
             
             document.getElementById('viewProfileName').innerText = chatObj.name;
@@ -949,7 +1034,8 @@
         function openAddModal() {
             currentGroupAvatar = null;
             const display = document.getElementById('groupAvatarDisplay');
-            display.style.backgroundImage = ''; display.innerText = '📷';
+            display.style.backgroundImage = ''; 
+            display.innerHTML = `<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>`;
             display.style.borderStyle = 'dashed'; display.style.borderColor = 'var(--text-muted)';
             document.getElementById('newChatTarget').value = ''; 
             document.getElementById('newGroupBio').value = '';
@@ -967,6 +1053,7 @@
             
             localStorage.setItem('auraUser', USER);
             localStorage.setItem('auraProfile', JSON.stringify(localProfile));
+            updateMyAvatarDisplay();
             registerUser(USER, localProfile.name);
             closeModal('profileModal');
         }
@@ -1095,7 +1182,7 @@
             } else if (text.startsWith('[audio]')) {
                 contentHtml = `<audio src="${text.replace('[audio]', '')}" class="msg-audio" controls></audio>`;
             } else if (text.startsWith('[sticker]')) {
-                contentHtml = `<div class="msg-sticker" style="font-size:4rem;">${text.replace('[sticker]', '')}</div>`;
+                contentHtml = `<div class="msg-sticker">${text.replace('[sticker]', '')}</div>`;
             }
 
             msgDiv.innerHTML = sender === USER ? contentHtml : `<b style="opacity: 0.7; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; display:block;">${sender}</b>${contentHtml}`;
