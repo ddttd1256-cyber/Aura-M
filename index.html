@@ -665,6 +665,9 @@
         let localProfile = USER ? (JSON.parse(localStorage.getItem('auraProfile_' + USER)) || { name: USER, avatar: null, bio: "Нет описания" }) : {};
         let localSettings = JSON.parse(localStorage.getItem('auraSettings')) || { lang: "ru", themeColor: "#00d2ff", themeMode: "dark", wallpaper: "none" };
         
+        /* ИСПРАВЛЕНИЕ: Хранилище для скрытых/удаленных сообщений */
+        let hiddenMsgs = USER ? (JSON.parse(localStorage.getItem('auraHiddenMsgs_' + USER)) || {}) : {};
+        
         let currentTarget = "Избранное";
         let chatLoop;
         let currentGroupAvatar = null;
@@ -738,6 +741,10 @@
             
             localMessages = {};
             localStorage.setItem('auraMessages_' + USER, JSON.stringify(localMessages));
+            
+            /* ИСПРАВЛЕНИЕ: Очищаем скрытые сообщения при новой регистрации */
+            hiddenMsgs = {};
+            localStorage.setItem('auraHiddenMsgs_' + USER, JSON.stringify(hiddenMsgs));
 
             document.getElementById('registrationModal').classList.remove('active');
             setTimeout(() => {
@@ -1186,7 +1193,7 @@
             document.getElementById('stickersPanel').style.display = 'none';
         }
 
-        /* --- УДАЛЕНИЕ ОТДЕЛЬНЫХ СООБЩЕНИЙ --- */
+        /* --- ИСПРАВЛЕНИЕ: УДАЛЕНИЕ ОТДЕЛЬНЫХ СООБЩЕНИЙ --- */
         function showMsgMenu(e, index, sender) {
             e.preventDefault();
             selectedMsgIndex = index;
@@ -1198,19 +1205,25 @@
 
         function deleteSelectedMsg(mode) {
             if(selectedMsgIndex > -1) {
-                // Удаляем у себя
-                localMessages[currentTarget].splice(selectedMsgIndex, 1);
-                localStorage.setItem('auraMessages_' + USER, JSON.stringify(localMessages));
+                // Прячем сообщение локально, чтобы сервер его не восстанавливал при fetch
+                if(!hiddenMsgs[currentTarget]) hiddenMsgs[currentTarget] = [];
+                hiddenMsgs[currentTarget].push(selectedMsgIndex);
+                localStorage.setItem('auraHiddenMsgs_' + USER, JSON.stringify(hiddenMsgs));
+
+                // Удаляем у себя из старого кэша
+                if (localMessages[currentTarget]) {
+                    localMessages[currentTarget].splice(selectedMsgIndex, 1);
+                    localStorage.setItem('auraMessages_' + USER, JSON.stringify(localMessages));
+                }
                 
                 // Эмулируем удаление у всех (локально для теста)
                 if(mode === 'all') {
-                    let theirMsgs = JSON.parse(localStorage.getItem('auraMessages_' + currentTarget)) || {};
-                    if(theirMsgs[USER]) {
-                        theirMsgs[USER].splice(selectedMsgIndex, 1);
-                        localStorage.setItem('auraMessages_' + currentTarget, JSON.stringify(theirMsgs));
-                    }
+                    let theirHidden = JSON.parse(localStorage.getItem('auraHiddenMsgs_' + currentTarget)) || {};
+                    if(!theirHidden[USER]) theirHidden[USER] = [];
+                    theirHidden[USER].push(selectedMsgIndex);
+                    localStorage.setItem('auraHiddenMsgs_' + currentTarget, JSON.stringify(theirHidden));
                 }
-                loadChat(); // Перерисовываем чат
+                loadChat(); // Перерисовываем чат (теперь фильтр сработает)
             }
             document.getElementById('msgContextMenu').style.display = 'none';
         }
@@ -1284,6 +1297,8 @@
                 localMessages = JSON.parse(localStorage.getItem('auraMessages_' + USER)) || {};
                 localProfile = JSON.parse(localStorage.getItem('auraProfile_' + USER)) || { name: USER, avatar: null, bio: "Нет описания" };
                 currentTarget = translations[localSettings.lang].fav;
+                
+                hiddenMsgs = JSON.parse(localStorage.getItem('auraHiddenMsgs_' + USER)) || {};
             }
             
             localProfile.name = document.getElementById('profileName').value || "Player1";
@@ -1401,14 +1416,22 @@
             }
         }
 
+        /* --- ИСПРАВЛЕНИЕ: ПРОВЕРКА СКРЫТЫХ СООБЩЕНИЙ ПРИ РЕНДЕРЕ --- */
         async function loadChat() {
+            const hidden = hiddenMsgs[currentTarget] || []; // Список удаленных
             try {
                 const res = await fetch(`${API_URL}/chat/${USER}/${currentTarget}`);
                 const data = await res.json();
                 
                 const chatDiv = document.getElementById('chat');
                 chatDiv.innerHTML = ''; 
-                data.messages.forEach((m, index) => renderMessage(m.sender, m.text, index));
+                
+                // Отрисовываем только те, которых нет в списке скрытых
+                data.messages.forEach((m, index) => {
+                    if(!hidden.includes(index)) {
+                        renderMessage(m.sender, m.text, index);
+                    }
+                });
                 
                 localMessages[currentTarget] = data.messages;
                 localStorage.setItem('auraMessages_' + USER, JSON.stringify(localMessages));
@@ -1417,7 +1440,12 @@
                 const msgs = localMessages[currentTarget] || [];
                 const chatDiv = document.getElementById('chat');
                 chatDiv.innerHTML = '';
-                msgs.forEach((m, index) => renderMessage(m.sender, m.text, index));
+                
+                msgs.forEach((m, index) => {
+                    if(!hidden.includes(index)) {
+                        renderMessage(m.sender, m.text, index);
+                    }
+                });
                 chatDiv.scrollTop = chatDiv.scrollHeight;
             }
         }
