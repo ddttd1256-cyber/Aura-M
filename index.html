@@ -318,6 +318,20 @@
         
         select option { background-color: #1a1b26; color: #ffffff; }
         [data-theme="light"] select option { background-color: #ffffff; color: #000000; }
+
+        /* Стили списков настроек */
+        .settings-list { display: flex; flex-direction: column; gap: 8px; }
+        .settings-list-item {
+            padding: 15px 20px; background: var(--bg-element); border: 1px solid var(--glass-border);
+            border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+            transition: 0.2s; color: var(--text-main); font-weight: 500; font-size: 0.95rem;
+        }
+        .settings-list-item:hover { background: var(--bg-hover); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .settings-list-item svg { width: 18px; height: 18px; color: var(--text-muted); }
+        .modal-header-back { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
+        .modal-header-back h2 { margin-bottom: 0; text-align: left; }
+        .modal-header-back .icon-btn { background: transparent; border: none; box-shadow: none; }
+        .modal-header-back .icon-btn:hover { color: var(--accent); }
         
         .wallpaper-options { display: flex; gap: 10px; margin-top: 10px; overflow-x: auto; padding-bottom: 5px; }
         .wp-option { width: 50px; height: 50px; border-radius: 10px; cursor: pointer; border: 2px solid transparent; background-size: cover; background-position: center; flex-shrink: 0;}
@@ -364,23 +378,24 @@
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ИСПРАВЛЕНИЕ: АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ (ЖЕСТКАЯ ФИКСАЦИЯ НА ВЕСЬ ЭКРАН) */
+        /* ИСПРАВЛЕНИЕ: АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ С ПЛАВНЫМ ВЫЕЗДОМ СПРАВА */
         @media (max-width: 768px) {
-            body { display: block; }
+            body { display: block; position: relative; overflow: hidden; }
             .sidebar { 
                 width: 100vw !important; max-width: 100vw !important; 
                 height: 100dvh !important;
-                position: fixed !important; left: 0; top: 0; 
-                z-index: 20; background: var(--bg-main); 
-                transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
+                position: absolute !important; left: 0; top: 0; 
+                z-index: 10; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             }
             .main-area { 
                 width: 100vw !important; max-width: 100vw !important; 
                 height: 100dvh !important;
-                position: fixed !important; left: 0; top: 0; 
-                z-index: 15; 
+                position: absolute !important; left: 0; top: 0; 
+                z-index: 20; background-color: var(--bg-main);
+                transform: translateX(100%);
+                transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
             }
-            body.chat-active .sidebar { transform: translateX(-100%); }
+            body.chat-active .main-area { transform: translateX(0); }
             
             .mobile-back-btn { display: flex; align-items: center; }
             .msg { max-width: 85%; }
@@ -399,8 +414,8 @@
     <div id="splash"><div class="splash-logo"></div></div>
 
     <div id="msgContextMenu" class="msg-context-menu">
-        <button class="msg-context-btn" onclick="deleteSelectedMsg('local')">Удалить у меня</button>
-        <button class="msg-context-btn del-all" onclick="deleteSelectedMsg('all')">Удалить у всех</button>
+        <button class="msg-context-btn" onclick="deleteSelectedMsg('local')" data-i18n="menuDeleteLocal">Удалить у меня</button>
+        <button class="msg-context-btn del-all" onclick="deleteSelectedMsg('all')" data-i18n="menuDeleteAll">Удалить у всех</button>
     </div>
 
     <div class="modal-overlay" id="registrationModal">
@@ -439,14 +454,14 @@
     <div class="sidebar">
         <div class="sidebar-header">
             <div class="sidebar-header-left">
-                <div class="my-mini-avatar" id="sidebarMyAvatar" onclick="openModal('profileModal')" title="Мой Профиль"></div>
+                <div class="my-mini-avatar" id="sidebarMyAvatar" onclick="openMyProfileView()" title="Мой Профиль"></div>
                 <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main);">Aura</h3>
             </div>
             <div style="display: flex; gap: 8px;">
                 <button class="icon-btn" onclick="openAddModal()" title="Новый чат">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                 </button>
-                <button class="icon-btn" onclick="openModal('settingsModal')" title="Настройки">
+                <button class="icon-btn" onclick="openSettingsMain()" title="Настройки">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                 </button>
             </div>
@@ -544,6 +559,20 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="viewMyProfileModal">
+        <div class="modal" style="text-align: center;">
+            <div class="profile-avatar-large" id="myViewAvatar" style="cursor: default; margin: 0 auto 15px auto;"></div>
+            <h2 id="myViewName" style="margin-bottom: 5px;">Name</h2>
+            <p id="myViewUsername" style="color: var(--accent); font-size: 0.9rem; font-weight: bold; margin-bottom: 15px;">@user</p>
+            <p id="myViewBio" style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.4; background: rgba(0,0,0,0.1); padding: 10px; border-radius: 10px;">Нет описания</p>
+            
+            <div class="modal-actions" style="justify-content: center; margin-top: 25px;">
+                <button class="btn-cancel" onclick="closeModal('viewMyProfileModal')" data-i18n="btnClose">Закрыть</button>
+                <button class="btn-save" onclick="closeModal('viewMyProfileModal'); setTimeout(()=>openModal('profileModal'), 300)" data-i18n="btnEdit">Редактировать</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="profileModal">
         <div class="modal">
             <h2 data-i18n="profTitle">Мой Профиль</h2>
@@ -577,47 +606,86 @@
     </div>
 
     <div class="modal-overlay" id="settingsModal">
-        <div class="modal">
-            <h2 data-i18n="setTitle">Оформление и Настройки</h2>
-            <div class="form-group">
-                <label data-i18n="setLang">Язык</label>
-                <select id="langSelect" onchange="changeLanguage()">
-                    <option value="ru">Русский</option>
-                    <option value="en">English</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Тема приложения</label>
-                <select id="themeMode" onchange="changeThemeMode()">
-                    <option value="dark">Тёмная (Dark)</option>
-                    <option value="light">Светлая (Light)</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label data-i18n="setColor">Цвет акцента</label>
-                <select id="themeColor" onchange="changeTheme()">
-                    <option value="#00d2ff">Aura Blue</option>
-                    <option value="#8a2be2">Deep Purple</option>
-                    <option value="#ff0055">Cyberpunk Red</option>
-                    <option value="#00fa9a">Matrix Green</option>
-                    <option value="#ffb74d">Sunset Orange</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Обои чата</label>
-                <div class="wallpaper-options">
-                    <div class="wp-option active" style="background: #1a1b26;" onclick="setWallpaper('none', this)"></div>
-                    <div class="wp-option" style="background-image: url('https://i.pinimg.com/736x/8c/98/99/8c98994518b575bfd8c949e91d20548b.jpg');" onclick="setWallpaper('url(https://i.pinimg.com/736x/8c/98/99/8c98994518b575bfd8c949e91d20548b.jpg)', this)"></div>
-                    <div class="wp-option" style="background-image: url('https://i.pinimg.com/736x/c5/47/3e/c5473e1f5791c53b3f2db7bbd2216e2d.jpg');" onclick="setWallpaper('url(https://i.pinimg.com/736x/c5/47/3e/c5473e1f5791c53b3f2db7bbd2216e2d.jpg)', this)"></div>
-                    <div class="wp-option" style="background-image: url('https://i.pinimg.com/736x/13/ab/a2/13aba2cdafc1a62d7a641a27e0259eb5.jpg');" onclick="setWallpaper('url(https://i.pinimg.com/736x/13/ab/a2/13aba2cdafc1a62d7a641a27e0259eb5.jpg)', this)"></div>
-                    <div class="wp-option" style="background-image: url('https://i.pinimg.com/736x/21/df/b6/21dfb6890f6b39ec4264b3cd796a5de6.jpg');" onclick="setWallpaper('url(https://i.pinimg.com/736x/21/df/b6/21dfb6890f6b39ec4264b3cd796a5de6.jpg)', this)"></div>
-                    <div class="wp-option" style="background-image: url('https://i.pinimg.com/736x/e4/f7/33/e4f733f39097da4ebefb3b145b206774.jpg');" onclick="setWallpaper('url(https://i.pinimg.com/736x/e4/f7/33/e4f733f39097da4ebefb3b145b206774.jpg)', this)"></div>
-                    <div class="wp-option" style="background-image: url('https://i.pinimg.com/736x/91/92/df/9192df28383e58992e5c830c253b26c0.jpg');" onclick="setWallpaper('url(https://i.pinimg.com/736x/91/92/df/9192df28383e58992e5c830c253b26c0.jpg)', this)"></div>
+        <div class="modal" id="settingsContentArea">
+            
+            <div id="settingsMainContent">
+                <h2 data-i18n="setTitle" style="margin-bottom: 20px;">Настройки</h2>
+                <div class="settings-list">
+                    <div class="settings-list-item" onclick="openSettingsTab('settingsData')">
+                        <span data-i18n="setData">Данные и память</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </div>
+                    <div class="settings-list-item" onclick="openSettingsTab('settingsAppearance')">
+                        <span data-i18n="setAppearance">Персонализация</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </div>
+                    <div class="settings-list-item" onclick="openSettingsTab('settingsLanguage')">
+                        <span data-i18n="setLang">Язык</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </div>
+                </div>
+                <div class="modal-actions" style="margin-top: 25px;">
+                    <button class="btn-cancel" onclick="closeModal('settingsModal')" data-i18n="btnClose">Закрыть</button>
                 </div>
             </div>
-            <div class="modal-actions">
-                <button class="btn-cancel" onclick="closeModal('settingsModal')" data-i18n="btnClose">Закрыть</button>
+
+            <div id="settingsAppearance" style="display: none;">
+                <div class="modal-header-back">
+                    <button class="icon-btn" onclick="openSettingsTab('settingsMainContent')"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></button>
+                    <h2 data-i18n="setAppearance">Персонализация</h2>
+                </div>
+                <div class="form-group">
+                    <label>Тема приложения</label>
+                    <select id="themeMode" onchange="changeThemeMode()">
+                        <option value="dark">Тёмная (Dark)</option>
+                        <option value="light">Светлая (Light)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="setColor">Цвет акцента</label>
+                    <select id="themeColor" onchange="changeTheme()">
+                        <option value="#00d2ff">Aura Blue</option>
+                        <option value="#8a2be2">Deep Purple</option>
+                        <option value="#ff0055">Cyberpunk Red</option>
+                        <option value="#00fa9a">Matrix Green</option>
+                        <option value="#ffb74d">Sunset Orange</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Обои чата</label>
+                    <div class="wallpaper-options">
+                        <div class="wp-option active" style="background: #1a1b26;" onclick="setWallpaper('none', this)"></div>
+                        <div class="wp-option" style="background-image: url('https://i.pinimg.com/736x/8c/98/99/8c98994518b575bfd8c949e91d20548b.jpg');" onclick="setWallpaper('url(https://i.pinimg.com/736x/8c/98/99/8c98994518b575bfd8c949e91d20548b.jpg)', this)"></div>
+                        <div class="wp-option" style="background-image: url('https://i.pinimg.com/736x/c5/47/3e/c5473e1f5791c53b3f2db7bbd2216e2d.jpg');" onclick="setWallpaper('url(https://i.pinimg.com/736x/c5/47/3e/c5473e1f5791c53b3f2db7bbd2216e2d.jpg)', this)"></div>
+                        <div class="wp-option" style="background-image: url('https://i.pinimg.com/736x/13/ab/a2/13aba2cdafc1a62d7a641a27e0259eb5.jpg');" onclick="setWallpaper('url(https://i.pinimg.com/736x/13/ab/a2/13aba2cdafc1a62d7a641a27e0259eb5.jpg)', this)"></div>
+                        <div class="wp-option" style="background-image: url('https://i.pinimg.com/736x/21/df/b6/21dfb6890f6b39ec4264b3cd796a5de6.jpg');" onclick="setWallpaper('url(https://i.pinimg.com/736x/21/df/b6/21dfb6890f6b39ec4264b3cd796a5de6.jpg)', this)"></div>
+                        <div class="wp-option" style="background-image: url('https://i.pinimg.com/736x/e4/f7/33/e4f733f39097da4ebefb3b145b206774.jpg');" onclick="setWallpaper('url(https://i.pinimg.com/736x/e4/f7/33/e4f733f39097da4ebefb3b145b206774.jpg)', this)"></div>
+                        <div class="wp-option" style="background-image: url('https://i.pinimg.com/736x/91/92/df/9192df28383e58992e5c830c253b26c0.jpg');" onclick="setWallpaper('url(https://i.pinimg.com/736x/91/92/df/9192df28383e58992e5c830c253b26c0.jpg)', this)"></div>
+                    </div>
+                </div>
             </div>
+
+            <div id="settingsLanguage" style="display: none;">
+                <div class="modal-header-back">
+                    <button class="icon-btn" onclick="openSettingsTab('settingsMainContent')"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></button>
+                    <h2 data-i18n="setLang">Язык</h2>
+                </div>
+                <div class="settings-list">
+                    <div class="settings-list-item" onclick="selectLanguage('en')">English</div>
+                    <div class="settings-list-item" onclick="selectLanguage('ru')">Русский</div>
+                    <div class="settings-list-item" onclick="selectLanguage('uk')">Українська</div>
+                    <div class="settings-list-item" onclick="selectLanguage('zh')">中文</div>
+                </div>
+            </div>
+
+            <div id="settingsData" style="display: none;">
+                <div class="modal-header-back">
+                    <button class="icon-btn" onclick="openSettingsTab('settingsMainContent')"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></button>
+                    <h2 data-i18n="setData">Данные и память</h2>
+                </div>
+                <p style="color: var(--text-muted); text-align: center; margin-top: 30px; font-size: 0.9rem;">В разработке...</p>
+            </div>
+
         </div>
     </div>
 
@@ -696,26 +764,54 @@
             ru: {
                 fav: "Избранное", placeholderMsg: "Напишите сообщение...", btnSend: "Отправить",
                 profTitle: "Мой Профиль", viewProfileTitle: "Профиль", profName: "Имя", profUser: "Юзернейм", 
-                btnCancel: "Отмена", btnSave: "Сохранить", setTitle: "Оформление", setLang: "Язык",
+                btnCancel: "Отмена", btnSave: "Сохранить", setTitle: "Настройки", setLang: "Язык",
                 setColor: "Цвет акцента", optYes: "Да", optNo: "Нет",
                 btnClose: "Закрыть", addTitle: "Новый чат", addType: "Тип", optUser: "Пользователь", 
                 optGroup: "Группа", optChannel: "Канал", addTarget: "Юзернейм или Название",
                 placeholderTarget: "Например: admin", btnAdd: "Создать", statusCheck: "Проверка...", 
                 statusShort: "Слишком короткий", statusTaken: "Этот юзернейм уже занят!", statusFree: "Свободен",
                 statusErr: "Ошибка сети", archiveTab: "Архив", menuArchive: "В архив", menuUnarchive: "Из архива", 
-                menuDeleteLocal: "Удалить у себя", menuDeleteAll: "Удалить у всех", userNotFound: "Аккаунт не найден"
+                menuDeleteLocal: "Удалить у себя", menuDeleteAll: "Удалить у всех", userNotFound: "Аккаунт не найден",
+                setAppearance: "Персонализация", setData: "Данные и память", btnEdit: "Редактировать"
             },
             en: {
                 fav: "Saved Messages", placeholderMsg: "Write a message...", btnSend: "Send",
                 profTitle: "My Profile", viewProfileTitle: "Profile", profName: "Name", profUser: "Username", 
-                btnCancel: "Cancel", btnSave: "Save", setTitle: "Appearance", setLang: "Language",
+                btnCancel: "Cancel", btnSave: "Save", setTitle: "Settings", setLang: "Language",
                 setColor: "Accent Color", optYes: "Yes", optNo: "No",
                 btnClose: "Close", addTitle: "New Chat", addType: "Type", optUser: "User", 
                 optGroup: "Group", optChannel: "Channel", addTarget: "Username or Title",
                 placeholderTarget: "e.g., admin", btnAdd: "Create", statusCheck: "Checking...", 
                 statusShort: "Too short", statusTaken: "Taken!", statusFree: "Available",
                 statusErr: "Network error", archiveTab: "Archive", menuArchive: "Archive", menuUnarchive: "Unarchive", 
-                menuDeleteLocal: "Delete for me", menuDeleteAll: "Delete for all", userNotFound: "Account not found"
+                menuDeleteLocal: "Delete for me", menuDeleteAll: "Delete for all", userNotFound: "Account not found",
+                setAppearance: "Appearance", setData: "Data & Storage", btnEdit: "Edit"
+            },
+            uk: {
+                fav: "Збережене", placeholderMsg: "Напишіть повідомлення...", btnSend: "Надіслати",
+                profTitle: "Мій Профіль", viewProfileTitle: "Профіль", profName: "Ім'я", profUser: "Юзернейм", 
+                btnCancel: "Скасувати", btnSave: "Зберегти", setTitle: "Налаштування", setLang: "Мова",
+                setColor: "Колір акценту", optYes: "Так", optNo: "Ні",
+                btnClose: "Закрити", addTitle: "Новий чат", addType: "Тип", optUser: "Користувач", 
+                optGroup: "Група", optChannel: "Канал", addTarget: "Юзернейм або Назва",
+                placeholderTarget: "Наприклад: admin", btnAdd: "Створити", statusCheck: "Перевірка...", 
+                statusShort: "Занадто короткий", statusTaken: "Вже зайнятий!", statusFree: "Вільний",
+                statusErr: "Помилка мережі", archiveTab: "Архів", menuArchive: "В архів", menuUnarchive: "З архіву", 
+                menuDeleteLocal: "Видалити у себе", menuDeleteAll: "Видалити у всіх", userNotFound: "Акаунт не знайдено",
+                setAppearance: "Персоналізація", setData: "Дані та пам'ять", btnEdit: "Редагувати"
+            },
+            zh: {
+                fav: "收藏夹", placeholderMsg: "写信息...", btnSend: "发送",
+                profTitle: "我的个人资料", viewProfileTitle: "个人资料", profName: "姓名", profUser: "用户名", 
+                btnCancel: "取消", btnSave: "保存", setTitle: "设置", setLang: "语言",
+                setColor: "强调色", optYes: "是", optNo: "否",
+                btnClose: "关闭", addTitle: "新聊天", addType: "类型", optUser: "用户", 
+                optGroup: "组", optChannel: "渠道", addTarget: "用户名或名称",
+                placeholderTarget: "例如：admin", btnAdd: "创建", statusCheck: "检查中...", 
+                statusShort: "太短", statusTaken: "已占用！", statusFree: "自由",
+                statusErr: "网络错误", archiveTab: "档案", menuArchive: "归档", menuUnarchive: "从档案中", 
+                menuDeleteLocal: "为我删除", menuDeleteAll: "为所有人删除", userNotFound: "找不到帐户",
+                setAppearance: "个性化", setData: "数据和存储", btnEdit: "编辑"
             }
         };
 
@@ -830,7 +926,6 @@
         }
 
         function initApp() {
-            document.getElementById('langSelect').value = localSettings.lang || 'ru';
             document.getElementById('themeColor').value = localSettings.themeColor || '#00d2ff';
             document.getElementById('themeMode').value = localSettings.themeMode || 'dark';
             
@@ -863,6 +958,28 @@
             }
         }
 
+        // --- ЛОГИКА НАСТРОЕК (ПОДМЕНЮ) ---
+        function openSettingsMain() {
+            openSettingsTab('settingsMainContent');
+            openModal('settingsModal');
+        }
+
+        function openSettingsTab(tabId) {
+            document.getElementById('settingsMainContent').style.display = 'none';
+            document.getElementById('settingsAppearance').style.display = 'none';
+            document.getElementById('settingsLanguage').style.display = 'none';
+            document.getElementById('settingsData').style.display = 'none';
+            
+            document.getElementById(tabId).style.display = 'block';
+        }
+
+        function selectLanguage(langCode) {
+            localSettings.lang = langCode;
+            saveSettings();
+            changeLanguage(true);
+            openSettingsTab('settingsMainContent'); // Возврат после выбора
+        }
+
         function changeThemeMode(isInit = false) {
             localSettings.themeMode = document.getElementById('themeMode').value;
             document.body.setAttribute('data-theme', localSettings.themeMode);
@@ -870,10 +987,7 @@
         }
 
         function changeLanguage(isInit = false) {
-            localSettings.lang = document.getElementById('langSelect').value;
-            if(!isInit) saveSettings();
-            
-            const dict = translations[localSettings.lang];
+            const dict = translations[localSettings.lang || 'ru'];
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if(dict[key]) el.innerText = dict[key];
@@ -883,7 +997,7 @@
                 if(dict[key]) el.placeholder = dict[key];
             });
 
-            if(currentTarget === translations.ru.fav || currentTarget === translations.en.fav) {
+            if(currentTarget === translations.ru.fav || currentTarget === translations.en.fav || currentTarget === translations.uk.fav || currentTarget === translations.zh.fav) {
                 currentTarget = dict.fav;
                 document.getElementById('currentChatName').innerText = dict.fav;
             }
@@ -1006,7 +1120,7 @@
         function renderSidebarChats() {
             const list = document.getElementById('chatList');
             const archiveList = document.getElementById('archivedChatsList');
-            const dict = translations[localSettings.lang];
+            const dict = translations[localSettings.lang || 'ru'];
             list.innerHTML = ''; archiveList.innerHTML = '';
 
             const favName = dict.fav;
@@ -1084,7 +1198,7 @@
             delete localMessages[name];
             localStorage.setItem('auraChats_' + USER, JSON.stringify(localChats));
             localStorage.setItem('auraMessages_' + USER, JSON.stringify(localMessages));
-            if(currentTarget === name) selectChat(translations[localSettings.lang].fav, 'favorites');
+            if(currentTarget === name) selectChat(translations[localSettings.lang || 'ru'].fav, 'favorites');
             renderSidebarChats();
         }
 
@@ -1099,7 +1213,7 @@
             const avatarDiv = document.getElementById('currentChatAvatar');
             const statusDiv = document.getElementById('statusInfo');
             const inputArea = document.getElementById('chatInputArea');
-            const dict = translations[localSettings.lang];
+            const dict = translations[localSettings.lang || 'ru'];
 
             if (targetName === dict.fav) {
                 avatarDiv.innerHTML = `<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>`; 
@@ -1154,7 +1268,7 @@
             const menu = document.getElementById('chatDropdown');
             menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
             
-            if(currentTarget === translations[localSettings.lang].fav) {
+            if(currentTarget === translations[localSettings.lang || 'ru'].fav) {
                 menu.style.display = 'none'; return;
             }
             const chatObj = localChats.find(c => c.name === currentTarget);
@@ -1306,7 +1420,7 @@
             setTimeout(() => modal.style.display = 'none', 300);
         }
 
-        // ИСПРАВЛЕНИЕ: Генерация красивой аватарки при просмотре профиля других юзеров
+        // Генерация красивой аватарки при просмотре профиля других юзеров
         function openViewProfile() {
             if(currentTarget === translations[localSettings.lang || 'ru'].fav) return; 
             const chatObj = localChats.find(c => c.name === currentTarget);
@@ -1329,6 +1443,25 @@
 
             document.getElementById('chatDropdown').style.display = 'none';
             openModal('viewProfileModal');
+        }
+
+        // НОВОЕ: Просмотр СВОЕГО профиля
+        function openMyProfileView() {
+            const avatarDisplay = document.getElementById('myViewAvatar');
+            if(localProfile.avatar) {
+                avatarDisplay.style.background = `url(${localProfile.avatar}) center/cover`; 
+                avatarDisplay.innerHTML = '';
+            } else {
+                avatarDisplay.style.background = 'var(--accent-gradient)';
+                let initial = localProfile.name ? localProfile.name.substring(0, 1).toUpperCase() : 'A';
+                avatarDisplay.innerHTML = initial;
+            }
+            
+            document.getElementById('myViewName').innerText = localProfile.name || USER;
+            document.getElementById('myViewUsername').innerText = '@' + USER;
+            document.getElementById('myViewBio').innerText = localProfile.bio || "Нет описания";
+
+            openModal('viewMyProfileModal');
         }
 
         function openAddModal() {
@@ -1447,18 +1580,26 @@
             const text = mediaContent || input.value.trim();
             if (!text) return;
 
-            // --- АВТО-ДОБАВЛЕНИЕ (У получателя появляется наш чат) ---
+            // --- ИСПРАВЛЕНИЕ: СИНХРОНИЗАЦИЯ АВАТАРОК ---
             let targetChats = JSON.parse(localStorage.getItem('auraChats_' + currentTarget)) || [];
-            if(!targetChats.find(c => c.name === USER)) {
+            let existingChat = targetChats.find(c => c.name === USER);
+            
+            if(!existingChat) {
                 targetChats.push({name: USER, type: 'user', avatar: localProfile.avatar, bio: localProfile.bio, isArchived: false});
-                localStorage.setItem('auraChats_' + currentTarget, JSON.stringify(targetChats));
+            } else {
+                // Если мы поменяли свою аву, при отправке она обновится у собеседника
+                existingChat.avatar = localProfile.avatar; 
+                existingChat.bio = localProfile.bio;
             }
+            localStorage.setItem('auraChats_' + currentTarget, JSON.stringify(targetChats));
+            // -------------------------------------------
+
             // Эмуляция отправки сообщения другому клиенту локально
             let targetMsgs = JSON.parse(localStorage.getItem('auraMessages_' + currentTarget)) || {};
             if(!targetMsgs[USER]) targetMsgs[USER] = [];
             targetMsgs[USER].push({sender: USER, text: text});
             localStorage.setItem('auraMessages_' + currentTarget, JSON.stringify(targetMsgs));
-            // ----------------------------------------------------------
+            
 
             if (!localMessages[currentTarget]) localMessages[currentTarget] = [];
             localMessages[currentTarget].push({sender: USER, text: text});
