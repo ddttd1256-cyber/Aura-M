@@ -98,11 +98,11 @@
             z-index: 10;
         }
         
-        /* ПЕРЕМЕЩЕННАЯ ПАНЕЛЬ ПРОФИЛЯ (ТЕПЕРЬ ВНИЗУ) */
+        /* Панель профиля внизу */
         .sidebar-footer { 
             padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; 
             border-top: 1px solid var(--glass-border); background: rgba(0,0,0,0.05);
-            margin-top: auto; /* Прижимает панель к низу */
+            margin-top: auto; 
         }
         
         .sidebar-footer-left { display: flex; align-items: center; gap: 10px; }
@@ -187,7 +187,7 @@
 
         .chat-header-info {
             display: flex; align-items: center; gap: 15px; cursor: pointer; 
-            transition: 0.2s; padding: 5px 10px; border-radius: 12px;
+            transition: 0.2s; padding: 5px 10px; border-radius: 12px; max-width: 70%;
         }
         .chat-header-info:hover { background: var(--bg-hover); }
 
@@ -402,6 +402,8 @@
             input[type="text"] { padding: 10px 15px; }
             .send-btn { padding: 10px 15px; }
             .stickers-panel { grid-template-columns: repeat(3, 1fr); left: 10px; right: 10px; }
+            
+            .chat-header-info { max-width: 65%; }
         }
         
         #registrationModal { z-index: 99999; background: var(--bg-main); }
@@ -486,9 +488,10 @@
                 <div class="avatar-mini" id="currentChatAvatar" style="width: 40px; height: 40px; font-size: 1rem;">
                     <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
                 </div>
-                <div>
-                    <h3 id="currentChatName" style="font-size: 1.2rem; font-weight: 600;">Избранное</h3>
-                    <div id="statusInfo" style="color: var(--accent); font-size: 0.8rem; font-weight: bold;">Только для вас</div>
+                <div style="min-width: 0; display: flex; flex-direction: column;">
+                    <h3 id="currentChatName" style="font-size: 1.15rem; font-weight: 600; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Избранное</h3>
+                    <div id="currentChatUsername" style="color: var(--text-muted); font-size: 0.85rem; display: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@user</div>
+                    <div id="statusInfo" style="color: var(--accent); font-size: 0.8rem; font-weight: bold; margin-top: 2px;">Только для вас</div>
                 </div>
             </div>
             
@@ -751,6 +754,7 @@
         const iconUser = `<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
         const iconGroup = `<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`;
         const iconChannel = `<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>`;
+        const iconDeleted = `<svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>`;
 
         let USER = localStorage.getItem('auraUser') || ""; 
         
@@ -768,6 +772,7 @@
         let mediaRecorder;
         let audioChunks = [];
         let selectedMsgIndex = -1; 
+        let isProfileUsernameTaken = false;
 
         let regUsernameTimeout;
         let isRegUsernameTaken = false;
@@ -790,7 +795,8 @@
                 cacheDesc: "Очистка ускорит работу мессенджера", alertCacheCleared: "Кэш успешно очищен!",
                 confirmCache: "Очистить историю всех чатов? Сами чаты останутся, но сообщения будут удалены. Это освободит память.",
                 confirmReset: "Внимание! Это полностью удалит ваш профиль и выйдет из аккаунта. Продолжить?",
-                deleteAccount: "Удалить аккаунт", confirmDelAcc: "Вы уверены, что хотите навсегда удалить свой аккаунт? Это действие необратимо и удалит все ваши данные!"
+                deleteAccount: "Удалить аккаунт", confirmDelAcc: "Вы уверены, что хотите навсегда удалить свой аккаунт? Это действие необратимо и удалит все ваши данные!",
+                deletedAccount: "Удалённый аккаунт"
             },
             en: {
                 fav: "Saved Messages", placeholderMsg: "Write a message...", btnSend: "Send",
@@ -809,7 +815,8 @@
                 cacheDesc: "Clearing cache makes the app run faster", alertCacheCleared: "Cache successfully cleared!",
                 confirmCache: "Clear all chat history? The chats will remain, but messages will be deleted. This frees up memory.",
                 confirmReset: "Warning! This will completely delete your profile and log you out. Continue?",
-                deleteAccount: "Delete Account", confirmDelAcc: "Are you sure you want to permanently delete your account? This action is irreversible!"
+                deleteAccount: "Delete Account", confirmDelAcc: "Are you sure you want to permanently delete your account? This action is irreversible!",
+                deletedAccount: "Deleted Account"
             },
             uk: {
                 fav: "Збережене", placeholderMsg: "Напишіть повідомлення...", btnSend: "Надіслати",
@@ -822,13 +829,14 @@
                 statusShort: "Занадто короткий", statusTaken: "Вже зайнятий!", statusFree: "Вільний",
                 statusErr: "Помилка мережі", archiveTab: "Архів", menuArchive: "В архів", menuUnarchive: "З архіву", 
                 menuDeleteLocal: "Видалити у себе", menuDeleteAll: "Видалити у всіх", userNotFound: "Акаунт не знайдено",
-                setAppearance: "Персоналізація", setData: "Дані та пам'ять", btnEdit: "Редагувати",
+                setAppearance: "Персоналізація", setData: "Дані та пам'ять", btnEdit: "Редактировать",
                 statusOnline: "У мережі", statusOffline: "Був(ла) нещодавно", statusFav: "Тільки для вас",
                 statusGroup: "Група", statusChannel: "Канал", clearCache: "Очистити кеш повідомлень", resetApp: "Повне скидання (Вийти)",
                 cacheDesc: "Очищення кешу прискорить роботу", alertCacheCleared: "Кеш успішно очищено!",
                 confirmCache: "Очистити історію всіх чатів? Самі чати залишаться, але повідомлення будуть видалені.",
                 confirmReset: "Увага! Це повністю видалить ваш профіль і вийде з акаунта. Продовжити?",
-                deleteAccount: "Видалити акаунт", confirmDelAcc: "Ви впевнені, що хочете назавжди видалити свій акаунт? Ця дія незворотна!"
+                deleteAccount: "Видалити акаунт", confirmDelAcc: "Ви впевнені, що хочете назавжди видалити свій акаунт? Ця дія незворотна!",
+                deletedAccount: "Видалений акаунт"
             },
             zh: {
                 fav: "收藏夹", placeholderMsg: "写信息...", btnSend: "发送",
@@ -847,7 +855,8 @@
                 cacheDesc: "清理缓存将加快工作速度", alertCacheCleared: "缓存已成功清除！",
                 confirmCache: "清除所有聊天记录？释放内存。",
                 confirmReset: "警告！这将完全删除您的个人资料。继续？",
-                deleteAccount: "删除帐户", confirmDelAcc: "您确定要永久删除您的帐户吗？此操作不可逆！"
+                deleteAccount: "删除帐户", confirmDelAcc: "您确定要永久删除您的帐户吗？此操作不可逆！",
+                deletedAccount: "已删除的帐户"
             }
         };
 
@@ -957,6 +966,7 @@
             registerUser(USER, localProfile.name);
             if(window.innerWidth > 768) selectChat(currentTarget, 'favorites');
             startChatLoop();
+            verifyChatsExistence(); // Проверяем нет ли удаленных аккаунтов при старте
         }
 
         function initApp() {
@@ -1054,7 +1064,6 @@
             } else {
                 document.documentElement.style.setProperty('--accent-gradient', `linear-gradient(135deg, ${color}, #8a2be2)`);
             }
-            // Обновляем чатбар при смене темы чтобы градиент перекрасился сразу
             renderSidebarChats();
             if (currentTarget === translations[localSettings.lang || 'ru'].fav) {
                 document.getElementById('currentChatAvatar').style.background = 'var(--accent-gradient)';
@@ -1117,7 +1126,7 @@
 
         function validateUsername(input) { input.value = input.value.replace(/[^a-zA-Z0-9_]/g, ''); }
 
-        /* --- ЛОГИКА ДРАГА И СВАЙПА (МЫШЬ И ТЕЛЕФОН) --- */
+        /* --- ЛОГИКА ДРАГА И СВАЙПА --- */
         let swipeStartX = 0;
         let isSwiping = false;
         let currentSwipeEl = null;
@@ -1210,7 +1219,9 @@
             list.innerHTML += `
                 <div class="chat-item ${currentTarget === favName ? 'active' : ''}" onclick="selectChat('${favName}', 'favorites')">
                     <div class="avatar-mini" style="background: var(--accent-gradient);"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg></div>
-                    <div style="font-weight: 600; flex:1;">${favName}</div>
+                    <div style="flex:1; display: flex; flex-direction: column; justify-content: center; min-width: 0;">
+                        <div style="font-weight: 600; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${favName}</div>
+                    </div>
                 </div>
             `;
 
@@ -1218,9 +1229,18 @@
 
             localChats.forEach(chat => {
                 let defaultIcon = chat.type === 'group' ? iconGroup : (chat.type === 'channel' ? iconChannel : iconUser);
-                let iconHtml = chat.avatar 
-                    ? `<div class="avatar-mini" style="background-image: url(${chat.avatar}); color: transparent;"></div>`
-                    : `<div class="avatar-mini" style="font-size: 0;">${defaultIcon}</div>`;
+                let isDeleted = chat.isDeleted === true;
+                
+                let iconHtml = '';
+                if (isDeleted) {
+                    iconHtml = `<div class="avatar-mini" style="background: rgba(100,100,100,0.5); color: #888;">${iconDeleted}</div>`;
+                } else if (chat.avatar) {
+                    iconHtml = `<div class="avatar-mini" style="background-image: url(${chat.avatar}); color: transparent;"></div>`;
+                } else {
+                    iconHtml = `<div class="avatar-mini" style="font-size: 0;">${defaultIcon}</div>`;
+                }
+                
+                let displayNameText = isDeleted ? dict.deletedAccount : chat.name;
                 
                 let html = `
                     <div class="swipe-container" data-name="${chat.name}">
@@ -1237,7 +1257,10 @@
                              onmousedown="handleSwipeStart(event)" onmousemove="handleSwipeMove(event)" onmouseup="handleSwipeEnd(event)" onmouseleave="handleSwipeEnd(event)"
                              ontouchstart="handleSwipeStart(event)" ontouchmove="handleSwipeMove(event)" ontouchend="handleSwipeEnd(event)">
                             ${iconHtml}
-                            <div style="font-weight: 500; flex:1;">${chat.name}</div>
+                            <div style="flex:1; display: flex; flex-direction: column; justify-content: center; min-width: 0;">
+                                <div style="font-weight: 600; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${displayNameText}</div>
+                                ${(chat.type === 'user' && !isDeleted) ? `<div style="font-size: 0.8rem; color: var(--accent); opacity: 0.8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@${chat.name}</div>` : ''}
+                            </div>
                         </div>
                     </div>
                 `;
@@ -1299,6 +1322,12 @@
             
             const chatObj = localChats.find(c => c.name === targetName);
             if (chatObj) {
+                if (chatObj.isDeleted) {
+                    statusDiv.innerText = "";
+                    inputArea.style.display = 'none'; 
+                    return;
+                }
+
                 if(chatObj.type === 'channel') {
                     statusDiv.innerText = dict.statusChannel;
                     statusDiv.style.color = "var(--text-muted)";
@@ -1326,23 +1355,44 @@
             if(wasSwiped) { wasSwiped = false; return; }
 
             currentTarget = targetName;
-            document.getElementById('currentChatName').innerText = targetName;
             
             const chatObj = localChats.find(c => c.name === targetName);
             const avatarDiv = document.getElementById('currentChatAvatar');
             const dict = translations[localSettings.lang || 'ru'];
 
             if (targetName === dict.fav) {
+                document.getElementById('currentChatName').innerText = dict.fav;
+                document.getElementById('currentChatUsername').style.display = 'none';
                 avatarDiv.innerHTML = `<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>`; 
                 avatarDiv.style.backgroundImage = '';
                 avatarDiv.style.background = 'var(--accent-gradient)';
+                avatarDiv.style.color = '#fff';
             } else if (chatObj) {
-                if(chatObj.avatar) {
-                    avatarDiv.style.backgroundImage = `url(${chatObj.avatar})`; avatarDiv.innerHTML = '';
+                let isDeleted = chatObj.isDeleted === true;
+                let displayName = isDeleted ? dict.deletedAccount : chatObj.name;
+                document.getElementById('currentChatName').innerText = displayName;
+                
+                let usernameDiv = document.getElementById('currentChatUsername');
+                if (chatObj.type === 'user' && !isDeleted) {
+                    usernameDiv.innerText = '@' + chatObj.name;
+                    usernameDiv.style.display = 'block';
+                } else {
+                    usernameDiv.style.display = 'none';
+                }
+
+                if (isDeleted) {
+                    avatarDiv.innerHTML = iconDeleted;
+                    avatarDiv.style.background = 'rgba(100,100,100,0.5)';
+                    avatarDiv.style.color = '#888';
+                    avatarDiv.style.backgroundImage = '';
+                } else if (chatObj.avatar) {
+                    avatarDiv.style.backgroundImage = `url(${chatObj.avatar})`; 
+                    avatarDiv.innerHTML = '';
                     avatarDiv.style.background = 'none';
                 } else {
                     avatarDiv.style.backgroundImage = ''; 
                     avatarDiv.style.background = 'var(--accent-gradient)';
+                    avatarDiv.style.color = '#fff';
                     let defaultIcon = type === 'group' ? iconGroup : (type === 'channel' ? iconChannel : iconUser);
                     avatarDiv.innerHTML = defaultIcon;
                 }
@@ -1520,7 +1570,11 @@
             if(!chatObj) return;
 
             const avatarDisplay = document.getElementById('viewProfileAvatar');
-            if(chatObj.avatar) {
+            if(chatObj.isDeleted) {
+                avatarDisplay.style.background = '#333';
+                avatarDisplay.innerHTML = iconDeleted;
+                avatarDisplay.style.color = '#888';
+            } else if(chatObj.avatar) {
                 avatarDisplay.style.background = `url(${chatObj.avatar}) center/cover`; 
                 avatarDisplay.innerHTML = '';
             } else {
@@ -1529,8 +1583,8 @@
                 avatarDisplay.innerHTML = initial;
             }
             
-            document.getElementById('viewProfileName').innerText = chatObj.name;
             const dict = translations[localSettings.lang || 'ru'];
+            document.getElementById('viewProfileName').innerText = chatObj.isDeleted ? dict.deletedAccount : chatObj.name;
             document.getElementById('viewProfileType').innerText = chatObj.type === 'group' ? dict.optGroup : (chatObj.type === 'channel' ? dict.optChannel : dict.optUser);
             document.getElementById('viewProfileBio').innerText = chatObj.bio || "Нет описания";
 
@@ -1572,6 +1626,12 @@
         }
 
         function saveProfile() {
+            // Исправлен баг: запрет сохранения если юзернейм занят
+            if(isProfileUsernameTaken) {
+                alert(translations[localSettings.lang || 'ru'].statusTaken);
+                return;
+            }
+
             const newUsername = document.getElementById('profileUsername').value || "Player1";
             
             if(newUsername !== USER) {
@@ -1608,17 +1668,24 @@
             statusLabel.style.color = 'var(--text-muted)'; statusLabel.innerText = dict.statusCheck;
 
             usernameTimeout = setTimeout(async () => {
-                if(newUsername.length < 3) { statusLabel.style.color = 'var(--danger)'; statusLabel.innerText = dict.statusShort; return; }
+                if(newUsername.length < 3) { 
+                    statusLabel.style.color = 'var(--danger)'; statusLabel.innerText = dict.statusShort; 
+                    isProfileUsernameTaken = true; 
+                    return; 
+                }
                 try {
                     const res = await fetch(`${API_URL}/check_user/${newUsername}`);
                     const data = await res.json();
                     if (data.exists && newUsername !== localStorage.getItem('auraUser')) {
                         statusLabel.style.color = 'var(--danger)'; statusLabel.innerText = dict.statusTaken;
+                        isProfileUsernameTaken = true;
                     } else {
                         statusLabel.style.color = 'var(--success)'; statusLabel.innerText = dict.statusFree;
+                        isProfileUsernameTaken = false;
                     }
                 } catch (e) {
                     statusLabel.style.color = 'var(--danger)'; statusLabel.innerText = dict.statusErr;
+                    isProfileUsernameTaken = false;
                 }
             }, 500);
         }
@@ -1646,7 +1713,12 @@
             }
 
             if (!localChats.find(c => c.name === target)) {
-                localChats.push({ name: target, type: type, avatar: currentGroupAvatar, bio: bio, isArchived: false });
+                localChats.push({ name: target, type: type, avatar: currentGroupAvatar, bio: bio, isArchived: false, isDeleted: false });
+                localStorage.setItem('auraChats_' + USER, JSON.stringify(localChats));
+            } else {
+                // Если чат уже есть, убираем метку удаления (может юзер пересоздал акк)
+                let existing = localChats.find(c => c.name === target);
+                existing.isDeleted = false;
                 localStorage.setItem('auraChats_' + USER, JSON.stringify(localChats));
             }
             
@@ -1675,7 +1747,7 @@
             let existingChat = targetChats.find(c => c.name === USER);
             
             if(!existingChat) {
-                targetChats.push({name: USER, type: 'user', avatar: localProfile.avatar, bio: localProfile.bio, isArchived: false});
+                targetChats.push({name: USER, type: 'user', avatar: localProfile.avatar, bio: localProfile.bio, isArchived: false, isDeleted: false});
             } else {
                 existingChat.avatar = localProfile.avatar; 
                 existingChat.bio = localProfile.bio;
@@ -1740,17 +1812,14 @@
         // --- ЛОГИКА ДЛЯ АВТО-ОБНОВЛЕНИЯ НОВЫХ ЧАТОВ ОТ СЕРВЕРА ---
         async function syncChatsFromServer() {
             try {
-                // Пытаемся получить список юзеров, с которыми есть переписка
                 const res = await fetch(`${API_URL}/get_chats/${USER}`);
                 if (res.ok) {
                     const data = await res.json();
                     let updated = false;
-                    // Ожидаем что сервер вернет: { chats: ["user1", "user2"] }
                     if(data.chats && Array.isArray(data.chats)) {
                         data.chats.forEach(chatName => {
-                            // Если чат с нами и его еще нет локально
                             if(chatName !== USER && !localChats.find(c => c.name === chatName)) {
-                                localChats.push({ name: chatName, type: 'user', avatar: null, bio: "Нет описания", isArchived: false });
+                                localChats.push({ name: chatName, type: 'user', avatar: null, bio: "Нет описания", isArchived: false, isDeleted: false });
                                 updated = true;
                             }
                         });
@@ -1760,8 +1829,30 @@
                         }
                     }
                 }
-            } catch (e) {
-                // Если роута пока нет на бэкенде, просто молчим
+            } catch (e) {}
+        }
+
+        // --- ФУНКЦИЯ ПРОВЕРКИ УДАЛЕННЫХ АККАУНТОВ ---
+        async function verifyChatsExistence() {
+            let updated = false;
+            for (let chat of localChats) {
+                if (chat.type === 'user' && chat.name !== USER && !chat.isDeleted) {
+                    try {
+                        const res = await fetch(`${API_URL}/check_user/${chat.name}`);
+                        if (res.ok) {
+                            const data = await res.json();
+                            if (!data.exists) {
+                                chat.isDeleted = true;
+                                updated = true;
+                            }
+                        }
+                    } catch (e) {}
+                }
+            }
+            if (updated) {
+                localStorage.setItem('auraChats_' + USER, JSON.stringify(localChats));
+                renderSidebarChats();
+                if (currentTarget) updateChatHeaderStatus(currentTarget);
             }
         }
 
@@ -1799,10 +1890,13 @@
 
                 loadChat();
 
-                // Раз в 6 секунд запрашиваем у сервера наличие новых чатов
                 syncCounter++;
                 if(syncCounter >= 3) {
                     syncChatsFromServer();
+                }
+                // Проверяем удаленные аккаунты раз в 30 секунд (15 тиков по 2 сек)
+                if(syncCounter >= 15) {
+                    verifyChatsExistence();
                     syncCounter = 0;
                 }
 
