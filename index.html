@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Aura Messenger</title>
     <style>
         /* Базовые стили и переменные (Темная тема по умолчанию) */
@@ -364,11 +364,24 @@
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ */
+        /* ИСПРАВЛЕНИЕ: АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ (ЖЕСТКАЯ ФИКСАЦИЯ НА ВЕСЬ ЭКРАН) */
         @media (max-width: 768px) {
-            .sidebar { width: 100vw !important; max-width: 100vw !important; z-index: 20; position: absolute; left: 0; top: 0; height: 100%; background: var(--bg-main); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
-            .main-area { width: 100vw !important; height: 100%; position: absolute; left: 0; top: 0; z-index: 15; }
+            body { display: block; }
+            .sidebar { 
+                width: 100vw !important; max-width: 100vw !important; 
+                height: 100dvh !important;
+                position: fixed !important; left: 0; top: 0; 
+                z-index: 20; background: var(--bg-main); 
+                transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
+            }
+            .main-area { 
+                width: 100vw !important; max-width: 100vw !important; 
+                height: 100dvh !important;
+                position: fixed !important; left: 0; top: 0; 
+                z-index: 15; 
+            }
             body.chat-active .sidebar { transform: translateX(-100%); }
+            
             .mobile-back-btn { display: flex; align-items: center; }
             .msg { max-width: 85%; }
             .chat-input-area { padding: 10px; gap: 5px;}
@@ -408,7 +421,8 @@
                 
                 <div class="form-group" style="width: 100%; text-align: left;">
                     <label>Юзернейм (Только англ) <span style="color:var(--danger)">*</span></label>
-                    <input type="text" id="regUsername" placeholder="Например: artem" oninput="validateUsername(this)">
+                    <input type="text" id="regUsername" placeholder="Например: artem" oninput="validateUsername(this)" onkeyup="checkRegUsername()">
+                    <div id="regUsernameStatus" class="status-msg" style="min-height: 20px;"></div>
                 </div>
                 
                 <div class="form-group" style="width: 100%; text-align: left;">
@@ -519,8 +533,7 @@
     <div class="modal-overlay" id="viewProfileModal">
         <div class="modal" style="text-align: center;">
             <div class="profile-avatar-large" id="viewProfileAvatar" style="cursor: default; margin: 0 auto 15px auto;">
-                <svg viewBox="0 0 24 24" width="60" height="60" stroke="currentColor" stroke-width="2" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            </div>
+                </div>
             <h2 id="viewProfileName" style="margin-bottom: 5px;">Name</h2>
             <p id="viewProfileType" style="color: var(--accent); font-size: 0.9rem; font-weight: bold; margin-bottom: 15px;">User</p>
             <p id="viewProfileBio" style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.4; background: rgba(0,0,0,0.1); padding: 10px; border-radius: 10px;">Нет описания</p>
@@ -665,7 +678,6 @@
         let localProfile = USER ? (JSON.parse(localStorage.getItem('auraProfile_' + USER)) || { name: USER, avatar: null, bio: "Нет описания" }) : {};
         let localSettings = JSON.parse(localStorage.getItem('auraSettings')) || { lang: "ru", themeColor: "#00d2ff", themeMode: "dark", wallpaper: "none" };
         
-        /* ИСПРАВЛЕНИЕ: Хранилище для скрытых/удаленных сообщений */
         let hiddenMsgs = USER ? (JSON.parse(localStorage.getItem('auraHiddenMsgs_' + USER)) || {}) : {};
         
         let currentTarget = "Избранное";
@@ -674,7 +686,11 @@
         let isArchiveOpen = false;
         let mediaRecorder;
         let audioChunks = [];
-        let selectedMsgIndex = -1; // Для удаления сообщений
+        let selectedMsgIndex = -1; 
+
+        // ИСПРАВЛЕНИЕ: Переменные для проверки регистрации
+        let regUsernameTimeout;
+        let isRegUsernameTaken = false;
 
         const translations = {
             ru: {
@@ -685,7 +701,7 @@
                 btnClose: "Закрыть", addTitle: "Новый чат", addType: "Тип", optUser: "Пользователь", 
                 optGroup: "Группа", optChannel: "Канал", addTarget: "Юзернейм или Название",
                 placeholderTarget: "Например: admin", btnAdd: "Создать", statusCheck: "Проверка...", 
-                statusShort: "Слишком короткий", statusTaken: "Уже занят!", statusFree: "Свободен",
+                statusShort: "Слишком короткий", statusTaken: "Этот юзернейм уже занят!", statusFree: "Свободен",
                 statusErr: "Ошибка сети", archiveTab: "Архив", menuArchive: "В архив", menuUnarchive: "Из архива", 
                 menuDeleteLocal: "Удалить у себя", menuDeleteAll: "Удалить у всех", userNotFound: "Аккаунт не найден"
             },
@@ -720,6 +736,44 @@
             }
         }
 
+        // ИСПРАВЛЕНИЕ: Функция проверки юзернейма при регистрации
+        async function checkRegUsername() {
+            clearTimeout(regUsernameTimeout);
+            const statusLabel = document.getElementById('regUsernameStatus');
+            const newUsername = document.getElementById('regUsername').value;
+            const dict = translations[localSettings.lang || 'ru'];
+            
+            if (newUsername.length < 3) {
+                statusLabel.style.color = 'var(--danger)';
+                statusLabel.innerText = dict.statusShort;
+                isRegUsernameTaken = true;
+                return;
+            }
+
+            statusLabel.style.color = 'var(--text-muted)'; 
+            statusLabel.innerText = dict.statusCheck;
+
+            regUsernameTimeout = setTimeout(async () => {
+                try {
+                    const res = await fetch(`${API_URL}/check_user/${newUsername}`);
+                    const data = await res.json();
+                    if (data.exists) {
+                        statusLabel.style.color = 'var(--danger)'; 
+                        statusLabel.innerText = dict.statusTaken; 
+                        isRegUsernameTaken = true;
+                    } else {
+                        statusLabel.style.color = 'var(--success)'; 
+                        statusLabel.innerText = dict.statusFree;
+                        isRegUsernameTaken = false;
+                    }
+                } catch (e) {
+                    statusLabel.style.color = 'var(--danger)'; 
+                    statusLabel.innerText = dict.statusErr;
+                    isRegUsernameTaken = false; 
+                }
+            }, 500);
+        }
+
         function completeRegistration() {
             const name = document.getElementById('regName').value.trim();
             const username = document.getElementById('regUsername').value.trim();
@@ -727,6 +781,12 @@
 
             if(name.length < 1 || username.length < 3) {
                 alert("Пожалуйста, введите имя и юзернейм (минимум 3 символа)!");
+                return;
+            }
+
+            // Блокируем регистрацию, если ник занят
+            if(isRegUsernameTaken) {
+                alert("Этот юзернейм уже занят! Выберите другой.");
                 return;
             }
 
@@ -742,7 +802,6 @@
             localMessages = {};
             localStorage.setItem('auraMessages_' + USER, JSON.stringify(localMessages));
             
-            /* ИСПРАВЛЕНИЕ: Очищаем скрытые сообщения при новой регистрации */
             hiddenMsgs = {};
             localStorage.setItem('auraHiddenMsgs_' + USER, JSON.stringify(hiddenMsgs));
 
@@ -1193,7 +1252,7 @@
             document.getElementById('stickersPanel').style.display = 'none';
         }
 
-        /* --- ИСПРАВЛЕНИЕ: УДАЛЕНИЕ ОТДЕЛЬНЫХ СООБЩЕНИЙ --- */
+        /* --- УДАЛЕНИЕ ОТДЕЛЬНЫХ СООБЩЕНИЙ --- */
         function showMsgMenu(e, index, sender) {
             e.preventDefault();
             selectedMsgIndex = index;
@@ -1247,22 +1306,24 @@
             setTimeout(() => modal.style.display = 'none', 300);
         }
 
+        // ИСПРАВЛЕНИЕ: Генерация красивой аватарки при просмотре профиля других юзеров
         function openViewProfile() {
-            if(currentTarget === translations[localSettings.lang].fav) return; 
+            if(currentTarget === translations[localSettings.lang || 'ru'].fav) return; 
             const chatObj = localChats.find(c => c.name === currentTarget);
             if(!chatObj) return;
 
             const avatarDisplay = document.getElementById('viewProfileAvatar');
             if(chatObj.avatar) {
-                avatarDisplay.style.backgroundImage = `url(${chatObj.avatar})`; avatarDisplay.innerHTML = '';
+                avatarDisplay.style.background = `url(${chatObj.avatar}) center/cover`; 
+                avatarDisplay.innerHTML = '';
             } else {
-                avatarDisplay.style.backgroundImage = '';
-                let defaultIcon = chatObj.type === 'group' ? iconGroup : (chatObj.type === 'channel' ? iconChannel : iconUser);
-                avatarDisplay.innerHTML = defaultIcon;
+                avatarDisplay.style.background = 'var(--accent-gradient)';
+                let initial = chatObj.name ? chatObj.name.substring(0, 1).toUpperCase() : 'U';
+                avatarDisplay.innerHTML = initial;
             }
             
             document.getElementById('viewProfileName').innerText = chatObj.name;
-            const dict = translations[localSettings.lang];
+            const dict = translations[localSettings.lang || 'ru'];
             document.getElementById('viewProfileType').innerText = chatObj.type === 'group' ? dict.optGroup : (chatObj.type === 'channel' ? dict.optChannel : dict.optUser);
             document.getElementById('viewProfileBio').innerText = chatObj.bio || "Нет описания";
 
@@ -1296,7 +1357,7 @@
                 localChats = JSON.parse(localStorage.getItem('auraChats_' + USER)) || [];
                 localMessages = JSON.parse(localStorage.getItem('auraMessages_' + USER)) || {};
                 localProfile = JSON.parse(localStorage.getItem('auraProfile_' + USER)) || { name: USER, avatar: null, bio: "Нет описания" };
-                currentTarget = translations[localSettings.lang].fav;
+                currentTarget = translations[localSettings.lang || 'ru'].fav;
                 
                 hiddenMsgs = JSON.parse(localStorage.getItem('auraHiddenMsgs_' + USER)) || {};
             }
@@ -1318,7 +1379,7 @@
             clearTimeout(usernameTimeout);
             const statusLabel = document.getElementById('usernameStatus');
             const newUsername = document.getElementById('profileUsername').value;
-            const dict = translations[localSettings.lang];
+            const dict = translations[localSettings.lang || 'ru'];
             
             statusLabel.style.color = 'var(--text-muted)'; statusLabel.innerText = dict.statusCheck;
 
@@ -1343,7 +1404,7 @@
             const type = document.getElementById('chatType').value;
             const bio = document.getElementById('newGroupBio').value.trim();
             const statusLabel = document.getElementById('addChatStatus');
-            const dict = translations[localSettings.lang];
+            const dict = translations[localSettings.lang || 'ru'];
             
             if(!target) return;
 
@@ -1416,9 +1477,8 @@
             }
         }
 
-        /* --- ИСПРАВЛЕНИЕ: ПРОВЕРКА СКРЫТЫХ СООБЩЕНИЙ ПРИ РЕНДЕРЕ --- */
         async function loadChat() {
-            const hidden = hiddenMsgs[currentTarget] || []; // Список удаленных
+            const hidden = hiddenMsgs[currentTarget] || []; 
             try {
                 const res = await fetch(`${API_URL}/chat/${USER}/${currentTarget}`);
                 const data = await res.json();
@@ -1426,7 +1486,6 @@
                 const chatDiv = document.getElementById('chat');
                 chatDiv.innerHTML = ''; 
                 
-                // Отрисовываем только те, которых нет в списке скрытых
                 data.messages.forEach((m, index) => {
                     if(!hidden.includes(index)) {
                         renderMessage(m.sender, m.text, index);
@@ -1470,7 +1529,7 @@
             }
 
             // Для групп пишем имя отправителя сверху
-            let showSenderName = (sender !== USER && currentTarget !== translations[localSettings.lang].fav) ? `<b style="opacity: 0.7; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; display:block;">${sender}</b>` : '';
+            let showSenderName = (sender !== USER && currentTarget !== translations[localSettings.lang || 'ru'].fav) ? `<b style="opacity: 0.7; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; display:block;">${sender}</b>` : '';
             msgDiv.innerHTML = showSenderName + contentHtml;
             chatDiv.appendChild(msgDiv);
             chatDiv.scrollTop = chatDiv.scrollHeight;
@@ -1509,7 +1568,7 @@
                 }
 
                 // Проверка онлайна собеседника
-                if(currentTarget && currentTarget !== translations[localSettings.lang].fav) {
+                if(currentTarget && currentTarget !== translations[localSettings.lang || 'ru'].fav) {
                     let chatObj = localChats.find(c => c.name === currentTarget);
                     let statusDiv = document.getElementById('statusInfo');
                     if(chatObj && chatObj.type === 'user') {
