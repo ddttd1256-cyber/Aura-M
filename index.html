@@ -97,12 +97,15 @@
             box-shadow: 5px 0 25px rgba(0,0,0,0.1);
             z-index: 10;
         }
-        .sidebar-header { 
+        
+        /* ПЕРЕМЕЩЕННАЯ ПАНЕЛЬ ПРОФИЛЯ (ТЕПЕРЬ ВНИЗУ) */
+        .sidebar-footer { 
             padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; 
-            border-bottom: 1px solid var(--glass-border); background: rgba(0,0,0,0.05);
+            border-top: 1px solid var(--glass-border); background: rgba(0,0,0,0.05);
+            margin-top: auto; /* Прижимает панель к низу */
         }
         
-        .sidebar-header-left { display: flex; align-items: center; gap: 10px; }
+        .sidebar-footer-left { display: flex; align-items: center; gap: 10px; }
         .my-mini-avatar {
             width: 40px; height: 40px; border-radius: 50%; background: var(--accent-gradient);
             display: flex; justify-content: center; align-items: center; cursor: pointer;
@@ -447,8 +450,19 @@
     </div>
 
     <div class="sidebar">
-        <div class="sidebar-header">
-            <div class="sidebar-header-left">
+        <div class="archive-header" id="archiveToggleBtn" onclick="toggleArchiveFolder()" style="display: none;">
+            <div class="archive-header-icon">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                <span data-i18n="archiveTab">Архив</span>
+            </div>
+            <span class="archive-arrow" id="archiveArrow"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+        </div>
+        <div id="archivedChatsList" style="display: none; background: rgba(0,0,0,0.1); border-bottom: 1px solid var(--glass-border);"></div>
+
+        <div class="chat-list" id="chatList"></div>
+        
+        <div class="sidebar-footer">
+            <div class="sidebar-footer-left">
                 <div class="my-mini-avatar" id="sidebarMyAvatar" onclick="openMyProfileView()" title="Мой Профиль"></div>
                 <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main);">Aura</h3>
             </div>
@@ -461,17 +475,6 @@
                 </button>
             </div>
         </div>
-        
-        <div class="archive-header" id="archiveToggleBtn" onclick="toggleArchiveFolder()" style="display: none;">
-            <div class="archive-header-icon">
-                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                <span data-i18n="archiveTab">Архив</span>
-            </div>
-            <span class="archive-arrow" id="archiveArrow"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
-        </div>
-        <div id="archivedChatsList" style="display: none; background: rgba(0,0,0,0.1); border-bottom: 1px solid var(--glass-border);"></div>
-
-        <div class="chat-list" id="chatList"></div>
     </div>
 
     <div class="main-area">
@@ -688,6 +691,10 @@
                         <span data-i18n="resetApp">Полный сброс (Выйти)</span>
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                     </div>
+                    <div class="settings-list-item danger" onclick="deleteAccount()" style="margin-top: 15px; border-color: rgba(255, 74, 74, 0.3);">
+                        <span data-i18n="deleteAccount">Удалить аккаунт</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><line x1="18" y1="9" x2="12" y2="15"></line><line x1="12" y1="9" x2="18" y2="15"></line></svg>
+                    </div>
                 </div>
                 <p style="color: var(--text-muted); text-align: center; margin-top: 15px; font-size: 0.8rem;" data-i18n="cacheDesc">Очистка кэша ускорит работу мессенджера</p>
             </div>
@@ -765,7 +772,6 @@
         let regUsernameTimeout;
         let isRegUsernameTaken = false;
 
-        // ИСПРАВЛЕНИЕ: Добавлены ключи локализации для статусов онлайна и кнопок очистки
         const translations = {
             ru: {
                 fav: "Избранное", placeholderMsg: "Напишите сообщение...", btnSend: "Отправить",
@@ -783,7 +789,8 @@
                 statusGroup: "Группа", statusChannel: "Канал", clearCache: "Очистить кэш сообщений", resetApp: "Полный сброс (Выйти)",
                 cacheDesc: "Очистка ускорит работу мессенджера", alertCacheCleared: "Кэш успешно очищен!",
                 confirmCache: "Очистить историю всех чатов? Сами чаты останутся, но сообщения будут удалены. Это освободит память.",
-                confirmReset: "Внимание! Это полностью удалит ваш профиль и выйдет из аккаунта. Продолжить?"
+                confirmReset: "Внимание! Это полностью удалит ваш профиль и выйдет из аккаунта. Продолжить?",
+                deleteAccount: "Удалить аккаунт", confirmDelAcc: "Вы уверены, что хотите навсегда удалить свой аккаунт? Это действие необратимо и удалит все ваши данные!"
             },
             en: {
                 fav: "Saved Messages", placeholderMsg: "Write a message...", btnSend: "Send",
@@ -801,7 +808,8 @@
                 statusGroup: "Group", statusChannel: "Channel", clearCache: "Clear messages cache", resetApp: "Full reset (Log out)",
                 cacheDesc: "Clearing cache makes the app run faster", alertCacheCleared: "Cache successfully cleared!",
                 confirmCache: "Clear all chat history? The chats will remain, but messages will be deleted. This frees up memory.",
-                confirmReset: "Warning! This will completely delete your profile and log you out. Continue?"
+                confirmReset: "Warning! This will completely delete your profile and log you out. Continue?",
+                deleteAccount: "Delete Account", confirmDelAcc: "Are you sure you want to permanently delete your account? This action is irreversible!"
             },
             uk: {
                 fav: "Збережене", placeholderMsg: "Напишіть повідомлення...", btnSend: "Надіслати",
@@ -819,7 +827,8 @@
                 statusGroup: "Група", statusChannel: "Канал", clearCache: "Очистити кеш повідомлень", resetApp: "Повне скидання (Вийти)",
                 cacheDesc: "Очищення кешу прискорить роботу", alertCacheCleared: "Кеш успішно очищено!",
                 confirmCache: "Очистити історію всіх чатів? Самі чати залишаться, але повідомлення будуть видалені.",
-                confirmReset: "Увага! Це повністю видалить ваш профіль і вийде з акаунта. Продовжити?"
+                confirmReset: "Увага! Це повністю видалить ваш профіль і вийде з акаунта. Продовжити?",
+                deleteAccount: "Видалити акаунт", confirmDelAcc: "Ви впевнені, що хочете назавжди видалити свій акаунт? Ця дія незворотна!"
             },
             zh: {
                 fav: "收藏夹", placeholderMsg: "写信息...", btnSend: "发送",
@@ -837,7 +846,8 @@
                 statusGroup: "群组", statusChannel: "渠道", clearCache: "清除缓存", resetApp: "重置应用程序 (登出)",
                 cacheDesc: "清理缓存将加快工作速度", alertCacheCleared: "缓存已成功清除！",
                 confirmCache: "清除所有聊天记录？释放内存。",
-                confirmReset: "警告！这将完全删除您的个人资料。继续？"
+                confirmReset: "警告！这将完全删除您的个人资料。继续？",
+                deleteAccount: "删除帐户", confirmDelAcc: "您确定要永久删除您的帐户吗？此操作不可逆！"
             }
         };
 
@@ -982,7 +992,7 @@
             }
         }
 
-        // --- ЛОГИКА НАСТРОЕК (ПОДМЕНЮ И СБРОС) ---
+        // --- ЛОГИКА НАСТРОЕК ---
         function openSettingsMain() {
             openSettingsTab('settingsMainContent');
             openModal('settingsModal');
@@ -999,7 +1009,7 @@
         function selectLanguage(langCode) {
             localSettings.lang = langCode;
             saveSettings();
-            changeLanguage(); // ИСПРАВЛЕНИЕ: Убрал флаг isInit, чтобы статус чата тоже обновился сразу
+            changeLanguage();
             openSettingsTab('settingsMainContent'); 
         }
 
@@ -1026,7 +1036,6 @@
             }
             renderSidebarChats();
 
-            // ИСПРАВЛЕНИЕ: Если у нас открыт чат, сразу же обновляем текст статуса "В сети/Был недавно"
             if (!isInit && currentTarget) {
                 updateChatHeaderStatus(currentTarget);
             }
@@ -1045,6 +1054,11 @@
             } else {
                 document.documentElement.style.setProperty('--accent-gradient', `linear-gradient(135deg, ${color}, #8a2be2)`);
             }
+            // Обновляем чатбар при смене темы чтобы градиент перекрасился сразу
+            renderSidebarChats();
+            if (currentTarget === translations[localSettings.lang || 'ru'].fav) {
+                document.getElementById('currentChatAvatar').style.background = 'var(--accent-gradient)';
+            }
         }
 
         function setWallpaper(val, el, isInit = false) {
@@ -1058,23 +1072,20 @@
 
         function saveSettings() { localStorage.setItem('auraSettings', JSON.stringify(localSettings)); }
 
-        // --- ИСПРАВЛЕНИЕ: ОЧИСТКА И СБРОС ---
+        // --- ОЧИСТКА И УДАЛЕНИЕ ---
         function clearMessageCache() {
             const dict = translations[localSettings.lang || 'ru'];
             if(confirm(dict.confirmCache)) {
-                // Удаляем ключи сообщений из localStorage, оставляя профиль и настройки
                 Object.keys(localStorage).forEach(key => {
                     if(key.startsWith('auraMessages_') || key.startsWith('auraHiddenMsgs_')) {
                         localStorage.removeItem(key);
                     }
                 });
-                
                 localMessages = {};
                 hiddenMsgs = {};
                 localStorage.setItem('auraMessages_' + USER, JSON.stringify(localMessages));
                 localStorage.setItem('auraHiddenMsgs_' + USER, JSON.stringify(hiddenMsgs));
-                
-                loadChat(); // Обновляем текущий открытый чат (он станет пустым)
+                loadChat(); 
                 alert(dict.alertCacheCleared);
             }
         }
@@ -1083,7 +1094,24 @@
             const dict = translations[localSettings.lang || 'ru'];
             if(confirm(dict.confirmReset)) {
                 localStorage.clear();
-                location.reload(); // Перезагружаем страницу, чтобы вернуться к регистрации
+                location.reload();
+            }
+        }
+
+        async function deleteAccount() {
+            const dict = translations[localSettings.lang || 'ru'];
+            if(confirm(dict.confirmDelAcc)) {
+                try {
+                    await fetch(`${API_URL}/delete_user/${USER}`, { method: 'DELETE' });
+                } catch(e) {
+                    console.log("Ошибка сервера: удаление выполнено локально");
+                }
+                Object.keys(localStorage).forEach(key => {
+                    if(key.includes('_' + USER) || key === 'auraUser') {
+                        localStorage.removeItem(key);
+                    }
+                });
+                location.reload(); 
             }
         }
 
@@ -1181,7 +1209,7 @@
             const favName = dict.fav;
             list.innerHTML += `
                 <div class="chat-item ${currentTarget === favName ? 'active' : ''}" onclick="selectChat('${favName}', 'favorites')">
-                    <div class="avatar-mini" style="background: linear-gradient(135deg, #007bff, #00d2ff);"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg></div>
+                    <div class="avatar-mini" style="background: var(--accent-gradient);"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg></div>
                     <div style="font-weight: 600; flex:1;">${favName}</div>
                 </div>
             `;
@@ -1257,7 +1285,6 @@
             renderSidebarChats();
         }
 
-        // ИСПРАВЛЕНИЕ: Вынес логику статуса в отдельную функцию, чтобы язык менялся мгновенно
         function updateChatHeaderStatus(targetName) {
             const statusDiv = document.getElementById('statusInfo');
             const inputArea = document.getElementById('chatInputArea');
@@ -1308,17 +1335,19 @@
             if (targetName === dict.fav) {
                 avatarDiv.innerHTML = `<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>`; 
                 avatarDiv.style.backgroundImage = '';
+                avatarDiv.style.background = 'var(--accent-gradient)';
             } else if (chatObj) {
                 if(chatObj.avatar) {
                     avatarDiv.style.backgroundImage = `url(${chatObj.avatar})`; avatarDiv.innerHTML = '';
+                    avatarDiv.style.background = 'none';
                 } else {
                     avatarDiv.style.backgroundImage = ''; 
+                    avatarDiv.style.background = 'var(--accent-gradient)';
                     let defaultIcon = type === 'group' ? iconGroup : (type === 'channel' ? iconChannel : iconUser);
                     avatarDiv.innerHTML = defaultIcon;
                 }
             }
 
-            // Обновляем текст статуса с правильным языком
             updateChatHeaderStatus(targetName);
 
             renderSidebarChats();
@@ -1708,30 +1737,35 @@
             }
         }
 
-        function renderMessage(sender, text, index) {
-            const chatDiv = document.getElementById('chat');
-            const msgDiv = document.createElement('div');
-            msgDiv.className = `msg ${sender === USER ? 'sent' : 'received'}`;
-            
-            msgDiv.oncontextmenu = (e) => showMsgMenu(e, index, sender);
-            
-            let contentHtml = text;
-            if(text.startsWith('[img]')) {
-                contentHtml = `<img src="${text.replace('[img]', '')}" class="msg-media" onclick="window.open(this.src)">`;
-            } else if (text.startsWith('[video]')) {
-                contentHtml = `<video src="${text.replace('[video]', '')}" class="msg-media" controls></video>`;
-            } else if (text.startsWith('[audio]')) {
-                contentHtml = `<audio src="${text.replace('[audio]', '')}" class="msg-audio" controls></audio>`;
-            } else if (text.startsWith('[sticker]')) {
-                contentHtml = `<div class="msg-sticker">${text.replace('[sticker]', '')}</div>`;
+        // --- ЛОГИКА ДЛЯ АВТО-ОБНОВЛЕНИЯ НОВЫХ ЧАТОВ ОТ СЕРВЕРА ---
+        async function syncChatsFromServer() {
+            try {
+                // Пытаемся получить список юзеров, с которыми есть переписка
+                const res = await fetch(`${API_URL}/get_chats/${USER}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    let updated = false;
+                    // Ожидаем что сервер вернет: { chats: ["user1", "user2"] }
+                    if(data.chats && Array.isArray(data.chats)) {
+                        data.chats.forEach(chatName => {
+                            // Если чат с нами и его еще нет локально
+                            if(chatName !== USER && !localChats.find(c => c.name === chatName)) {
+                                localChats.push({ name: chatName, type: 'user', avatar: null, bio: "Нет описания", isArchived: false });
+                                updated = true;
+                            }
+                        });
+                        if (updated) {
+                            localStorage.setItem('auraChats_' + USER, JSON.stringify(localChats));
+                            renderSidebarChats();
+                        }
+                    }
+                }
+            } catch (e) {
+                // Если роута пока нет на бэкенде, просто молчим
             }
-
-            let showSenderName = (sender !== USER && currentTarget !== translations[localSettings.lang || 'ru'].fav) ? `<b style="opacity: 0.7; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; display:block;">${sender}</b>` : '';
-            msgDiv.innerHTML = showSenderName + contentHtml;
-            chatDiv.appendChild(msgDiv);
-            chatDiv.scrollTop = chatDiv.scrollHeight;
         }
 
+        let syncCounter = 0;
         function startChatLoop() {
             if(chatLoop) clearInterval(chatLoop);
             
@@ -1764,7 +1798,39 @@
                 }
 
                 loadChat();
+
+                // Раз в 6 секунд запрашиваем у сервера наличие новых чатов
+                syncCounter++;
+                if(syncCounter >= 3) {
+                    syncChatsFromServer();
+                    syncCounter = 0;
+                }
+
             }, 2000);
+        }
+
+        function renderMessage(sender, text, index) {
+            const chatDiv = document.getElementById('chat');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `msg ${sender === USER ? 'sent' : 'received'}`;
+            
+            msgDiv.oncontextmenu = (e) => showMsgMenu(e, index, sender);
+            
+            let contentHtml = text;
+            if(text.startsWith('[img]')) {
+                contentHtml = `<img src="${text.replace('[img]', '')}" class="msg-media" onclick="window.open(this.src)">`;
+            } else if (text.startsWith('[video]')) {
+                contentHtml = `<video src="${text.replace('[video]', '')}" class="msg-media" controls></video>`;
+            } else if (text.startsWith('[audio]')) {
+                contentHtml = `<audio src="${text.replace('[audio]', '')}" class="msg-audio" controls></audio>`;
+            } else if (text.startsWith('[sticker]')) {
+                contentHtml = `<div class="msg-sticker">${text.replace('[sticker]', '')}</div>`;
+            }
+
+            let showSenderName = (sender !== USER && currentTarget !== translations[localSettings.lang || 'ru'].fav) ? `<b style="opacity: 0.7; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; display:block;">${sender}</b>` : '';
+            msgDiv.innerHTML = showSenderName + contentHtml;
+            chatDiv.appendChild(msgDiv);
+            chatDiv.scrollTop = chatDiv.scrollHeight;
         }
 
         window.onload = () => {
