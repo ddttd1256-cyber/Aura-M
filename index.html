@@ -471,7 +471,7 @@
         
         <div class="sidebar-footer">
             <div class="sidebar-footer-left">
-                <div class="my-mini-avatar" id="sidebarMyAvatar" onclick="openMyProfileView()" title="Мой Профиль"></div>
+                <div class="my-mini-avatar" id="sidebar MyAvatar" onclick="openMyProfileView()" title="Мой Профиль"></div>
                 <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main);">Aura</h3>
             </div>
             <div style="display: flex; gap: 8px;">
@@ -771,7 +771,7 @@
         
         let hiddenMsgs = USER ? (JSON.parse(localStorage.getItem('auraHiddenMsgs_' + USER)) || {}) : {};
         
-        let currentTarget = "Избранное";
+        let currentTarget = translations[localSettings.lang || 'ru'].fav; 
         let chatLoop;
         let currentGroupAvatar = null;
         let isArchiveOpen = false;
@@ -794,14 +794,14 @@
                 placeholderTarget: "Например: admin", btnAdd: "Создать", statusCheck: "Проверка...", 
                 statusShort: "Слишком короткий", statusTaken: "Этот юзернейм уже занят!", statusFree: "Свободен",
                 statusErr: "Ошибка сети", archiveTab: "Архив", menuArchive: "В архив", menuUnarchive: "Из архива", 
-                menuDeleteLocal: "Удалить у себя", menuDeleteAll: "Удалить у всех", userNotFound: "Аккаунт не найден",
+                menuDeleteLocal: "Удалить у меня", menuDeleteAll: "Удалить у всех", userNotFound: "Аккаунт не найден",
                 setAppearance: "Персонализация", setData: "Данные и память", btnEdit: "Редактировать",
                 statusOnline: "В сети", statusOffline: "Был(а) недавно", statusFav: "Только для вас",
                 statusGroup: "Группа", statusChannel: "Канал", clearCache: "Очистить кэш сообщений", resetApp: "Полный сброс (Выйти)",
                 cacheDesc: "Очистка ускорит работу мессенджера", alertCacheCleared: "Кэш успешно очищен!",
                 confirmCache: "Очистить историю всех чатов? Сами чаты останутся, но сообщения будут удалены. Это освободит память.",
                 confirmReset: "Внимание! Это полностью удалит ваш профиль и выйдет из аккаунта. Продолжить?",
-                deleteAccount: "Удалить аккаунт", confirmDelAcc: "Вы уверены, что хотите навсегда удалить свой аккаунт? Это действие необратимо и удалит все ваши данные!",
+                deleteAccount: "Удалить аккаунт", confirmDelAcc: "Вы уверены, что хотите навсегда удалить свой аккаунт? Действие необратимо и удалит все ваши данные!",
                 deletedAccount: "Удалённый аккаунт"
             },
             en: {
@@ -821,7 +821,7 @@
                 cacheDesc: "Clearing cache makes the app run faster", alertCacheCleared: "Cache successfully cleared!",
                 confirmCache: "Clear all chat history? The chats will remain, but messages will be deleted. This frees up memory.",
                 confirmReset: "Warning! This will completely delete your profile and log you out. Continue?",
-                deleteAccount: "Delete Account", confirmDelAcc: "Are you sure you want to permanently delete your account? This action is irreversible!",
+                deleteAccount: "Delete Account", confirmDelAcc: "Are you sure you want to permanently delete your account? Irreversible!",
                 deletedAccount: "Deleted Account"
             },
             uk: {
@@ -829,14 +829,14 @@
                 profTitle: "Мій Профіль", viewProfileTitle: "Профіль", profName: "Ім'я", profUser: "Юзернейм", 
                 btnCancel: "Скасувати", btnSave: "Зберегти", setTitle: "Налаштування", setLang: "Мова",
                 setColor: "Колір акценту", optYes: "Так", optNo: "Ні",
-                btnClose: "Закрити", addTitle: "Новий чат", addType: "Тип", optUser: "Користувач", 
+                btnClose: "Закрити", addTitle: "Новый чат", addType: "Тип", optUser: "Користувач", 
                 optGroup: "Група", optChannel: "Канал", addTarget: "Юзернейм або Назва",
                 placeholderTarget: "Наприклад: admin", btnAdd: "Створити", statusCheck: "Перевірка...", 
                 statusShort: "Занадто короткий", statusTaken: "Вже зайнятий!", statusFree: "Вільний",
                 statusErr: "Помилка мережі", archiveTab: "Архів", menuArchive: "В архів", menuUnarchive: "З архіву", 
                 menuDeleteLocal: "Видалити у себе", menuDeleteAll: "Видалити у всіх", userNotFound: "Акаунт не знайдено",
                 setAppearance: "Персоналізація", setData: "Дані та пам'ять", btnEdit: "Редактировать",
-                statusOnline: "У мережі", statusOffline: "Був(ла) нещодавно", statusFav: "Тільки для вас",
+                statusOnline: "У мережі", statusOffline: " Був(ла) нещодавно", statusFav: "Тільки для вас",
                 statusGroup: "Група", statusChannel: "Канал", clearCache: "Очистити кеш повідомлень", resetApp: "Повне скидання (Вийти)",
                 cacheDesc: "Очищення кешу прискорить роботу", alertCacheCleared: "Кеш успішно очищено!",
                 confirmCache: "Очистити історію всіх чатів? Самі чати залишаться, але повідомлення будуть видалені.",
@@ -1046,7 +1046,9 @@
                 if(dict[key]) el.placeholder = dict[key];
             });
 
-            if(currentTarget === translations.ru.fav || currentTarget === translations.en.fav || currentTarget === translations.uk.fav || currentTarget === translations.zh.fav) {
+            const currentFavString = translations.ru.fav || translations.en.fav || translations.uk.fav || translations.zh.fav;
+
+            if(currentTarget === currentFavString) {
                 currentTarget = dict.fav;
                 document.getElementById('currentChatName').innerText = dict.fav;
             }
@@ -1360,11 +1362,15 @@
         function selectChat(targetName, type) {
             if(wasSwiped) { wasSwiped = false; return; }
 
+            // Исправление: если пытаемся открыть Saved Messages, приводим targetName к текущему языку
+            const dict = translations[localSettings.lang || 'ru'];
+            const favStrings = [translations.ru.fav, translations.en.fav, translations.uk.fav, translations.zh.fav];
+            if (favStrings.includes(targetName)) targetName = dict.fav;
+
             currentTarget = targetName;
             
             const chatObj = localChats.find(c => c.name === targetName);
             const avatarDiv = document.getElementById('currentChatAvatar');
-            const dict = translations[localSettings.lang || 'ru'];
 
             if (targetName === dict.fav) {
                 document.getElementById('currentChatName').innerText = dict.fav;
@@ -1577,7 +1583,9 @@
 
         function openViewProfile(e) {
             if(e) e.stopPropagation();
-            if(!currentTarget || currentTarget === translations[localSettings.lang || 'ru'].fav) return; 
+            if(!currentTarget) return;
+            const dict = translations[localSettings.lang || 'ru'];
+            if(currentTarget === dict.fav) return; 
             
             const chatObj = localChats.find(c => c.name === currentTarget);
             if(!chatObj) return;
@@ -1596,7 +1604,6 @@
                 avatarDisplay.innerHTML = initial;
             }
             
-            const dict = translations[localSettings.lang || 'ru'];
             document.getElementById('viewProfileName').innerText = chatObj.isDeleted ? dict.deletedAccount : (chatObj.name || 'Unknown');
             document.getElementById('viewProfileType').innerText = chatObj.type === 'group' ? dict.optGroup : (chatObj.type === 'channel' ? dict.optChannel : dict.optUser);
             document.getElementById('viewProfileBio').innerText = chatObj.bio || "Нет описания";
@@ -1931,7 +1938,8 @@
                 contentHtml = `<div class="msg-sticker">${text.replace('[sticker]', '')}</div>`;
             }
 
-            let showSenderName = (sender !== USER && currentTarget !== translations[localSettings.lang || 'ru'].fav) ? `<b style="opacity: 0.7; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; display:block;">${sender}</b>` : '';
+            const dict = translations[localSettings.lang || 'ru'];
+            let showSenderName = (sender !== USER && currentTarget !== dict.fav) ? `<b style="opacity: 0.7; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; display:block;">${sender}</b>` : '';
             msgDiv.innerHTML = showSenderName + contentHtml;
             chatDiv.appendChild(msgDiv);
             chatDiv.scrollTop = chatDiv.scrollHeight;
