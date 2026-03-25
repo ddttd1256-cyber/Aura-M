@@ -113,19 +113,16 @@
 
         .chat-list { flex: 1; overflow-y: auto; overflow-x: hidden; padding-top: 10px; }
         
-        /* СВАЙП КОНТЕЙНЕР (Скрытые кнопки до момента свайпа) */
+        /* СВАЙП КОНТЕЙНЕР */
         .swipe-container { position: relative; overflow: hidden; margin: 5px 10px; border-radius: 15px; }
         .swipe-actions {
             position: absolute; right: 0; top: 0; height: 100%; display: flex;
             align-items: center; justify-content: flex-end; padding-right: 15px; gap: 10px;
             background: var(--bg-element); width: 100%; z-index: 1; border-radius: 15px;
-            
-            /* КНОПКИ СКРЫТЫ ПО УМОЛЧАНИЮ */
             opacity: 0; 
             pointer-events: none;
             transition: opacity 0.2s ease;
         }
-        /* ПОКАЗЫВАЕМ ТОЛЬКО ПРИ СВАЙПЕ */
         .swipe-container.is-swiping .swipe-actions,
         .swipe-container.swiped-open .swipe-actions {
             opacity: 1;
@@ -153,7 +150,6 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1), inset 0 0 0 1px var(--accent-glow);
         }
 
-        /* Класс для фиксации открытого свайпа */
         .chat-item.swiped-open { transform: translateX(-110px) !important; }
         
         .avatar-mini { 
@@ -228,7 +224,6 @@
         .msg-audio { width: 250px; height: 50px; margin-top: 5px; outline: none; border-radius: 25px; background: rgba(255,255,255,0.1); }
         .msg-sticker { width: 120px; height: 120px; }
 
-        /* ИНТЕРФЕЙС КОНТЕКСТНОГО МЕНЮ СООБЩЕНИЙ */
         .msg-context-menu {
             display: none; position: absolute; background: var(--bg-element); border: 1px solid var(--glass-border);
             padding: 8px; border-radius: 12px; z-index: 1000; flex-direction: column; gap: 5px;
@@ -255,7 +250,6 @@
         .media-btn.recording { color: var(--danger); animation: pulse 1s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
 
-        /* Панель стикеров */
         .stickers-panel {
             position: absolute; bottom: 80px; left: 20px; background: var(--bg-element);
             border: 1px solid var(--glass-border); border-radius: 15px; padding: 15px;
@@ -327,7 +321,10 @@
             transition: 0.2s; color: var(--text-main); font-weight: 500; font-size: 0.95rem;
         }
         .settings-list-item:hover { background: var(--bg-hover); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .settings-list-item.danger { color: var(--danger); }
         .settings-list-item svg { width: 18px; height: 18px; color: var(--text-muted); }
+        .settings-list-item.danger svg { color: var(--danger); }
+        
         .modal-header-back { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
         .modal-header-back h2 { margin-bottom: 0; text-align: left; }
         .modal-header-back .icon-btn { background: transparent; border: none; box-shadow: none; }
@@ -363,7 +360,6 @@
         }
         .profile-line-input .line-field:focus { border-bottom-color: var(--accent); }
 
-        /* Аватарка для групп */
         .group-avatar-preview {
             width: 70px; height: 70px; border-radius: 50%; border: 2px dashed var(--text-muted);
             display: flex; justify-content: center; align-items: center; color: var(--text-muted);
@@ -378,7 +374,7 @@
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ИСПРАВЛЕНИЕ: АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ С ПЛАВНЫМ ВЫЕЗДОМ СПРАВА */
+        /* АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ */
         @media (max-width: 768px) {
             body { display: block; position: relative; overflow: hidden; }
             .sidebar { 
@@ -405,7 +401,6 @@
             .stickers-panel { grid-template-columns: repeat(3, 1fr); left: 10px; right: 10px; }
         }
         
-        /* Стили окна Регистрации (перекрывает весь фон) */
         #registrationModal { z-index: 99999; background: var(--bg-main); }
     </style>
 </head>
@@ -683,7 +678,18 @@
                     <button class="icon-btn" onclick="openSettingsTab('settingsMainContent')"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></button>
                     <h2 data-i18n="setData">Данные и память</h2>
                 </div>
-                <p style="color: var(--text-muted); text-align: center; margin-top: 30px; font-size: 0.9rem;">В разработке...</p>
+                
+                <div class="settings-list">
+                    <div class="settings-list-item danger" onclick="clearMessageCache()">
+                        <span data-i18n="clearCache">Очистить кэш сообщений</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                    </div>
+                    <div class="settings-list-item danger" onclick="fullAppReset()">
+                        <span data-i18n="resetApp">Полный сброс (Выйти)</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    </div>
+                </div>
+                <p style="color: var(--text-muted); text-align: center; margin-top: 15px; font-size: 0.8rem;" data-i18n="cacheDesc">Очистка кэша ускорит работу мессенджера</p>
             </div>
 
         </div>
@@ -734,7 +740,7 @@
     <script>
         const API_URL = "https://aura-server-lzxy.onrender.com";
 
-        // SVG Иконки для генерации чатов
+        // SVG Иконки
         const iconUser = `<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
         const iconGroup = `<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`;
         const iconChannel = `<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>`;
@@ -756,10 +762,10 @@
         let audioChunks = [];
         let selectedMsgIndex = -1; 
 
-        // ИСПРАВЛЕНИЕ: Переменные для проверки регистрации
         let regUsernameTimeout;
         let isRegUsernameTaken = false;
 
+        // ИСПРАВЛЕНИЕ: Добавлены ключи локализации для статусов онлайна и кнопок очистки
         const translations = {
             ru: {
                 fav: "Избранное", placeholderMsg: "Напишите сообщение...", btnSend: "Отправить",
@@ -772,7 +778,12 @@
                 statusShort: "Слишком короткий", statusTaken: "Этот юзернейм уже занят!", statusFree: "Свободен",
                 statusErr: "Ошибка сети", archiveTab: "Архив", menuArchive: "В архив", menuUnarchive: "Из архива", 
                 menuDeleteLocal: "Удалить у себя", menuDeleteAll: "Удалить у всех", userNotFound: "Аккаунт не найден",
-                setAppearance: "Персонализация", setData: "Данные и память", btnEdit: "Редактировать"
+                setAppearance: "Персонализация", setData: "Данные и память", btnEdit: "Редактировать",
+                statusOnline: "В сети", statusOffline: "Был(а) недавно", statusFav: "Только для вас",
+                statusGroup: "Группа", statusChannel: "Канал", clearCache: "Очистить кэш сообщений", resetApp: "Полный сброс (Выйти)",
+                cacheDesc: "Очистка ускорит работу мессенджера", alertCacheCleared: "Кэш успешно очищен!",
+                confirmCache: "Очистить историю всех чатов? Сами чаты останутся, но сообщения будут удалены. Это освободит память.",
+                confirmReset: "Внимание! Это полностью удалит ваш профиль и выйдет из аккаунта. Продолжить?"
             },
             en: {
                 fav: "Saved Messages", placeholderMsg: "Write a message...", btnSend: "Send",
@@ -785,7 +796,12 @@
                 statusShort: "Too short", statusTaken: "Taken!", statusFree: "Available",
                 statusErr: "Network error", archiveTab: "Archive", menuArchive: "Archive", menuUnarchive: "Unarchive", 
                 menuDeleteLocal: "Delete for me", menuDeleteAll: "Delete for all", userNotFound: "Account not found",
-                setAppearance: "Appearance", setData: "Data & Storage", btnEdit: "Edit"
+                setAppearance: "Appearance", setData: "Data & Storage", btnEdit: "Edit",
+                statusOnline: "Online", statusOffline: "Last seen recently", statusFav: "Only for you",
+                statusGroup: "Group", statusChannel: "Channel", clearCache: "Clear messages cache", resetApp: "Full reset (Log out)",
+                cacheDesc: "Clearing cache makes the app run faster", alertCacheCleared: "Cache successfully cleared!",
+                confirmCache: "Clear all chat history? The chats will remain, but messages will be deleted. This frees up memory.",
+                confirmReset: "Warning! This will completely delete your profile and log you out. Continue?"
             },
             uk: {
                 fav: "Збережене", placeholderMsg: "Напишіть повідомлення...", btnSend: "Надіслати",
@@ -798,7 +814,12 @@
                 statusShort: "Занадто короткий", statusTaken: "Вже зайнятий!", statusFree: "Вільний",
                 statusErr: "Помилка мережі", archiveTab: "Архів", menuArchive: "В архів", menuUnarchive: "З архіву", 
                 menuDeleteLocal: "Видалити у себе", menuDeleteAll: "Видалити у всіх", userNotFound: "Акаунт не знайдено",
-                setAppearance: "Персоналізація", setData: "Дані та пам'ять", btnEdit: "Редагувати"
+                setAppearance: "Персоналізація", setData: "Дані та пам'ять", btnEdit: "Редагувати",
+                statusOnline: "У мережі", statusOffline: "Був(ла) нещодавно", statusFav: "Тільки для вас",
+                statusGroup: "Група", statusChannel: "Канал", clearCache: "Очистити кеш повідомлень", resetApp: "Повне скидання (Вийти)",
+                cacheDesc: "Очищення кешу прискорить роботу", alertCacheCleared: "Кеш успішно очищено!",
+                confirmCache: "Очистити історію всіх чатів? Самі чати залишаться, але повідомлення будуть видалені.",
+                confirmReset: "Увага! Це повністю видалить ваш профіль і вийде з акаунта. Продовжити?"
             },
             zh: {
                 fav: "收藏夹", placeholderMsg: "写信息...", btnSend: "发送",
@@ -811,7 +832,12 @@
                 statusShort: "太短", statusTaken: "已占用！", statusFree: "自由",
                 statusErr: "网络错误", archiveTab: "档案", menuArchive: "归档", menuUnarchive: "从档案中", 
                 menuDeleteLocal: "为我删除", menuDeleteAll: "为所有人删除", userNotFound: "找不到帐户",
-                setAppearance: "个性化", setData: "数据和存储", btnEdit: "编辑"
+                setAppearance: "个性化", setData: "数据和存储", btnEdit: "编辑",
+                statusOnline: "在线", statusOffline: "最近见过", statusFav: "只为你",
+                statusGroup: "群组", statusChannel: "渠道", clearCache: "清除缓存", resetApp: "重置应用程序 (登出)",
+                cacheDesc: "清理缓存将加快工作速度", alertCacheCleared: "缓存已成功清除！",
+                confirmCache: "清除所有聊天记录？释放内存。",
+                confirmReset: "警告！这将完全删除您的个人资料。继续？"
             }
         };
 
@@ -832,7 +858,6 @@
             }
         }
 
-        // ИСПРАВЛЕНИЕ: Функция проверки юзернейма при регистрации
         async function checkRegUsername() {
             clearTimeout(regUsernameTimeout);
             const statusLabel = document.getElementById('regUsernameStatus');
@@ -880,7 +905,6 @@
                 return;
             }
 
-            // Блокируем регистрацию, если ник занят
             if(isRegUsernameTaken) {
                 alert("Этот юзернейм уже занят! Выберите другой.");
                 return;
@@ -958,7 +982,7 @@
             }
         }
 
-        // --- ЛОГИКА НАСТРОЕК (ПОДМЕНЮ) ---
+        // --- ЛОГИКА НАСТРОЕК (ПОДМЕНЮ И СБРОС) ---
         function openSettingsMain() {
             openSettingsTab('settingsMainContent');
             openModal('settingsModal');
@@ -969,15 +993,14 @@
             document.getElementById('settingsAppearance').style.display = 'none';
             document.getElementById('settingsLanguage').style.display = 'none';
             document.getElementById('settingsData').style.display = 'none';
-            
             document.getElementById(tabId).style.display = 'block';
         }
 
         function selectLanguage(langCode) {
             localSettings.lang = langCode;
             saveSettings();
-            changeLanguage(true);
-            openSettingsTab('settingsMainContent'); // Возврат после выбора
+            changeLanguage(); // ИСПРАВЛЕНИЕ: Убрал флаг isInit, чтобы статус чата тоже обновился сразу
+            openSettingsTab('settingsMainContent'); 
         }
 
         function changeThemeMode(isInit = false) {
@@ -1002,6 +1025,11 @@
                 document.getElementById('currentChatName').innerText = dict.fav;
             }
             renderSidebarChats();
+
+            // ИСПРАВЛЕНИЕ: Если у нас открыт чат, сразу же обновляем текст статуса "В сети/Был недавно"
+            if (!isInit && currentTarget) {
+                updateChatHeaderStatus(currentTarget);
+            }
         }
 
         function changeTheme(isInit = false) {
@@ -1029,6 +1057,35 @@
         }
 
         function saveSettings() { localStorage.setItem('auraSettings', JSON.stringify(localSettings)); }
+
+        // --- ИСПРАВЛЕНИЕ: ОЧИСТКА И СБРОС ---
+        function clearMessageCache() {
+            const dict = translations[localSettings.lang || 'ru'];
+            if(confirm(dict.confirmCache)) {
+                // Удаляем ключи сообщений из localStorage, оставляя профиль и настройки
+                Object.keys(localStorage).forEach(key => {
+                    if(key.startsWith('auraMessages_') || key.startsWith('auraHiddenMsgs_')) {
+                        localStorage.removeItem(key);
+                    }
+                });
+                
+                localMessages = {};
+                hiddenMsgs = {};
+                localStorage.setItem('auraMessages_' + USER, JSON.stringify(localMessages));
+                localStorage.setItem('auraHiddenMsgs_' + USER, JSON.stringify(hiddenMsgs));
+                
+                loadChat(); // Обновляем текущий открытый чат (он станет пустым)
+                alert(dict.alertCacheCleared);
+            }
+        }
+
+        function fullAppReset() {
+            const dict = translations[localSettings.lang || 'ru'];
+            if(confirm(dict.confirmReset)) {
+                localStorage.clear();
+                location.reload(); // Перезагружаем страницу, чтобы вернуться к регистрации
+            }
+        }
 
         function validateUsername(input) { input.value = input.value.replace(/[^a-zA-Z0-9_]/g, ''); }
 
@@ -1080,7 +1137,6 @@
                 currentSwipeEl.classList.add('swiped-open');
                 currentSwipeEl.parentElement.classList.add('swiped-open');
                 
-                // Закрываем остальные
                 document.querySelectorAll('.chat-item.swiped-open').forEach(el => {
                     if(el !== currentSwipeEl) {
                         el.style.transform = '';
@@ -1096,7 +1152,6 @@
             currentSwipeEl = null;
         }
 
-        /* Клик вне чата закрывает открытые свайпы и меню */
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.chat-options-btn') && !e.target.closest('.dropdown-menu')) {
                 document.getElementById('chatDropdown').style.display = 'none';
@@ -1202,6 +1257,43 @@
             renderSidebarChats();
         }
 
+        // ИСПРАВЛЕНИЕ: Вынес логику статуса в отдельную функцию, чтобы язык менялся мгновенно
+        function updateChatHeaderStatus(targetName) {
+            const statusDiv = document.getElementById('statusInfo');
+            const inputArea = document.getElementById('chatInputArea');
+            const dict = translations[localSettings.lang || 'ru'];
+            
+            if (targetName === dict.fav) {
+                statusDiv.innerText = dict.statusFav;
+                statusDiv.style.color = "var(--accent)";
+                inputArea.style.display = 'flex';
+                return;
+            }
+            
+            const chatObj = localChats.find(c => c.name === targetName);
+            if (chatObj) {
+                if(chatObj.type === 'channel') {
+                    statusDiv.innerText = dict.statusChannel;
+                    statusDiv.style.color = "var(--text-muted)";
+                    inputArea.style.display = 'none'; 
+                } else if (chatObj.type === 'group') {
+                    statusDiv.innerText = dict.statusGroup;
+                    statusDiv.style.color = "var(--accent)";
+                    inputArea.style.display = 'flex';
+                } else {
+                    inputArea.style.display = 'flex';
+                    let lastSeen = localStorage.getItem('auraOnline_' + targetName);
+                    if(lastSeen && (Date.now() - parseInt(lastSeen) < 15000)) {
+                        statusDiv.innerHTML = `<span style="display:inline-block; width:8px; height:8px; background:var(--success); border-radius:50%; margin-right:5px;"></span>${dict.statusOnline}`;
+                        statusDiv.style.color = "var(--success)";
+                    } else {
+                        statusDiv.innerHTML = dict.statusOffline;
+                        statusDiv.style.color = "var(--text-muted)";
+                    }
+                }
+            }
+        }
+
         /* --- ВЫБОР ЧАТА И ШАПКА --- */
         function selectChat(targetName, type) {
             if(wasSwiped) { wasSwiped = false; return; }
@@ -1211,16 +1303,11 @@
             
             const chatObj = localChats.find(c => c.name === targetName);
             const avatarDiv = document.getElementById('currentChatAvatar');
-            const statusDiv = document.getElementById('statusInfo');
-            const inputArea = document.getElementById('chatInputArea');
             const dict = translations[localSettings.lang || 'ru'];
 
             if (targetName === dict.fav) {
                 avatarDiv.innerHTML = `<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>`; 
                 avatarDiv.style.backgroundImage = '';
-                statusDiv.innerText = "Только для вас";
-                statusDiv.style.color = "var(--accent)";
-                inputArea.style.display = 'flex';
             } else if (chatObj) {
                 if(chatObj.avatar) {
                     avatarDiv.style.backgroundImage = `url(${chatObj.avatar})`; avatarDiv.innerHTML = '';
@@ -1229,29 +1316,10 @@
                     let defaultIcon = type === 'group' ? iconGroup : (type === 'channel' ? iconChannel : iconUser);
                     avatarDiv.innerHTML = defaultIcon;
                 }
-                
-                // Обработка статусов и скрытия инпута для каналов
-                if(type === 'channel') {
-                    statusDiv.innerText = "Канал";
-                    statusDiv.style.color = "var(--text-muted)";
-                    inputArea.style.display = 'none'; // Скрываем ввод для каналов
-                } else if (type === 'group') {
-                    statusDiv.innerText = "Группа";
-                    statusDiv.style.color = "var(--accent)";
-                    inputArea.style.display = 'flex';
-                } else {
-                    inputArea.style.display = 'flex';
-                    // Первичная проверка онлайна при открытии
-                    let lastSeen = localStorage.getItem('auraOnline_' + targetName);
-                    if(lastSeen && (Date.now() - parseInt(lastSeen) < 15000)) {
-                        statusDiv.innerHTML = `<span style="display:inline-block; width:8px; height:8px; background:var(--success); border-radius:50%; margin-right:5px;"></span>В сети`;
-                        statusDiv.style.color = "var(--success)";
-                    } else {
-                        statusDiv.innerHTML = "Был(а) недавно";
-                        statusDiv.style.color = "var(--text-muted)";
-                    }
-                }
             }
+
+            // Обновляем текст статуса с правильным языком
+            updateChatHeaderStatus(targetName);
 
             renderSidebarChats();
             document.getElementById('chat').innerHTML = '';
@@ -1378,25 +1446,22 @@
 
         function deleteSelectedMsg(mode) {
             if(selectedMsgIndex > -1) {
-                // Прячем сообщение локально, чтобы сервер его не восстанавливал при fetch
                 if(!hiddenMsgs[currentTarget]) hiddenMsgs[currentTarget] = [];
                 hiddenMsgs[currentTarget].push(selectedMsgIndex);
                 localStorage.setItem('auraHiddenMsgs_' + USER, JSON.stringify(hiddenMsgs));
 
-                // Удаляем у себя из старого кэша
                 if (localMessages[currentTarget]) {
                     localMessages[currentTarget].splice(selectedMsgIndex, 1);
                     localStorage.setItem('auraMessages_' + USER, JSON.stringify(localMessages));
                 }
                 
-                // Эмулируем удаление у всех (локально для теста)
                 if(mode === 'all') {
                     let theirHidden = JSON.parse(localStorage.getItem('auraHiddenMsgs_' + currentTarget)) || {};
                     if(!theirHidden[USER]) theirHidden[USER] = [];
                     theirHidden[USER].push(selectedMsgIndex);
                     localStorage.setItem('auraHiddenMsgs_' + currentTarget, JSON.stringify(theirHidden));
                 }
-                loadChat(); // Перерисовываем чат (теперь фильтр сработает)
+                loadChat(); 
             }
             document.getElementById('msgContextMenu').style.display = 'none';
         }
@@ -1420,7 +1485,6 @@
             setTimeout(() => modal.style.display = 'none', 300);
         }
 
-        // Генерация красивой аватарки при просмотре профиля других юзеров
         function openViewProfile() {
             if(currentTarget === translations[localSettings.lang || 'ru'].fav) return; 
             const chatObj = localChats.find(c => c.name === currentTarget);
@@ -1445,7 +1509,6 @@
             openModal('viewProfileModal');
         }
 
-        // НОВОЕ: Просмотр СВОЕГО профиля
         function openMyProfileView() {
             const avatarDisplay = document.getElementById('myViewAvatar');
             if(localProfile.avatar) {
@@ -1482,7 +1545,6 @@
         function saveProfile() {
             const newUsername = document.getElementById('profileUsername').value || "Player1";
             
-            // Если юзернейм изменился, загружаем его личную базу данных
             if(newUsername !== USER) {
                 USER = newUsername;
                 localStorage.setItem('auraUser', USER);
@@ -1580,21 +1642,17 @@
             const text = mediaContent || input.value.trim();
             if (!text) return;
 
-            // --- ИСПРАВЛЕНИЕ: СИНХРОНИЗАЦИЯ АВАТАРОК ---
             let targetChats = JSON.parse(localStorage.getItem('auraChats_' + currentTarget)) || [];
             let existingChat = targetChats.find(c => c.name === USER);
             
             if(!existingChat) {
                 targetChats.push({name: USER, type: 'user', avatar: localProfile.avatar, bio: localProfile.bio, isArchived: false});
             } else {
-                // Если мы поменяли свою аву, при отправке она обновится у собеседника
                 existingChat.avatar = localProfile.avatar; 
                 existingChat.bio = localProfile.bio;
             }
             localStorage.setItem('auraChats_' + currentTarget, JSON.stringify(targetChats));
-            // -------------------------------------------
 
-            // Эмуляция отправки сообщения другому клиенту локально
             let targetMsgs = JSON.parse(localStorage.getItem('auraMessages_' + currentTarget)) || {};
             if(!targetMsgs[USER]) targetMsgs[USER] = [];
             targetMsgs[USER].push({sender: USER, text: text});
@@ -1655,7 +1713,6 @@
             const msgDiv = document.createElement('div');
             msgDiv.className = `msg ${sender === USER ? 'sent' : 'received'}`;
             
-            // Привязка меню по правому клику (ПКМ)
             msgDiv.oncontextmenu = (e) => showMsgMenu(e, index, sender);
             
             let contentHtml = text;
@@ -1669,7 +1726,6 @@
                 contentHtml = `<div class="msg-sticker">${text.replace('[sticker]', '')}</div>`;
             }
 
-            // Для групп пишем имя отправителя сверху
             let showSenderName = (sender !== USER && currentTarget !== translations[localSettings.lang || 'ru'].fav) ? `<b style="opacity: 0.7; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; display:block;">${sender}</b>` : '';
             msgDiv.innerHTML = showSenderName + contentHtml;
             chatDiv.appendChild(msgDiv);
@@ -1680,17 +1736,14 @@
             if(chatLoop) clearInterval(chatLoop);
             
             chatLoop = setInterval(() => {
-                // Обновление онлайна
                 localStorage.setItem('auraOnline_' + USER, Date.now());
                 
-                // Проверка: добавил ли нас кто-то новый (чтобы обновить сайдбар)
                 let myStoredChats = JSON.parse(localStorage.getItem('auraChats_' + USER)) || [];
                 if(myStoredChats.length > localChats.length) {
                     localChats = myStoredChats;
                     renderSidebarChats();
                 }
 
-                // Динамическое обновление аватарок чужих профилей
                 let avatarsUpdated = false;
                 localChats.forEach(c => {
                     if(c.type === 'user') {
@@ -1704,34 +1757,18 @@
                 if(avatarsUpdated) {
                     localStorage.setItem('auraChats_' + USER, JSON.stringify(localChats));
                     renderSidebarChats();
-                    // Обновляем шапку, если открыт этот чат
-                    if(currentTarget) selectChat(currentTarget, localChats.find(x => x.name === currentTarget)?.type || 'user');
                 }
 
-                // Проверка онлайна собеседника
-                if(currentTarget && currentTarget !== translations[localSettings.lang || 'ru'].fav) {
-                    let chatObj = localChats.find(c => c.name === currentTarget);
-                    let statusDiv = document.getElementById('statusInfo');
-                    if(chatObj && chatObj.type === 'user') {
-                        let lastSeen = localStorage.getItem('auraOnline_' + currentTarget);
-                        if(lastSeen && (Date.now() - parseInt(lastSeen) < 15000)) {
-                            statusDiv.innerHTML = `<span style="display:inline-block; width:8px; height:8px; background:var(--success); border-radius:50%; margin-right:5px;"></span>В сети`;
-                            statusDiv.style.color = "var(--success)";
-                        } else {
-                            statusDiv.innerHTML = "Был(а) недавно";
-                            statusDiv.style.color = "var(--text-muted)";
-                        }
-                    }
+                if(currentTarget) {
+                    updateChatHeaderStatus(currentTarget);
                 }
 
                 loadChat();
             }, 2000);
         }
 
-        // Запуск приложения: проверка на наличие юзера
         window.onload = () => {
             if (!localStorage.getItem('auraUser')) {
-                // Если юзера нет, убираем сплеш и показываем регистрацию
                 document.getElementById('splash').style.display = 'none';
                 document.getElementById('registrationModal').style.display = 'flex';
                 setTimeout(() => document.getElementById('registrationModal').classList.add('active'), 50);
