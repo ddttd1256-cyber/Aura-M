@@ -65,7 +65,7 @@
         #splash {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #0b0c10; display: flex; justify-content: center; align-items: center;
-            z-index: 9999; transition: opacity 0.8s ease, visibility 0.8s;
+            z-index: 100000; transition: opacity 0.8s ease, visibility 0.8s;
         }
         [data-theme="light"] #splash { background: #ffffff; }
         
@@ -1274,7 +1274,9 @@
                 reader.onload = function(event) {
                     tempRegAvatar = event.target.result;
                     const display = document.getElementById('regAvatarDisplay');
-                    for(let el of display.childNodes) if(el.nodeType === 3 || el.nodeName === 'SVG' || el.className==='cam-icon') display.removeChild(el);
+                    Array.from(display.childNodes).forEach(el => {
+                        if(el.nodeType === 3 || el.nodeName === 'SVG' || el.className==='cam-icon') display.removeChild(el);
+                    });
                     display.style.backgroundImage = `url('${tempRegAvatar}')`; // Фикс бага 7 (кавычки)
                     display.style.border = '2px solid var(--accent)';
                 }
@@ -1420,7 +1422,7 @@
                         document.querySelector('.main-area').style.animation = 'fadeIn 0.8s ease forwards';
                     }, 800);
                 }
-            }, 1000);
+            }, 2000); // Увеличено время с 1000 до 2000, чтобы пульсация анимации успела проиграться
             
             registerUser(USER, localProfile.name);
             if(window.innerWidth > 768) selectChat(currentTarget, 'favorites');
@@ -1450,7 +1452,9 @@
             const display = document.getElementById('profileAvatarDisplay');
             const miniDisplay = document.getElementById('sidebarMyAvatar');
             
-            for(let el of display.childNodes) if(el.nodeType === 3 || el.nodeName === 'SVG' || el.className==='cam-icon') display.removeChild(el);
+            Array.from(display.childNodes).forEach(el => {
+                if(el.nodeType === 3 || el.nodeName === 'SVG' || el.className==='cam-icon') display.removeChild(el);
+            });
             
             if (localProfile.avatar) {
                 display.style.backgroundImage = `url('${localProfile.avatar}')`; // Фикс
@@ -2076,7 +2080,9 @@
                 reader.onload = function(event) {
                     currentGroupAvatar = event.target.result;
                     const display = document.getElementById('groupAvatarDisplay');
-                    for(let el of display.childNodes) if(el.nodeName === 'SVG') display.removeChild(el);
+                    Array.from(display.childNodes).forEach(el => {
+                        if(el.nodeName === 'SVG') display.removeChild(el);
+                    });
                     display.style.backgroundImage = `url('${currentGroupAvatar}')`; // Фикс
                     display.style.borderStyle = 'solid'; display.style.borderColor = 'var(--accent)';
                 }
@@ -2921,9 +2927,16 @@
 
         window.onload = () => {
             if (!localStorage.getItem('auraUser')) {
-                document.getElementById('splash').style.display = 'none';
-                document.getElementById('authModal').style.display = 'flex';
-                setTimeout(() => document.getElementById('authModal').classList.add('active'), 50);
+                // Даем анимации splash-экрана проиграться перед показом окна входа
+                setTimeout(() => {
+                    const splash = document.getElementById('splash');
+                    splash.style.opacity = '0';
+                    setTimeout(() => {
+                        splash.style.display = 'none';
+                        document.getElementById('authModal').style.display = 'flex';
+                        setTimeout(() => document.getElementById('authModal').classList.add('active'), 50);
+                    }, 800);
+                }, 1500);
             } else {
                 startNormalApp();
             }
