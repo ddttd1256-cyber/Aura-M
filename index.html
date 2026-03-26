@@ -180,7 +180,7 @@
             opacity: 0.05; pointer-events: none; z-index: 0;
         }
 
-        /* ШАПКА ЧАТА (ИСправлено) */
+        /* ШАПКА ЧАТА */
         .chat-header { 
             padding: 15px 20px; background: var(--bg-sidebar); border-bottom: 1px solid var(--glass-border); 
             display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(10px); z-index: 5;
@@ -471,7 +471,7 @@
         
         <div class="sidebar-footer">
             <div class="sidebar-footer-left">
-                <div class="my-mini-avatar" id="sidebar MyAvatar" onclick="openMyProfileView()" title="Мой Профиль"></div>
+                <div class="my-mini-avatar" id="sidebarMyAvatar" onclick="openMyProfileView()" title="Мой Профиль"></div>
                 <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main);">Aura</h3>
             </div>
             <div style="display: flex; gap: 8px;">
@@ -770,19 +770,8 @@
         let localSettings = JSON.parse(localStorage.getItem('auraSettings')) || { lang: "ru", themeColor: "#00d2ff", themeMode: "dark", wallpaper: "none" };
         
         let hiddenMsgs = USER ? (JSON.parse(localStorage.getItem('auraHiddenMsgs_' + USER)) || {}) : {};
-        
-        let currentTarget = translations[localSettings.lang || 'ru'].fav; 
-        let chatLoop;
-        let currentGroupAvatar = null;
-        let isArchiveOpen = false;
-        let mediaRecorder;
-        let audioChunks = [];
-        let selectedMsgIndex = -1; 
-        let isProfileUsernameTaken = false;
 
-        let regUsernameTimeout;
-        let isRegUsernameTaken = false;
-
+        // ИСПРАВЛЕНИЕ 1: Переместили translations ВВЕРХ, до использования в currentTarget
         const translations = {
             ru: {
                 fav: "Избранное", placeholderMsg: "Напишите сообщение...", btnSend: "Отправить",
@@ -865,6 +854,18 @@
                 deletedAccount: "已删除的帐户"
             }
         };
+
+        let currentTarget = translations[localSettings.lang || 'ru'].fav; 
+        let chatLoop;
+        let currentGroupAvatar = null;
+        let isArchiveOpen = false;
+        let mediaRecorder;
+        let audioChunks = [];
+        let selectedMsgIndex = -1; 
+        let isProfileUsernameTaken = false;
+
+        let regUsernameTimeout;
+        let isRegUsernameTaken = false;
 
         // --- ЛОГИКА РЕГИСТРАЦИИ ---
         let tempRegAvatar = null;
@@ -1362,7 +1363,6 @@
         function selectChat(targetName, type) {
             if(wasSwiped) { wasSwiped = false; return; }
 
-            // Исправление: если пытаемся открыть Saved Messages, приводим targetName к текущему языку
             const dict = translations[localSettings.lang || 'ru'];
             const favStrings = [translations.ru.fav, translations.en.fav, translations.uk.fav, translations.zh.fav];
             if (favStrings.includes(targetName)) targetName = dict.fav;
