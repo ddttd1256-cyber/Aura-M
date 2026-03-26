@@ -69,7 +69,7 @@
         }
         [data-theme="light"] #splash { background: #ffffff; }
         
-        .splash-logo {
+       .splash-logo {
             width: 180px; height: 180px;
             background: url('KFC.jpg') no-repeat center/cover; 
             background-color: var(--glass-bg);
@@ -79,15 +79,19 @@
             font-size: 2.5rem; font-weight: 800; color: var(--accent);
             text-shadow: 0 0 20px var(--accent-glow);
             box-shadow: 0 0 0 transparent;
-            animation: drawLogo 2.5s ease-in-out forwards;
+            /* Сначала логотип появляется, затем начинает бесконечно пульсировать */
+            animation: drawLogo 1s ease-out forwards, pulseLogo 1.5s ease-in-out 1s infinite alternate;
         }
+        
         @keyframes drawLogo {
             0% { opacity: 0; transform: scale(0.3); box-shadow: 0 0 0 transparent; }
-            40% { opacity: 1; transform: scale(1.1); box-shadow: 0 0 50px var(--accent-glow); }
-            70% { opacity: 1; transform: scale(0.95); box-shadow: 0 0 20px var(--accent-glow); }
-            100% { opacity: 1; transform: scale(1); box-shadow: 0 0 40px var(--accent-glow); }
+            100% { opacity: 1; transform: scale(1); box-shadow: 0 0 30px var(--accent-glow); }
         }
 
+        @keyframes pulseLogo {
+            0% { transform: scale(1); box-shadow: 0 0 30px var(--accent-glow); }
+            100% { transform: scale(1.08); box-shadow: 0 0 60px var(--accent-glow); }
+        }
         /* Сайдбар */
         .sidebar { 
             width: 340px; 
