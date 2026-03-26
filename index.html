@@ -117,7 +117,7 @@
         .chat-list { flex: 1; overflow-y: auto; overflow-x: hidden; padding-top: 10px; }
         
         /* СВАЙП КОНТЕЙНЕР */
-        .swipe-container { position: relative; overflow: hidden; margin: 5px 10px; border-radius: 15px; touch-action: pan-y; } /* FIX 1: pan-y */
+        .swipe-container { position: relative; overflow: hidden; margin: 5px 10px; border-radius: 15px; touch-action: pan-y; }
         .swipe-actions {
             position: absolute; right: 0; top: 0; height: 100%; display: flex;
             align-items: center; justify-content: flex-end; padding-right: 15px; gap: 10px;
@@ -231,6 +231,18 @@
         .msg-audio { width: 250px; height: 50px; margin-top: 5px; outline: none; border-radius: 25px; background: rgba(255,255,255,0.1); }
         .msg-sticker { width: 120px; height: 120px; }
 
+        /* Стили для ПОДАРКОВ в чате */
+        .msg-gift {
+            background: rgba(20, 21, 30, 0.8); border: 1px solid var(--accent); border-radius: 20px;
+            padding: 15px; text-align: center; width: 200px; max-width: 100%; position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3), inset 0 0 15px var(--accent-glow);
+            backdrop-filter: blur(10px); animation: giftFloat 3s ease-in-out infinite; margin-top: 5px;
+        }
+        @keyframes giftFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        .msg-gift-icon { font-size: 4rem; margin-bottom: 10px; display: inline-block; filter: drop-shadow(0 0 10px var(--accent)); }
+        .msg-gift-title { color: var(--text-main); font-weight: bold; font-size: 1.1rem; margin-bottom: 5px; }
+        .msg-gift-desc { color: var(--accent); font-size: 0.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+
         .msg-context-menu {
             display: none; position: absolute; background: var(--bg-element); border: 1px solid var(--glass-border);
             padding: 8px; border-radius: 12px; z-index: 1000; flex-direction: column; gap: 5px;
@@ -252,7 +264,7 @@
         .media-btn {
             background: transparent; border: none; color: var(--text-muted);
             cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; padding: 5px;
-            touch-action: none;
+            touch-action: none; position: relative;
         }
         .media-btn:hover { color: var(--accent); transform: scale(1.1); }
         .media-btn.recording { color: var(--danger); animation: pulse 1s infinite; }
@@ -375,6 +387,18 @@
         }
         .group-avatar-preview svg { width: 30px; height: 30px; }
 
+        /* СЕТКА ПОДАРКОВ В МОДАЛКЕ */
+        .gifts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px; }
+        .gift-card { 
+            background: var(--bg-element); border: 1px solid var(--glass-border); border-radius: 16px; 
+            padding: 20px 10px; text-align: center; cursor: pointer; transition: var(--transition);
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+        }
+        .gift-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 20px var(--accent-glow); background: rgba(0,0,0,0.2); }
+        .gift-card .emoji { font-size: 3rem; filter: drop-shadow(0 0 10px var(--accent-glow)); }
+        .gift-card .name { font-weight: bold; font-size: 1rem; color: var(--text-main); }
+        .gift-card .price { font-size: 0.8rem; color: var(--success); font-weight: bold; background: rgba(0,230,118,0.1); padding: 4px 10px; border-radius: 10px;}
+
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(150,150,150,0.3); border-radius: 10px; }
@@ -407,6 +431,7 @@
             input[type="text"] { padding: 10px 15px; }
             .send-btn { padding: 10px 15px; }
             .stickers-panel { grid-template-columns: repeat(3, 1fr); left: 10px; right: 10px; }
+            .gifts-grid { grid-template-columns: 1fr 1fr; }
             
             /* Фикс переполнения в шапке на телефонах */
             .chat-header-info { padding: 5px; flex: 1; min-width: 0; }
@@ -453,6 +478,38 @@
             </div>
             <div class="modal-actions" style="justify-content: center; margin-top: 10px;">
                 <button class="btn-save" style="width: 100%; padding: 12px; font-size: 1.1rem;" onclick="completeRegistration()">Начать общение</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="giftModal" onclick="if(event.target === this) closeModal('giftModal')">
+        <div class="modal">
+            <h2 data-i18n="sendGiftTitle">Отправить подарок</h2>
+            <p style="text-align:center; color: var(--text-muted); margin-bottom: 10px;">Выберите премиум-подарок для собеседника</p>
+            <div class="gifts-grid">
+                <div class="gift-card" onclick="sendPremiumGift('star')">
+                    <div class="emoji">🌟</div>
+                    <div class="name">Aura Star</div>
+                    <div class="price">Бесплатно</div>
+                </div>
+                <div class="gift-card" onclick="sendPremiumGift('heart')">
+                    <div class="emoji">💖</div>
+                    <div class="name">Пылающее Сердце</div>
+                    <div class="price">Бесплатно</div>
+                </div>
+                <div class="gift-card" onclick="sendPremiumGift('crown')">
+                    <div class="emoji">👑</div>
+                    <div class="name">Корона Императора</div>
+                    <div class="price">Бесплатно</div>
+                </div>
+                <div class="gift-card" onclick="sendPremiumGift('diamond')">
+                    <div class="emoji">💎</div>
+                    <div class="name">Редкий Бриллиант</div>
+                    <div class="price">Бесплатно</div>
+                </div>
+            </div>
+            <div class="modal-actions" style="justify-content: center; margin-top: 25px;">
+                <button class="btn-cancel" onclick="closeModal('giftModal')" data-i18n="btnClose" style="width:100%">Отмена</button>
             </div>
         </div>
     </div>
@@ -530,6 +587,10 @@
             </button>
             <input type="file" id="fileInput" accept="image/*,video/*" style="display: none;" onchange="handleFileUpload(event)">
             
+            <button class="media-btn" onclick="openModal('giftModal')" title="Отправить подарок">
+                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
+            </button>
+
             <button class="media-btn" onclick="toggleStickers(event)" title="Стикеры">
                 <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
             </button>
@@ -787,7 +848,7 @@
                 confirmCache: "Очистить историю всех чатов? Сами чаты останутся, но сообщения будут удалены. Это освободит память.",
                 confirmReset: "Внимание! Это полностью удалит ваш профиль и выйдет из аккаунта. Продолжить?",
                 deleteAccount: "Удалить аккаунт", confirmDelAcc: "Вы уверены, что хотите навсегда удалить свой аккаунт? Действие необратимо и удалит все ваши данные!",
-                deletedAccount: "Удалённый аккаунт"
+                deletedAccount: "Удалённый аккаунт", sendGiftTitle: "Отправить подарок"
             },
             en: {
                 fav: "Saved Messages", placeholderMsg: "Write a message...", btnSend: "Send",
@@ -807,7 +868,7 @@
                 confirmCache: "Clear all chat history? The chats will remain, but messages will be deleted. This frees up memory.",
                 confirmReset: "Warning! This will completely delete your profile and log you out. Continue?",
                 deleteAccount: "Delete Account", confirmDelAcc: "Are you sure you want to permanently delete your account? Irreversible!",
-                deletedAccount: "Deleted Account"
+                deletedAccount: "Deleted Account", sendGiftTitle: "Send a gift"
             },
             uk: {
                 fav: "Збережене", placeholderMsg: "Напишіть повідомлення...", btnSend: "Надіслати",
@@ -827,7 +888,7 @@
                 confirmCache: "Очистити історію всіх чатів? Самі чати залишаться, але повідомлення будуть видалені.",
                 confirmReset: "Увага! Це повністю видалить ваш профіль і вийде з акаунта. Продовжити?",
                 deleteAccount: "Видалити акаунт", confirmDelAcc: "Ви впевнені, що хочете назавжди видалити свій акаунт? Ця дія незворотна!",
-                deletedAccount: "Видалений акаунт"
+                deletedAccount: "Видалений акаунт", sendGiftTitle: "Надіслати подарунок"
             },
             zh: {
                 fav: "收藏夹", placeholderMsg: "写信息...", btnSend: "发送",
@@ -847,7 +908,7 @@
                 confirmCache: "清除所有聊天记录？释放内存。",
                 confirmReset: "警告！这将完全删除您的个人资料。继续？",
                 deleteAccount: "删除帐户", confirmDelAcc: "您确定要永久删除您的帐户吗？此操作不可逆！",
-                deletedAccount: "已删除的帐户"
+                deletedAccount: "已删除的帐户", sendGiftTitle: "送礼物"
             }
         };
 
@@ -1273,10 +1334,11 @@
                 } else if (chat.avatar) {
                     iconHtml = `<div class="avatar-mini" style="background-image: url(${chat.avatar}); color: transparent;"></div>`;
                 } else {
-                    iconHtml = `<div class="avatar-mini" style="font-size: 0;">${defaultIcon}</div>`;
+                    let initial = chat.name ? chat.name.substring(0, 1).toUpperCase() : 'U';
+                    iconHtml = `<div class="avatar-mini">${initial}</div>`;
                 }
                 
-                let displayNameText = isDeleted ? dict.deletedAccount : chat.name;
+                let displayNameText = isDeleted ? dict.deletedAccount : (chat.realName || chat.name);
                 
                 let html = `
                     <div class="swipe-container" data-name="${chat.name}">
@@ -1420,7 +1482,7 @@
                 avatarDiv.style.color = '#fff';
             } else if (chatObj) {
                 let isDeleted = chatObj.isDeleted === true;
-                let displayName = isDeleted ? dict.deletedAccount : chatObj.name;
+                let displayName = isDeleted ? dict.deletedAccount : (chatObj.realName || chatObj.name);
                 document.getElementById('currentChatName').innerText = displayName;
                 
                 let usernameDiv = document.getElementById('currentChatUsername');
@@ -1444,8 +1506,8 @@
                     avatarDiv.style.backgroundImage = ''; 
                     avatarDiv.style.background = 'var(--accent-gradient)';
                     avatarDiv.style.color = '#fff';
-                    let defaultIcon = type === 'group' ? iconGroup : (type === 'channel' ? iconChannel : iconUser);
-                    avatarDiv.innerHTML = defaultIcon;
+                    let initial = chatObj.name ? chatObj.name.substring(0, 1).toUpperCase() : 'U';
+                    avatarDiv.innerHTML = initial;
                 }
             }
 
@@ -1575,6 +1637,12 @@
             document.getElementById('stickersPanel').style.display = 'none';
         }
 
+        /* --- ПОДАРКИ --- */
+        function sendPremiumGift(type) {
+            send('[gift]' + type);
+            closeModal('giftModal');
+        }
+
         /* --- УДАЛЕНИЕ ОТДЕЛЬНЫХ СООБЩЕНИЙ --- */
         function showMsgMenu(e, index, sender) {
             e.preventDefault();
@@ -1647,7 +1715,7 @@
                 avatarDisplay.innerHTML = initial;
             }
             
-            document.getElementById('viewProfileName').innerText = chatObj.isDeleted ? dict.deletedAccount : (chatObj.name || 'Unknown');
+            document.getElementById('viewProfileName').innerText = chatObj.isDeleted ? dict.deletedAccount : (chatObj.realName || chatObj.name || 'Unknown');
             document.getElementById('viewProfileType').innerText = chatObj.type === 'group' ? dict.optGroup : (chatObj.type === 'channel' ? dict.optChannel : dict.optUser);
             document.getElementById('viewProfileBio').innerText = chatObj.bio || "Нет описания";
 
@@ -1799,12 +1867,30 @@
                 localStorage.setItem('auraDeletedChats_' + USER, JSON.stringify(deletedChats));
             }
 
+            // Пытаемся сразу вытянуть аватарку при добавлении чата, если она есть в локальной БД телефона
+            let pulledAvatar = currentGroupAvatar;
+            let pulledName = target;
+            let pulledBio = bio;
+            if (type === 'user') {
+                let foreignProfile = JSON.parse(localStorage.getItem('auraProfile_' + target));
+                if (foreignProfile) {
+                    pulledAvatar = foreignProfile.avatar || null;
+                    pulledName = foreignProfile.name || target;
+                    pulledBio = foreignProfile.bio || "Нет описания";
+                }
+            }
+
             if (!localChats.find(c => c.name === target)) {
-                localChats.push({ name: target, type: type, avatar: currentGroupAvatar, bio: bio, isArchived: false, isDeleted: false });
+                localChats.push({ name: target, realName: pulledName, type: type, avatar: pulledAvatar, bio: pulledBio, isArchived: false, isDeleted: false });
                 localStorage.setItem('auraChats_' + USER, JSON.stringify(localChats));
             } else {
                 let existing = localChats.find(c => c.name === target);
                 existing.isDeleted = false;
+                if(type === 'user') {
+                    existing.avatar = pulledAvatar;
+                    existing.realName = pulledName;
+                    existing.bio = pulledBio;
+                }
                 localStorage.setItem('auraChats_' + USER, JSON.stringify(localChats));
             }
             
@@ -1835,10 +1921,11 @@
                 let existingChat = targetChats.find(c => c.name === USER);
                 
                 if(!existingChat) {
-                    targetChats.push({name: USER, type: 'user', avatar: localProfile.avatar, bio: localProfile.bio, isArchived: false, isDeleted: false});
+                    targetChats.push({name: USER, realName: localProfile.name, type: 'user', avatar: localProfile.avatar, bio: localProfile.bio, isArchived: false, isDeleted: false});
                 } else {
                     existingChat.avatar = localProfile.avatar; 
                     existingChat.bio = localProfile.bio;
+                    existingChat.realName = localProfile.name;
                 }
                 localStorage.setItem('auraChats_' + currentTarget, JSON.stringify(targetChats));
 
@@ -1927,7 +2014,19 @@
                     if(data.chats && Array.isArray(data.chats)) {
                         data.chats.forEach(chatName => {
                             if(chatName !== USER && !localChats.find(c => c.name === chatName) && !deletedChats.includes(chatName) && !favStrings.includes(chatName)) {
-                                localChats.push({ name: chatName, type: 'user', avatar: null, bio: "Нет описания", isArchived: false, isDeleted: false });
+                                
+                                // Умное подтягивание профиля при приходе нового чата
+                                let pulledAvatar = null;
+                                let pulledName = chatName;
+                                let pulledBio = "Нет описания";
+                                let foreignProfile = JSON.parse(localStorage.getItem('auraProfile_' + chatName));
+                                if (foreignProfile) {
+                                    pulledAvatar = foreignProfile.avatar || null;
+                                    pulledName = foreignProfile.name || chatName;
+                                    pulledBio = foreignProfile.bio || "Нет описания";
+                                }
+
+                                localChats.push({ name: chatName, realName: pulledName, type: 'user', avatar: pulledAvatar, bio: pulledBio, isArchived: false, isDeleted: false });
                                 updated = true;
                             }
                         });
@@ -1977,22 +2076,30 @@
                     renderSidebarChats();
                 }
 
+                // ФИКС АВАТАРОК: агрессивная проверка обновлений профилей других людей локально
                 let avatarsUpdated = false;
                 localChats.forEach(c => {
                     if(c.type === 'user') {
                         let p = JSON.parse(localStorage.getItem('auraProfile_' + c.name));
-                        if(p && p.avatar && p.avatar !== c.avatar) {
-                            c.avatar = p.avatar;
-                            avatarsUpdated = true;
+                        if(p) {
+                            if (p.avatar !== c.avatar || p.name !== c.realName || p.bio !== c.bio) {
+                                c.avatar = p.avatar;
+                                c.realName = p.name;
+                                c.bio = p.bio;
+                                avatarsUpdated = true;
+                            }
                         }
                     }
                 });
+                
                 if(avatarsUpdated) {
                     localStorage.setItem('auraChats_' + USER, JSON.stringify(localChats));
                     renderSidebarChats();
-                }
-
-                if(currentTarget) {
+                    // Если мы сидим в чате с человеком, обновим шапку
+                    if (currentTarget !== translations[localSettings.lang || 'ru'].fav && localChats.find(c => c.name === currentTarget)) {
+                        selectChat(currentTarget, 'user'); // Перерендер шапки
+                    }
+                } else if(currentTarget) {
                     updateChatHeaderStatus(currentTarget);
                 }
 
@@ -2020,7 +2127,6 @@
             let contentHtml = '';
             
             if(text.startsWith('[img]')) {
-                // Экранируем Base64, чтобы избежать внедрения кода
                 contentHtml = `<img src="${escapeHTML(text.replace('[img]', ''))}" class="msg-media" onclick="window.open(this.src)">`;
             } else if (text.startsWith('[video]')) {
                 contentHtml = `<video src="${escapeHTML(text.replace('[video]', ''))}" class="msg-media" controls></video>`;
@@ -2028,13 +2134,33 @@
                 contentHtml = `<audio src="${escapeHTML(text.replace('[audio]', ''))}" class="msg-audio" controls></audio>`;
             } else if (text.startsWith('[sticker]')) {
                 contentHtml = `<div class="msg-sticker">${text.replace('[sticker]', '')}</div>`;
+            } else if (text.startsWith('[gift]')) {
+                // ПАРСЕР НОВЫХ ПОДАРКОВ
+                let giftType = text.replace('[gift]', '');
+                let giftData = { emoji: '🎁', name: 'Подарок' };
+                if(giftType === 'star') giftData = { emoji: '🌟', name: 'Aura Star' };
+                if(giftType === 'heart') giftData = { emoji: '💖', name: 'Пылающее Сердце' };
+                if(giftType === 'crown') giftData = { emoji: '👑', name: 'Корона Императора' };
+                if(giftType === 'diamond') giftData = { emoji: '💎', name: 'Редкий Бриллиант' };
+                
+                // Делаем сам контейнер прозрачным для подарка, чтобы он выглядел эпично
+                msgDiv.style.background = 'transparent';
+                msgDiv.style.boxShadow = 'none';
+                msgDiv.style.border = 'none';
+                
+                contentHtml = `
+                    <div class="msg-gift">
+                        <div class="msg-gift-icon">${giftData.emoji}</div>
+                        <div class="msg-gift-title">${giftData.name}</div>
+                        <div class="msg-gift-desc">${sender === USER ? 'Вы отправили подарок' : 'Вам отправили подарок'}</div>
+                    </div>
+                `;
             } else {
-                // Полное экранирование обычного текста от XSS атак
                 contentHtml = escapeHTML(text);
             }
 
             const dict = translations[localSettings.lang || 'ru'];
-            let showSenderName = (sender !== USER && currentTarget !== dict.fav) ? `<b style="opacity: 0.7; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; display:block;">${escapeHTML(sender)}</b>` : '';
+            let showSenderName = (sender !== USER && currentTarget !== dict.fav && !text.startsWith('[gift]')) ? `<b style="opacity: 0.7; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; display:block;">${escapeHTML(sender)}</b>` : '';
             msgDiv.innerHTML = showSenderName + contentHtml;
             chatDiv.appendChild(msgDiv);
             chatDiv.scrollTop = chatDiv.scrollHeight;
