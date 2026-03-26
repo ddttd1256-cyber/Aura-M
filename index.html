@@ -189,14 +189,14 @@
         .chat-header-info {
             display: flex; align-items: center; gap: 15px; cursor: pointer; 
             transition: 0.2s; padding: 5px 10px; border-radius: 12px; 
-            flex: 1; min-width: 0; overflow: hidden; /* Важно для обрезки текста */
+            flex: 1; min-width: 0; overflow: hidden;
         }
         .chat-header-info:hover { background: var(--bg-hover); }
 
         .mobile-back-btn {
             display: none; background: transparent; border: none; color: var(--text-main); 
             cursor: pointer; margin-right: 5px; padding: 0 5px; transition: 0.2s;
-            flex-shrink: 0; /* Чтобы кнопка не сжималась */
+            flex-shrink: 0;
         }
         .mobile-back-btn:hover { color: var(--accent); }
         
@@ -252,7 +252,7 @@
         .media-btn {
             background: transparent; border: none; color: var(--text-muted);
             cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; padding: 5px;
-            touch-action: none; /* Защита от конфликта тапов */
+            touch-action: none;
         }
         .media-btn:hover { color: var(--accent); transform: scale(1.1); }
         .media-btn.recording { color: var(--danger); animation: pulse 1s infinite; }
@@ -668,13 +668,11 @@
                         <div class="wp-option" style="background-image: url('https://i.pinimg.com/736x/21/df/b6/21dfb6890f6b39ec4264b3cd796a5de6.jpg');" onclick="setWallpaper('url(https://i.pinimg.com/736x/21/df/b6/21dfb6890f6b39ec4264b3cd796a5de6.jpg)', this)"></div>
                         <div class="wp-option" style="background-image: url('https://i.pinimg.com/736x/e4/f7/33/e4f733f39097da4ebefb3b145b206774.jpg');" onclick="setWallpaper('url(https://i.pinimg.com/736x/e4/f7/33/e4f733f39097da4ebefb3b145b206774.jpg)', this)"></div>
                         <div class="wp-option" style="background-image: url('https://i.pinimg.com/736x/91/92/df/9192df28383e58992e5c830c253b26c0.jpg');" onclick="setWallpaper('url(https://i.pinimg.com/736x/91/92/df/9192df28383e58992e5c830c253b26c0.jpg)', this)"></div>
-                        
                         <div class="wp-option" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);" onclick="setWallpaper('linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)', this)"></div>
                         <div class="wp-option" style="background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);" onclick="setWallpaper('linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%)', this)"></div>
                         <div class="wp-option" style="background: linear-gradient(to top, #a18cd1 0%, #fbc2eb 100%);" onclick="setWallpaper('linear-gradient(to top, #a18cd1 0%, #fbc2eb 100%)', this)"></div>
                         <div class="wp-option" style="background: linear-gradient(135deg, #1f1c2c 0%, #928dab 100%);" onclick="setWallpaper('linear-gradient(135deg, #1f1c2c 0%, #928dab 100%)', this)"></div>
                         <div class="wp-option" style="background: #2b5876;" onclick="setWallpaper('#2b5876', this)"></div>
-
                         <div class="wp-option" style="background-image: url('https://i.pinimg.com/736x/5b/c8/16/5bc816e8851ccfaee47225110e53db71.jpg');" onclick="setWallpaper('url(https://i.pinimg.com/736x/5b/c8/16/5bc816e8851ccfaee47225110e53db71.jpg)', this)"></div>
                         <div class="wp-option" style="background-image: url('https://i.pinimg.com/736x/9c/e8/87/9ce887714fc2a76f2df83020614ea174.jpg');" onclick="setWallpaper('url(https://i.pinimg.com/736x/9c/e8/87/9ce887714fc2a76f2df83020614ea174.jpg)', this)"></div>
                         <div class="wp-option" style="background-image: url('https://i.pinimg.com/736x/71/84/04/7184045f47a61d3090623fc63e808c1c.jpg');" onclick="setWallpaper('url(https://i.pinimg.com/736x/71/84/04/7184045f47a61d3090623fc63e808c1c.jpg)', this)"></div>
@@ -876,13 +874,25 @@
         let isProfileUsernameTaken = false;
 
         let regUsernameTimeout;
+        let currentRegCheckId = 0;
         let isRegUsernameTaken = false;
+
+        let renderedMsgCount = 0;
+        let lastRenderedChat = "";
+
+        // Функция для экранирования HTML (защита от XSS багов)
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, tag => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            }[tag]));
+        }
 
         // --- ЛОГИКА РЕГИСТРАЦИИ ---
         let tempRegAvatar = null;
         function handleRegAvatar(e) {
             const file = e.target.files[0];
             if (file) {
+                if (file.size > 5 * 1024 * 1024) { alert("Файл слишком большой! Лимит 5 МБ."); return; }
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     tempRegAvatar = event.target.result;
@@ -897,6 +907,7 @@
 
         async function checkRegUsername() {
             clearTimeout(regUsernameTimeout);
+            let checkId = ++currentRegCheckId;
             const statusLabel = document.getElementById('regUsernameStatus');
             const newUsername = document.getElementById('regUsername').value;
             const dict = translations[localSettings.lang || 'ru'];
@@ -915,6 +926,8 @@
                 try {
                     const res = await fetch(`${API_URL}/check_user/${newUsername}`);
                     const data = await res.json();
+                    if (checkId !== currentRegCheckId) return; // Игнорируем старые ответы сервера
+                    
                     if (data.exists) {
                         statusLabel.style.color = 'var(--danger)'; 
                         statusLabel.innerText = dict.statusTaken; 
@@ -925,6 +938,7 @@
                         isRegUsernameTaken = false;
                     }
                 } catch (e) {
+                    if (checkId !== currentRegCheckId) return;
                     statusLabel.style.color = 'var(--danger)'; 
                     statusLabel.innerText = dict.statusErr;
                     isRegUsernameTaken = false; 
@@ -1114,6 +1128,9 @@
                 hiddenMsgs = {};
                 localStorage.setItem('auraMessages_' + USER, JSON.stringify(localMessages));
                 localStorage.setItem('auraHiddenMsgs_' + USER, JSON.stringify(hiddenMsgs));
+                
+                renderedMsgCount = 0;
+                document.getElementById('chat').innerHTML = '';
                 loadChat(); 
                 alert(dict.alertCacheCleared);
             }
@@ -1435,6 +1452,8 @@
 
             renderSidebarChats();
             document.getElementById('chat').innerHTML = '';
+            renderedMsgCount = 0; 
+            lastRenderedChat = currentTarget;
             document.getElementById('chatDropdown').style.display = 'none';
             document.getElementById('stickersPanel').style.display = 'none';
             
@@ -1471,6 +1490,7 @@
         document.getElementById('avatarUpload').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
+                if (file.size > 5 * 1024 * 1024) { alert("Файл слишком большой! Лимит 5 МБ."); return; }
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     localProfile.avatar = event.target.result;
@@ -1483,6 +1503,7 @@
         document.getElementById('groupAvatarUpload').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
+                if (file.size > 5 * 1024 * 1024) { alert("Файл слишком большой! Лимит 5 МБ."); return; }
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     currentGroupAvatar = event.target.result;
@@ -1498,6 +1519,8 @@
         function handleFileUpload(e) {
             const file = e.target.files[0];
             if(!file) return;
+            if (file.size > 5 * 1024 * 1024) { alert("Файл слишком большой! Для демо-версии лимит 5МБ."); return; }
+            
             const reader = new FileReader();
             reader.onload = function(event) {
                 const base64 = event.target.result;
@@ -1567,10 +1590,7 @@
                 hiddenMsgs[currentTarget].push(selectedMsgIndex);
                 localStorage.setItem('auraHiddenMsgs_' + USER, JSON.stringify(hiddenMsgs));
 
-                if (localMessages[currentTarget]) {
-                    localMessages[currentTarget].splice(selectedMsgIndex, 1);
-                    localStorage.setItem('auraMessages_' + USER, JSON.stringify(localMessages));
-                }
+                // Убрана функция splice, чтобы не ломать индексы массива!
                 
                 if(mode === 'all') {
                     let theirHidden = JSON.parse(localStorage.getItem('auraHiddenMsgs_' + currentTarget)) || {};
@@ -1578,6 +1598,10 @@
                     theirHidden[USER].push(selectedMsgIndex);
                     localStorage.setItem('auraHiddenMsgs_' + currentTarget, JSON.stringify(theirHidden));
                 }
+
+                // Полная перерисовка чата с обновленными скрытыми индексами
+                renderedMsgCount = 0;
+                document.getElementById('chat').innerHTML = '';
                 loadChat(); 
             }
             document.getElementById('msgContextMenu').style.display = 'none';
@@ -1699,8 +1723,10 @@
         }
 
         let usernameTimeout;
+        let currentProfileCheckId = 0;
         async function checkUsername() {
             clearTimeout(usernameTimeout);
+            let checkId = ++currentProfileCheckId;
             const statusLabel = document.getElementById('usernameStatus');
             const newUsername = document.getElementById('profileUsername').value;
             const dict = translations[localSettings.lang || 'ru'];
@@ -1716,6 +1742,8 @@
                 try {
                     const res = await fetch(`${API_URL}/check_user/${newUsername}`);
                     const data = await res.json();
+                    if (checkId !== currentProfileCheckId) return; // Игнорируем старые ответы сервера
+
                     if (data.exists && newUsername !== localStorage.getItem('auraUser')) {
                         statusLabel.style.color = 'var(--danger)'; statusLabel.innerText = dict.statusTaken;
                         isProfileUsernameTaken = true;
@@ -1724,6 +1752,7 @@
                         isProfileUsernameTaken = false;
                     }
                 } catch (e) {
+                    if (checkId !== currentProfileCheckId) return;
                     statusLabel.style.color = 'var(--danger)'; statusLabel.innerText = dict.statusErr;
                     isProfileUsernameTaken = false;
                 }
@@ -1795,6 +1824,7 @@
             const text = mediaContent || input.value.trim();
             if (!text) return;
 
+            // Сохраняем информацию у адресата о том, кто ему написал (локальная симуляция)
             let targetChats = JSON.parse(localStorage.getItem('auraChats_' + currentTarget)) || [];
             let existingChat = targetChats.find(c => c.name === USER);
             
@@ -1806,17 +1836,20 @@
             }
             localStorage.setItem('auraChats_' + currentTarget, JSON.stringify(targetChats));
 
-            let targetMsgs = JSON.parse(localStorage.getItem('auraMessages_' + currentTarget)) || {};
-            if(!targetMsgs[USER]) targetMsgs[USER] = [];
-            targetMsgs[USER].push({sender: USER, text: text});
-            localStorage.setItem('auraMessages_' + currentTarget, JSON.stringify(targetMsgs));
+            // Исправлен баг: сохраняем сообщение в историю чата адресата С НАМИ, а не общую
+            let targetAllMsgs = JSON.parse(localStorage.getItem('auraMessages_' + currentTarget)) || {};
+            if(!targetAllMsgs[USER]) targetAllMsgs[USER] = [];
+            targetAllMsgs[USER].push({sender: USER, text: text});
+            localStorage.setItem('auraMessages_' + currentTarget, JSON.stringify(targetAllMsgs));
             
-
+            // Сохраняем сообщение у нас
             if (!localMessages[currentTarget]) localMessages[currentTarget] = [];
             localMessages[currentTarget].push({sender: USER, text: text});
             localStorage.setItem('auraMessages_' + USER, JSON.stringify(localMessages));
             
+            // Рендерим и прокручиваем
             renderMessage(USER, text, localMessages[currentTarget].length - 1);
+            renderedMsgCount++; 
             input.value = '';
 
             try {
@@ -1831,32 +1864,43 @@
 
         async function loadChat() {
             const hidden = hiddenMsgs[currentTarget] || []; 
+            let msgs = localMessages[currentTarget] || [];
+            
             try {
                 const res = await fetch(`${API_URL}/chat/${USER}/${currentTarget}`);
                 const data = await res.json();
-                
-                const chatDiv = document.getElementById('chat');
-                chatDiv.innerHTML = ''; 
-                
-                data.messages.forEach((m, index) => {
-                    if(!hidden.includes(index)) {
-                        renderMessage(m.sender, m.text, index);
-                    }
-                });
-                
-                localMessages[currentTarget] = data.messages;
+                msgs = data.messages || [];
+                localMessages[currentTarget] = msgs;
                 localStorage.setItem('auraMessages_' + USER, JSON.stringify(localMessages));
-                chatDiv.scrollTop = chatDiv.scrollHeight;
             } catch (e) {
-                const msgs = localMessages[currentTarget] || [];
-                const chatDiv = document.getElementById('chat');
+                // Если нет сети, используем локальные msgs
+            }
+
+            const chatDiv = document.getElementById('chat');
+
+            if (lastRenderedChat !== currentTarget) {
                 chatDiv.innerHTML = '';
-                
+                renderedMsgCount = 0;
+                lastRenderedChat = currentTarget;
+            }
+
+            // Оптимизированный рендер: добавляем только новые сообщения (не ломает аудио/видео)
+            if (msgs.length > renderedMsgCount) {
+                for (let i = renderedMsgCount; i < msgs.length; i++) {
+                    if (!hidden.includes(i)) {
+                        renderMessage(msgs[i].sender, msgs[i].text, i);
+                    }
+                }
+                renderedMsgCount = msgs.length;
+            } else if (msgs.length < renderedMsgCount) {
+                // Редкий случай, если массив сообщений уменьшился — перерисовываем полностью
+                chatDiv.innerHTML = '';
                 msgs.forEach((m, index) => {
                     if(!hidden.includes(index)) {
                         renderMessage(m.sender, m.text, index);
                     }
                 });
+                renderedMsgCount = msgs.length;
                 chatDiv.scrollTop = chatDiv.scrollHeight;
             }
         }
@@ -1964,19 +2008,24 @@
             
             msgDiv.oncontextmenu = (e) => showMsgMenu(e, index, sender);
             
-            let contentHtml = text;
+            let contentHtml = '';
+            
             if(text.startsWith('[img]')) {
-                contentHtml = `<img src="${text.replace('[img]', '')}" class="msg-media" onclick="window.open(this.src)">`;
+                // Экранируем Base64, чтобы избежать внедрения кода
+                contentHtml = `<img src="${escapeHTML(text.replace('[img]', ''))}" class="msg-media" onclick="window.open(this.src)">`;
             } else if (text.startsWith('[video]')) {
-                contentHtml = `<video src="${text.replace('[video]', '')}" class="msg-media" controls></video>`;
+                contentHtml = `<video src="${escapeHTML(text.replace('[video]', ''))}" class="msg-media" controls></video>`;
             } else if (text.startsWith('[audio]')) {
-                contentHtml = `<audio src="${text.replace('[audio]', '')}" class="msg-audio" controls></audio>`;
+                contentHtml = `<audio src="${escapeHTML(text.replace('[audio]', ''))}" class="msg-audio" controls></audio>`;
             } else if (text.startsWith('[sticker]')) {
                 contentHtml = `<div class="msg-sticker">${text.replace('[sticker]', '')}</div>`;
+            } else {
+                // Полное экранирование обычного текста от XSS атак
+                contentHtml = escapeHTML(text);
             }
 
             const dict = translations[localSettings.lang || 'ru'];
-            let showSenderName = (sender !== USER && currentTarget !== dict.fav) ? `<b style="opacity: 0.7; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; display:block;">${sender}</b>` : '';
+            let showSenderName = (sender !== USER && currentTarget !== dict.fav) ? `<b style="opacity: 0.7; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; display:block;">${escapeHTML(sender)}</b>` : '';
             msgDiv.innerHTML = showSenderName + contentHtml;
             chatDiv.appendChild(msgDiv);
             chatDiv.scrollTop = chatDiv.scrollHeight;
