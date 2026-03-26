@@ -402,7 +402,7 @@
         .modal-header-back .icon-btn { background: transparent; border: none; box-shadow: none; }
         .modal-header-back .icon-btn:hover { color: var(--accent); }
         
-        .wallpaper-options { display: flex; gap: 10px; margin-top: 10px; overflow-x: auto; padding-bottom: 5px; }
+        .wallpaper-options { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; padding-bottom: 5px; max-height: 200px; overflow-y: auto; overflow-x: hidden;}
         .wp-option { width: 50px; height: 50px; border-radius: 10px; cursor: pointer; border: 2px solid transparent; background-size: cover; background-position: center; flex-shrink: 0;}
         .wp-option.active { border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
 
@@ -445,8 +445,10 @@
         /* СЕТКА ПОДАРКОВ В МОДАЛКЕ */
         .gifts-grid { 
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); 
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
             gap: 15px; margin-top: 10px; 
+            max-height: 50vh; overflow-y: auto; overflow-x: hidden;
+            padding-bottom: 10px;
         }
         .gift-card { 
             background: var(--bg-element); border: 1px solid var(--glass-border); border-radius: 16px; 
@@ -456,7 +458,7 @@
         .gift-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 20px var(--accent-glow); background: rgba(0,0,0,0.2); }
         .gift-card .icon-wrapper { width: 60px; height: 60px; display: flex; justify-content: center; align-items: center; filter: drop-shadow(0 0 10px var(--accent-glow)); }
         .gift-card .name { font-weight: bold; font-size: 0.95rem; color: var(--text-main); }
-        .gift-card .price { font-size: 0.9rem; color: var(--gold); font-weight: 800; background: rgba(255, 215, 0, 0.1); padding: 5px 12px; border-radius: 12px; border: 1px solid rgba(255, 215, 0, 0.3);}
+        .gift-card .price { font-size: 0.9rem; color: var(--gold); font-weight: 800; background: rgba(255, 215, 0, 0.1); padding: 5px 12px; border-radius: 12px; border: 1px solid rgba(255, 215, 0, 0.3); line-height: 1.3;}
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -510,32 +512,32 @@
     <div class="modal-overlay" id="authModal">
         <div class="modal" style="pointer-events: auto;">
             <div class="auth-tabs">
-                <div class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Вход</div>
-                <div class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">Регистрация</div>
+                <div class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')" data-i18n="tabLogin">Вход</div>
+                <div class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')" data-i18n="tabRegister">Регистрация</div>
             </div>
 
             <div id="formLogin">
-                <h2 style="color: var(--accent); margin-bottom: 10px;">С возвращением!</h2>
-                <p style="text-align: center; color: var(--text-muted); margin-bottom: 25px; font-size: 0.9rem;">Войдите в свой аккаунт Aura</p>
+                <h2 style="color: var(--accent); margin-bottom: 10px;" data-i18n="authWelcomeBack">С возвращением!</h2>
+                <p style="text-align: center; color: var(--text-muted); margin-bottom: 25px; font-size: 0.9rem;" data-i18n="authSubLogin">Войдите в свой аккаунт Aura</p>
                 
                 <div class="form-group" style="text-align: left;">
-                    <label>Юзернейм</label>
-                    <input type="text" id="loginUsername" placeholder="Например: name" oninput="validateUsername(this)">
+                    <label data-i18n="profUser">Юзернейм</label>
+                    <input type="text" id="loginUsername" data-i18n-ph="placeholderTarget" placeholder="Например: name" oninput="validateUsername(this)">
                 </div>
                 
                 <div class="form-group" style="text-align: left;">
-                    <label>Пароль</label>
-                    <input type="password" id="loginPassword" placeholder="Ваш пароль">
+                    <label data-i18n="authPass">Пароль</label>
+                    <input type="password" id="loginPassword" data-i18n-ph="authPassHolder" placeholder="Ваш пароль">
                 </div>
 
                 <div class="modal-actions" style="justify-content: center; margin-top: 10px;">
-                    <button class="btn-save" style="width: 100%; padding: 12px; font-size: 1.1rem;" onclick="processLogin()">Войти</button>
+                    <button class="btn-save" style="width: 100%; padding: 12px; font-size: 1.1rem;" onclick="processLogin()" data-i18n="authBtnLogin">Войти</button>
                 </div>
             </div>
 
             <div id="formRegister" style="display: none;">
-                <h2 style="color: var(--accent); margin-bottom: 10px;">Добро пожаловать!</h2>
-                <p style="text-align: center; color: var(--text-muted); margin-bottom: 25px; font-size: 0.9rem;">Создайте свой профиль Aura</p>
+                <h2 style="color: var(--accent); margin-bottom: 10px;" data-i18n="authWelcome">Добро пожаловать!</h2>
+                <p style="text-align: center; color: var(--text-muted); margin-bottom: 25px; font-size: 0.9rem;" data-i18n="authSubReg">Создайте свой профиль Aura</p>
                 
                 <div class="profile-layout">
                     <label for="regAvatarUpload" class="profile-avatar-large" id="regAvatarDisplay" title="Установить фото">
@@ -544,28 +546,28 @@
                     <input type="file" id="regAvatarUpload" accept="image/*" style="display: none;" onchange="handleRegAvatar(event)">
                     
                     <div class="form-group" style="text-align: left;">
-                        <label>Имя <span style="color:var(--danger)">*</span></label>
-                        <input type="text" id="regName" placeholder="Ваше имя">
+                        <label><span data-i18n="profName">Имя</span> <span style="color:var(--danger)">*</span></label>
+                        <input type="text" id="regName" data-i18n-ph="authNameHolder" placeholder="Ваше имя">
                     </div>
                     
                     <div class="form-group" style="text-align: left;">
-                        <label>Юзернейм (Только англ) <span style="color:var(--danger)">*</span></label>
-                        <input type="text" id="regUsername" placeholder="Например: name" oninput="validateUsername(this)" onkeyup="checkRegUsername()">
+                        <label><span data-i18n="profUser">Юзернейм</span> (Только англ) <span style="color:var(--danger)">*</span></label>
+                        <input type="text" id="regUsername" data-i18n-ph="placeholderTarget" placeholder="Например: name" oninput="validateUsername(this)" onkeyup="checkRegUsername()">
                         <div id="regUsernameStatus" class="status-msg" style="min-height: 20px;"></div>
                     </div>
 
                     <div class="form-group" style="text-align: left;">
-                        <label>Пароль <span style="color:var(--danger)">*</span></label>
-                        <input type="password" id="regPassword" placeholder="Придумайте пароль">
+                        <label><span data-i18n="authPass">Пароль</span> <span style="color:var(--danger)">*</span></label>
+                        <input type="password" id="regPassword" data-i18n-ph="authRegPassHolder" placeholder="Придумайте пароль">
                     </div>
                     
                     <div class="form-group" style="text-align: left;">
-                        <label>О себе (по желанию)</label>
-                        <textarea id="regBio" rows="2" placeholder="Расскажите немного о себе..."></textarea>
+                        <label data-i18n="authBio">О себе (по желанию)</label>
+                        <textarea id="regBio" rows="2" data-i18n-ph="authBioHolder" placeholder="Расскажите немного о себе..."></textarea>
                     </div>
                 </div>
                 <div class="modal-actions" style="justify-content: center; margin-top: 10px;">
-                    <button class="btn-save" style="width: 100%; padding: 12px; font-size: 1.1rem;" onclick="completeRegistration()">Создать аккаунт</button>
+                    <button class="btn-save" style="width: 100%; padding: 12px; font-size: 1.1rem;" onclick="completeRegistration()" data-i18n="authBtnReg">Создать аккаунт</button>
                 </div>
             </div>
         </div>
@@ -573,26 +575,26 @@
 
     <div class="modal-overlay" id="topupModal" onclick="if(event.target === this) closeModal('topupModal')">
         <div class="modal">
-            <h2 style="color: var(--gold); margin-bottom: 5px;">Банк Aura</h2>
-            <p style="text-align:center; color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">Пополните баланс для покупки подарков</p>
+            <h2 style="color: var(--gold); margin-bottom: 5px;" data-i18n="bankTitle">Банк Aura</h2>
+            <p style="text-align:center; color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;" data-i18n="bankSub">Пополните баланс для покупки подарков</p>
             
             <div style="background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); padding: 15px; border-radius: 12px; margin-bottom: 20px;">
-                <p style="text-align:center; font-weight: bold; font-size: 1.1rem;">Курс: 1 AUR = 1 грн</p>
+                <p style="text-align:center; font-weight: bold; font-size: 1.1rem;" data-i18n="bankRate">Курс: 1 AUR = 1 грн = 2.5 руб = 0.025 $</p>
             </div>
 
             <div class="form-group">
-                <label>Сумма пополнения (грн)</label>
+                <label data-i18n="bankAmount">Сумма пополнения (грн)</label>
                 <input type="number" id="topupAmount" placeholder="Например: 100" min="10">
             </div>
 
-            <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin-top: 10px;">
+            <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin-top: 10px;" data-i18n="bankVisual">
                 *Это визуальный интерфейс, сейчас он начисляет тестовые AUR.
             </p>
 
-            <button class="btn-topup" onclick="processTopUp()">Оплатить </button>
+            <button class="btn-topup" onclick="processTopUp()" data-i18n="bankPay">Оплатить </button>
             
             <div class="modal-actions" style="justify-content: center; margin-top: 15px;">
-                <button class="btn-cancel" onclick="closeModal('topupModal')" style="width:100%">Отмена</button>
+                <button class="btn-cancel" onclick="closeModal('topupModal')" style="width:100%" data-i18n="btnCancel">Отмена</button>
             </div>
         </div>
     </div>
@@ -614,6 +616,11 @@
                     <option value="50|heart">Пылающее Сердце (50 AUR)</option>
                     <option value="100|diamond">Редкий Бриллиант (100 AUR)</option>
                     <option value="150|crown">Корона Императора (150 AUR)</option>
+                    <option value="200|rose">Золотая Роза (200 AUR)</option>
+                    <option value="350|sphere">Космическая Сфера (350 AUR)</option>
+                    <option value="500|crystal">Магический Кристалл (500 AUR)</option>
+                    <option value="750|dragon">Плазменный Дракон (750 AUR)</option>
+                    <option value="1000|universe">Aura Universe (1000 AUR)</option>
                 </select>
             </div>
 
@@ -632,37 +639,74 @@
                     <span id="storeBalanceLabel">0</span> AUR <span>+</span>
                 </div>
             </div>
-            <p style="color: var(--text-muted); margin-bottom: 10px; font-size: 0.9rem;">Выберите премиум-подарок для собеседника</p>
+            <p style="color: var(--text-muted); margin-bottom: 10px; font-size: 0.9rem;" data-i18n="sendGiftSub">Выберите премиум-подарок для собеседника</p>
             
-            <div class="gifts-grid">
+            <div class="gifts-grid" id="giftsGridContainer">
                 <div class="gift-card" onclick="buyAndSendGift('star', 25)">
                     <div class="icon-wrapper">
                         <svg viewBox="0 0 24 24" width="100%" height="100%"><defs><linearGradient id="gStar" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fffde7"/><stop offset="50%" stop-color="#fdd835"/><stop offset="100%" stop-color="#f57f17"/></linearGradient></defs><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="url(#gStar)" stroke="#fbc02d" stroke-width="1" stroke-linejoin="round"/></svg>
                     </div>
                     <div class="name">Aura Star</div>
-                    <div class="price">25 AUR</div>
+                    <div class="price">25 AUR<br><span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">~25₴ | ~63₽ | ~0.63$</span></div>
                 </div>
                 <div class="gift-card" onclick="buyAndSendGift('heart', 50)">
                     <div class="icon-wrapper">
                         <svg viewBox="0 0 24 24" width="100%" height="100%"><defs><linearGradient id="gHeart" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff8a80"/><stop offset="50%" stop-color="#ff1744"/><stop offset="100%" stop-color="#b71c1c"/></linearGradient></defs><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="url(#gHeart)" stroke="#d50000" stroke-width="1"/></svg>
                     </div>
                     <div class="name">Пылающее Сердце</div>
-                    <div class="price">50 AUR</div>
+                    <div class="price">50 AUR<br><span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">~50₴ | ~125₽ | ~1.25$</span></div>
                 </div>
                 <div class="gift-card" onclick="buyAndSendGift('diamond', 100)">
                     <div class="icon-wrapper">
                         <svg viewBox="0 0 24 24" width="100%" height="100%"><defs><linearGradient id="gDiamond" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e0f7fa"/><stop offset="50%" stop-color="#00e5ff"/><stop offset="100%" stop-color="#006064"/></linearGradient></defs><polygon points="12 2 2 8 12 22 22 8 12 2" fill="url(#gDiamond)" stroke="#00b8d4" stroke-width="1" stroke-linejoin="round"/><polygon points="12 2 6 8 12 22 18 8 12 2" fill="rgba(255,255,255,0.3)" stroke="#00b8d4" stroke-width="0.5"/><line x1="2" y1="8" x2="22" y2="8" stroke="#00b8d4" stroke-width="1"/></svg>
                     </div>
                     <div class="name">Редкий Бриллиант</div>
-                    <div class="price">100 AUR</div>
+                    <div class="price">100 AUR<br><span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">~100₴ | ~250₽ | ~2.50$</span></div>
                 </div>
                 <div class="gift-card" onclick="buyAndSendGift('crown', 150)">
                     <div class="icon-wrapper">
                         <svg viewBox="0 0 24 24" width="100%" height="100%"><defs><linearGradient id="gCrown" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ffe082"/><stop offset="50%" stop-color="#ffb300"/><stop offset="100%" stop-color="#ff6f00"/></linearGradient></defs><path d="M2 20h20v2H2v-2zm1.6-4l2-10 4.4 5.5L12 2l2 9.5L18.4 6l2 10H3.6z" fill="url(#gCrown)" stroke="#ff8f00" stroke-width="1" stroke-linejoin="round"/><circle cx="12" cy="2" r="1.5" fill="#fff"/><circle cx="3.6" cy="6" r="1.5" fill="#fff"/><circle cx="20.4" cy="6" r="1.5" fill="#fff"/></svg>
                     </div>
                     <div class="name">Корона Императора</div>
-                    <div class="price">150 AUR</div>
+                    <div class="price">150 AUR<br><span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">~150₴ | ~375₽ | ~3.75$</span></div>
                 </div>
+                
+                <div class="gift-card" onclick="buyAndSendGift('rose', 200)">
+                    <div class="icon-wrapper">
+                        <svg viewBox="0 0 24 24" width="100%" height="100%"><defs><linearGradient id="gRose" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fff176"/><stop offset="100%" stop-color="#f57f17"/></linearGradient></defs><path d="M12 2c-2 0-3 2-3 4 0 1 1 2 1 3-1 0-2-1-3-1-1.5 0-2.5 1-2.5 2.5 0 2 2 3 3 4-1 1-2 2-2 4 0 1.5 1.5 2.5 3 2.5 2 0 3-2 3-4 1 1 2 2 4 2 1.5 0 2.5-1 2.5-2.5 0-2-2-3-3-4 1-1 2-2 2-4 0-1.5-1-2.5-2.5-2.5-1 0-2 1-3 1 0-1 1-2 1-3 0-2-1-4-3-4z" fill="url(#gRose)" stroke="#fbc02d" stroke-width="0.5"/><path d="M12 11c0 4 2 8 2 11" stroke="#4caf50" stroke-width="2" fill="none"/></svg>
+                    </div>
+                    <div class="name">Золотая Роза</div>
+                    <div class="price">200 AUR<br><span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">~200₴ | ~500₽ | ~5.00$</span></div>
+                </div>
+                <div class="gift-card" onclick="buyAndSendGift('sphere', 350)">
+                    <div class="icon-wrapper">
+                        <svg viewBox="0 0 24 24" width="100%" height="100%"><defs><radialGradient id="gSphere" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#e040fb"/><stop offset="100%" stop-color="#4a148c"/></radialGradient></defs><circle cx="12" cy="12" r="10" fill="url(#gSphere)" stroke="#7b1fa2" stroke-width="1"/><circle cx="8" cy="8" r="3" fill="rgba(255,255,255,0.4)" filter="blur(2px)"/><path d="M12 2a10 10 0 000 20 10 10 0 000-20z" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="0.5"/></svg>
+                    </div>
+                    <div class="name">Космическая Сфера</div>
+                    <div class="price">350 AUR<br><span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">~350₴ | ~875₽ | ~8.75$</span></div>
+                </div>
+                <div class="gift-card" onclick="buyAndSendGift('crystal', 500)">
+                    <div class="icon-wrapper">
+                        <svg viewBox="0 0 24 24" width="100%" height="100%"><defs><linearGradient id="gCrystal" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#b2dfdb"/><stop offset="50%" stop-color="#009688"/><stop offset="100%" stop-color="#004d40"/></linearGradient></defs><polygon points="12 2 16 8 12 22 8 8" fill="url(#gCrystal)" stroke="#00bfa5" stroke-width="1"/><polygon points="12 2 12 22 8 8" fill="rgba(255,255,255,0.2)"/></svg>
+                    </div>
+                    <div class="name">Магический Кристалл</div>
+                    <div class="price">500 AUR<br><span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">~500₴ | ~1250₽ | ~12.50$</span></div>
+                </div>
+                <div class="gift-card" onclick="buyAndSendGift('dragon', 750)">
+                    <div class="icon-wrapper">
+                        <svg viewBox="0 0 24 24" width="100%" height="100%"><defs><linearGradient id="gDragon" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff5252"/><stop offset="50%" stop-color="#d50000"/><stop offset="100%" stop-color="#212121"/></linearGradient></defs><path d="M22 12c0-5-4-9-9-9-3 0-6 2-8 5-1 2-2 4-2 6 0 2 2 3 4 2 2-1 3-3 5-3 2 0 4 1 5 3 0 1-1 2-2 2-2 0-3-1-4-2-1-1-3 0-2 2 1 1 3 1 4 1 3 0 5-2 5-5z" fill="url(#gDragon)" stroke="#ff1744" stroke-width="1"/><circle cx="16" cy="8" r="1" fill="#fff"/></svg>
+                    </div>
+                    <div class="name">Плазменный Дракон</div>
+                    <div class="price">750 AUR<br><span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">~750₴ | ~1875₽ | ~18.75$</span></div>
+                </div>
+                <div class="gift-card" onclick="buyAndSendGift('universe', 1000)">
+                    <div class="icon-wrapper">
+                        <svg viewBox="0 0 24 24" width="100%" height="100%"><defs><radialGradient id="gUniverse" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffffff"/><stop offset="40%" stop-color="#00d2ff"/><stop offset="100%" stop-color="#3a0ca3"/></radialGradient></defs><circle cx="12" cy="12" r="11" fill="url(#gUniverse)" stroke="#00d2ff" stroke-width="1"/><circle cx="12" cy="12" r="6" fill="rgba(255,255,255,0.3)"/><path d="M2 12 a10 4 0 0 0 20 0" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="1"/><path d="M2 12 a10 4 0 0 1 20 0" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1"/></svg>
+                    </div>
+                    <div class="name">Aura Universe</div>
+                    <div class="price">1000 AUR<br><span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">~1000₴ | ~2500₽ | ~25.00$</span></div>
+                </div>
+
             </div>
             
             <div class="modal-actions" style="justify-content: center; margin-top: 25px;">
@@ -673,7 +717,7 @@
 
     <div class="sidebar">
         <div class="sidebar-search">
-            <input type="text" id="searchInput" placeholder="Поиск контактов и глобальный..." oninput="filterChats()">
+            <input type="text" id="searchInput" data-i18n-ph="placeholderSearch" placeholder="Поиск контактов и глобальный..." oninput="filterChats()">
         </div>
 
         <div class="archive-header" id="archiveToggleBtn" onclick="toggleArchiveFolder()" style="display: none;">
@@ -790,6 +834,11 @@
             
             <div id="viewProfilePinnedGift" style="margin-top: 15px; display: none; align-items: center; justify-content: center; gap: 10px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 15px; border: 1px dashed var(--accent);"></div>
 
+            <div id="viewProfileMembers" style="margin-top: 15px; display: none; flex-direction: column; gap: 5px; text-align: left; background: rgba(0,0,0,0.1); padding: 10px; border-radius: 10px; max-height: 150px; overflow-y: auto;">
+                <h4 style="color: var(--accent); margin-bottom: 5px; font-size: 0.9rem;" data-i18n="membersList">Участники:</h4>
+                <div id="membersListContainer"></div>
+            </div>
+
             <div class="modal-actions" style="justify-content: center; margin-top: 25px;">
                 <button class="btn-cancel" onclick="closeModal('viewProfileModal')" data-i18n="btnClose">Закрыть</button>
             </div>
@@ -833,8 +882,8 @@
                     <div id="usernameStatus" class="status-msg" style="text-align: right; min-height: 20px;"></div>
                 </div>
                 <div class="form-group" style="width: 100%; margin-top: 10px;">
-                    <label>О себе (Био)</label>
-                    <textarea id="profileBio" rows="2" placeholder="Расскажите о себе..."></textarea>
+                    <label data-i18n="authBio">О себе (Био)</label>
+                    <textarea id="profileBio" rows="2" data-i18n-ph="authBioHolder" placeholder="Расскажите о себе..."></textarea>
                 </div>
             </div>
             <div class="modal-actions">
@@ -874,10 +923,10 @@
                     <h2 data-i18n="setAppearance">Персонализация</h2>
                 </div>
                 <div class="form-group">
-                    <label>Тема приложения</label>
+                    <label data-i18n="setTheme">Тема приложения</label>
                     <select id="themeMode" onchange="changeThemeMode()">
-                        <option value="dark">Тёмная (Dark)</option>
-                        <option value="light">Светлая (Light)</option>
+                        <option value="dark" data-i18n="themeDark">Тёмная (Dark)</option>
+                        <option value="light" data-i18n="themeLight">Светлая (Light)</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -891,12 +940,21 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Обои чата</label>
+                    <label data-i18n="setWall">Обои чата</label>
                     <div class="wallpaper-options">
                         <div class="wp-option active" style="background: var(--bg-element); display: flex; justify-content: center; align-items: center;" onclick="setWallpaper('none', this)" title="Без обоев">
                             <svg viewBox="0 0 24 24" stroke="var(--text-muted)" stroke-width="2" fill="none" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                         </div>
-                        <div class="wp-option" style="background-image: url('https://i.pinimg.com/736x/8c/98/99/8c98994518b575bfd8c949e91d20548b.jpg');" onclick="setWallpaper('url(https://i.pinimg.com/736x/8c/98/99/8c98994518b575bfd8c949e91d20548b.jpg)', this)"></div><div class="wp-option" style="background-image: url('https://i.pinimg.com/736x/c5/47/3e/c5473e1f5791c53b3f2db7bbd2216e2d.jpg');" onclick="setWallpaper('url(https://i.pinimg.com/736x/c5/47/3e/c5473e1f5791c53b3f2db7bbd2216e2d.jpg)', this)"></div><div class="wp-option" style="background-image: url('https://i.pinimg.com/736x/13/ab/a2/13aba2cdafc1a62d7a641a27e0259eb5.jpg');" onclick="setWallpaper('url(https://i.pinimg.com/736x/13/ab/a2/13aba2cdafc1a62d7a641a27e0259eb5.jpg)', this)"></div><div class="wp-option" style="background-image: url('https://i.pinimg.com/736x/21/df/b6/21dfb6890f6b39ec4264b3cd796a5de6.jpg');" onclick="setWallpaper('url(https://i.pinimg.com/736x/21/df/b6/21dfb6890f6b39ec4264b3cd796a5de6.jpg)', this)"></div><div class="wp-option" style="background-image: url('https://i.pinimg.com/736x/e4/f7/33/e4f733f39097da4ebefb3b145b206774.jpg');" onclick="setWallpaper('url(https://i.pinimg.com/736x/e4/f7/33/e4f733f39097da4ebefb3b145b206774.jpg)', this)"></div><div class="wp-option" style="background-image: url('https://i.pinimg.com/736x/91/92/df/9192df28383e58992e5c830c253b26c0.jpg');" onclick="setWallpaper('url(https://i.pinimg.com/736x/91/92/df/9192df28383e58992e5c830c253b26c0.jpg)', this)"></div><div class="wp-option" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);" onclick="setWallpaper('linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)', this)"></div><div class="wp-option" style="background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);" onclick="setWallpaper('linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%)', this)"></div><div class="wp-option" style="background: linear-gradient(to top, #a18cd1 0%, #fbc2eb 100%);" onclick="setWallpaper('linear-gradient(to top, #a18cd1 0%, #fbc2eb 100%)', this)"></div><div class="wp-option" style="background: linear-gradient(135deg, #1f1c2c 0%, #928dab 100%);" onclick="setWallpaper('linear-gradient(135deg, #1f1c2c 0%, #928dab 100%)', this)"></div><div class="wp-option" style="background: #2b5876;" onclick="setWallpaper('#2b5876', this)"></div><div class="wp-option" style="background-image: url('https://i.pinimg.com/736x/5b/c8/16/5bc816e8851ccfaee47225110e53db71.jpg');" onclick="setWallpaper('url(https://i.pinimg.com/736x/5b/c8/16/5bc816e8851ccfaee47225110e53db71.jpg)', this)"></div><div class="wp-option" style="background-image: url('https://i.pinimg.com/736x/9c/e8/87/9ce887714fc2a76f2df83020614ea174.jpg');" onclick="setWallpaper('url(https://i.pinimg.com/736x/9c/e8/87/9ce887714fc2a76f2df83020614ea174.jpg)', this)"></div><div class="wp-option" style="background-image: url('https://i.pinimg.com/736x/71/84/04/7184045f47a61d3090623fc63e808c1c.jpg');" onclick="setWallpaper('url(https://i.pinimg.com/736x/71/84/04/7184045f47a61d3090623fc63e808c1c.jpg)', this)"></div><div class="wp-option" style="background-image: url('https://i.pinimg.com/736x/09/a4/09/09a4097f3747bf47000e3197116cb7bf.jpg');" onclick="setWallpaper('url(https://i.pinimg.com/736x/09/a4/09/09a4097f3747bf47000e3197116cb7bf.jpg)', this)"></div><div class="wp-option" style="background-image: url('https://i.pinimg.com/736x/83/82/87/8382875ab93da2cc2574169622d1df7b.jpg');" onclick="setWallpaper('url(https://i.pinimg.com/736x/83/82/87/8382875ab93da2cc2574169622d1df7b.jpg)', this)"></div>
+                        <div class="wp-option" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);" onclick="setWallpaper('linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)', this)"></div>
+                        <div class="wp-option" style="background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);" onclick="setWallpaper('linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%)', this)"></div>
+                        <div class="wp-option" style="background: linear-gradient(to top, #a18cd1 0%, #fbc2eb 100%);" onclick="setWallpaper('linear-gradient(to top, #a18cd1 0%, #fbc2eb 100%)', this)"></div>
+                        <div class="wp-option" style="background: linear-gradient(135deg, #1f1c2c 0%, #928dab 100%);" onclick="setWallpaper('linear-gradient(135deg, #1f1c2c 0%, #928dab 100%)', this)"></div>
+                        <div class="wp-option" style="background: #2b5876;" onclick="setWallpaper('#2b5876', this)"></div>
+                        <div class="wp-option" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);" onclick="setWallpaper('linear-gradient(135deg, #667eea 0%, #764ba2 100%)', this)"></div>
+                        <div class="wp-option" style="background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);" onclick="setWallpaper('linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%)', this)"></div>
+                        <div class="wp-option" style="background-image: url('https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=200&q=80');" onclick="setWallpaper('url(https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=200&q=80)', this)"></div>
+                        <div class="wp-option" style="background-image: url('https://images.unsplash.com/photo-1557683316-973673baf926?w=200&q=80');" onclick="setWallpaper('url(https://images.unsplash.com/photo-1557683316-973673baf926?w=200&q=80)', this)"></div>
+                        <div class="wp-option" style="background-image: url('https://images.unsplash.com/photo-1557682224-5b8590cd9ec5?w=200&q=80');" onclick="setWallpaper('url(https://images.unsplash.com/photo-1557682224-5b8590cd9ec5?w=200&q=80)', this)"></div>
                     </div>
                 </div>
             </div>
@@ -960,10 +1018,10 @@
             </div>
             
             <div class="form-group" id="groupPrivacyArea" style="display: none;">
-                <label>Приватность</label>
+                <label data-i18n="addPrivacy">Приватность</label>
                 <select id="chatPrivacy">
-                    <option value="public">Публичная (Поиск по юзу/названию)</option>
-                    <option value="private">Приватная (Вход по заявке)</option>
+                    <option value="public" data-i18n="optPublic">Публичная (Поиск по юзу/названию)</option>
+                    <option value="private" data-i18n="optPrivate">Приватная (Вход по заявке)</option>
                 </select>
             </div>
 
@@ -974,18 +1032,18 @@
             </div>
             
             <div id="contactNameGroup" class="form-group">
-                <label>Имя контакта (как будет отображаться у вас)</label>
-                <input type="text" id="newChatContactName" placeholder="Например: Артём (по желанию)">
+                <label data-i18n="addContactName">Имя контакта (как будет отображаться у вас)</label>
+                <input type="text" id="newChatContactName" data-i18n-ph="addContactNameHolder" placeholder="Например: Артём (по желанию)">
             </div>
 
             <div id="groupExtraFields" style="display: none;">
                 <div class="form-group">
-                    <label>Описание</label>
-                    <textarea id="newGroupBio" rows="2" placeholder="О чем эта группа?"></textarea>
+                    <label data-i18n="addDesc">Описание</label>
+                    <textarea id="newGroupBio" rows="2" data-i18n-ph="addDescHolder" placeholder="О чем эта группа?"></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Участники (юзернеймы через запятую)</label>
-                    <input type="text" id="newGroupMembers" placeholder="Например: name, name1">
+                    <label data-i18n="addMembers">Участники (юзернеймы через запятую)</label>
+                    <input type="text" id="newGroupMembers" data-i18n-ph="addMembersHolder" placeholder="Например: name, name1">
                 </div>
             </div>
 
@@ -1016,17 +1074,20 @@
         
         let hiddenMsgs = USER ? (JSON.parse(localStorage.getItem('auraHiddenMsgs_' + USER)) || {}) : {};
 
+        // Решение бага с обнулением локально обменянных подарков сервером
+        let exchangedGifts = USER ? (JSON.parse(localStorage.getItem('auraExchangedGifts_' + USER)) || {}) : {};
+
         const translations = {
             ru: {
                 fav: "Избранное", placeholderMsg: "Напишите сообщение...", btnSend: "Отправить",
                 profTitle: "Мой Профиль", viewProfileTitle: "Профиль", profName: "Имя", profUser: "Юзернейм", 
                 btnCancel: "Отмена", btnSave: "Сохранить", setTitle: "Настройки", setLang: "Язык",
                 setColor: "Цвет акцента", optYes: "Да", optNo: "Нет",
-                btnClose: "Закрыть", addTitle: "Новый чат", addType: "Тип", optUser: "Пользователь", 
-                optGroup: "Группа", optChannel: "Канал", addTarget: "Юзернейм или Название",
+                btnClose: "Закрыть", addTitle: "Новый чат / Группа", addType: "Тип", optUser: "Пользователь", 
+                optGroup: "Группа", optChannel: "Канал", addTarget: "Юзернейм пользователя",
                 placeholderTarget: "Например: name", btnAdd: "Создать", statusCheck: "Проверка...", 
                 statusShort: "Слишком короткий", statusTaken: "Этот юзернейм уже занят!", statusFree: "Свободен",
-                statusErr: "Ошибка сети", archiveTab: "Архив", menuArchive: "В архив", menuUnarchive: "Из архива", 
+                statusErr: "Ошибка сети", archiveTab: "Архив", menuArchive: "В архив", menuUnarchive: "Достать из архива", 
                 menuDeleteLocal: "Удалить у меня", menuDeleteAll: "Удалить у всех", userNotFound: "Аккаунт не найден",
                 setAppearance: "Персонализация", setData: "Данные и память", btnEdit: "Редактировать",
                 statusOnline: "В сети", statusOffline: "Был(а) недавно", statusFav: "Только для вас",
@@ -1035,15 +1096,25 @@
                 confirmCache: "Очистить историю всех чатов? Сами чаты останутся, но сообщения будут удалены. Это освободит память.",
                 confirmReset: "Внимание! Это полностью удалит ваш профиль и выйдет из аккаунта. Продолжить?",
                 deleteAccount: "Удалить аккаунт", confirmDelAcc: "Вы уверены, что хотите навсегда удалить свой аккаунт? Действие необратимо и удалит все ваши данные!",
-                deletedAccount: "Удалённый аккаунт", sendGiftTitle: "Магазин подарков"
+                deletedAccount: "Удалённый аккаунт", sendGiftTitle: "Магазин подарков", sendGiftSub: "Выберите премиум-подарок для собеседника",
+                placeholderSearch: "Поиск контактов и глобальный...", setTheme: "Тема приложения", themeDark: "Тёмная (Dark)", themeLight: "Светлая (Light)",
+                setWall: "Обои чата", addPrivacy: "Приватность", optPublic: "Публичная (Поиск по юзу/названию)", optPrivate: "Приватная (Вход по заявке)",
+                addContactName: "Имя контакта (как будет отображаться у вас)", addContactNameHolder: "Например: Артём (по желанию)",
+                addDesc: "Описание", addDescHolder: "О чем эта группа?", addMembers: "Участники (юзернеймы через запятую)", addMembersHolder: "Например: name, name1",
+                tabLogin: "Вход", tabRegister: "Регистрация", authWelcomeBack: "С возвращением!", authSubLogin: "Войдите в свой аккаунт Aura",
+                authPass: "Пароль", authPassHolder: "Ваш пароль", authBtnLogin: "Войти", authWelcome: "Добро пожаловать!", authSubReg: "Создайте свой профиль Aura",
+                authNameHolder: "Ваше имя", authRegPassHolder: "Придумайте пароль", authBio: "О себе (по желанию)", authBioHolder: "Расскажите немного о себе...",
+                authBtnReg: "Создать аккаунт", bankTitle: "Банк Aura", bankSub: "Пополните баланс для покупки подарков", bankRate: "Курс: 1 AUR = 1 грн = 2.5 руб = 0.025 $",
+                bankAmount: "Сумма пополнения (грн)", bankVisual: "*Это визуальный интерфейс, сейчас он начисляет тестовые AUR.", bankPay: "Оплатить",
+                membersList: "Участники:"
             },
             en: {
                 fav: "Saved Messages", placeholderMsg: "Write a message...", btnSend: "Send",
                 profTitle: "My Profile", viewProfileTitle: "Profile", profName: "Name", profUser: "Username", 
                 btnCancel: "Cancel", btnSave: "Save", setTitle: "Settings", setLang: "Language",
                 setColor: "Accent Color", optYes: "Yes", optNo: "No",
-                btnClose: "Close", addTitle: "New Chat", addType: "Type", optUser: "User", 
-                optGroup: "Group", optChannel: "Channel", addTarget: "Username or Title",
+                btnClose: "Close", addTitle: "New Chat / Group", addType: "Type", optUser: "User", 
+                optGroup: "Group", optChannel: "Channel", addTarget: "Username",
                 placeholderTarget: "e.g., name", btnAdd: "Create", statusCheck: "Checking...", 
                 statusShort: "Too short", statusTaken: "Taken!", statusFree: "Available",
                 statusErr: "Network error", archiveTab: "Archive", menuArchive: "Archive", menuUnarchive: "Unarchive", 
@@ -1055,15 +1126,25 @@
                 confirmCache: "Clear all chat history? The chats will remain, but messages will be deleted. This frees up memory.",
                 confirmReset: "Warning! This will completely delete your profile and log you out. Continue?",
                 deleteAccount: "Delete Account", confirmDelAcc: "Are you sure you want to permanently delete your account? Irreversible!",
-                deletedAccount: "Deleted Account", sendGiftTitle: "Gift Store"
+                deletedAccount: "Deleted Account", sendGiftTitle: "Gift Store", sendGiftSub: "Choose a premium gift for the recipient",
+                placeholderSearch: "Search contacts and global...", setTheme: "App Theme", themeDark: "Dark", themeLight: "Light",
+                setWall: "Chat Wallpaper", addPrivacy: "Privacy", optPublic: "Public (Search by username/title)", optPrivate: "Private (Join via request)",
+                addContactName: "Contact Name (how it will appear to you)", addContactNameHolder: "e.g., Artem (optional)",
+                addDesc: "Description", addDescHolder: "What is this group about?", addMembers: "Members (usernames separated by commas)", addMembersHolder: "e.g., name, name1",
+                tabLogin: "Login", tabRegister: "Register", authWelcomeBack: "Welcome back!", authSubLogin: "Login to your Aura account",
+                authPass: "Password", authPassHolder: "Your password", authBtnLogin: "Log in", authWelcome: "Welcome!", authSubReg: "Create your Aura profile",
+                authNameHolder: "Your name", authRegPassHolder: "Create a password", authBio: "About me (optional)", authBioHolder: "Tell a bit about yourself...",
+                authBtnReg: "Create account", bankTitle: "Aura Bank", bankSub: "Top up your balance to buy gifts", bankRate: "Rate: 1 AUR = 1 UAH = 2.5 RUB = 0.025 USD",
+                bankAmount: "Top-up amount (UAH)", bankVisual: "*This is a visual interface, it adds test AUR.", bankPay: "Pay",
+                membersList: "Members:"
             },
             uk: {
                 fav: "Збережене", placeholderMsg: "Напишіть повідомлення...", btnSend: "Надіслати",
                 profTitle: "Мій Профіль", viewProfileTitle: "Профіль", profName: "Ім'я", profUser: "Юзернейм", 
                 btnCancel: "Скасувати", btnSave: "Зберегти", setTitle: "Налаштування", setLang: "Мова",
                 setColor: "Колір акценту", optYes: "Так", optNo: "Ні",
-                btnClose: "Закрити", addTitle: "Новый чат", addType: "Тип", optUser: "Користувач", 
-                optGroup: "Група", optChannel: "Канал", addTarget: "Юзернейм або Назва",
+                btnClose: "Закрити", addTitle: "Новый чат / Група", addType: "Тип", optUser: "Користувач", 
+                optGroup: "Група", optChannel: "Канал", addTarget: "Юзернейм користувача",
                 placeholderTarget: "Наприклад: name", btnAdd: "Створити", statusCheck: "Перевірка...", 
                 statusShort: "Занадто короткий", statusTaken: "Вже зайнятий!", statusFree: "Вільний",
                 statusErr: "Помилка мережі", archiveTab: "Архів", menuArchive: "В архів", menuUnarchive: "З архіву", 
@@ -1075,7 +1156,17 @@
                 confirmCache: "Очистити історію всіх чатів? Самі чати залишаться, але повідомлення будуть видалені.",
                 confirmReset: "Увага! Це повністю видалить ваш профіль і вийде з акаунта. Продовжити?",
                 deleteAccount: "Видалити акаунт", confirmDelAcc: "Ви впевнені, що хочете назавжди видалити свій акаунт? Ця дія незворотна!",
-                deletedAccount: "Видалений акаунт", sendGiftTitle: "Магазин подарунків"
+                deletedAccount: "Видалений акаунт", sendGiftTitle: "Магазин подарунків", sendGiftSub: "Виберіть преміум-подарунок",
+                placeholderSearch: "Пошук контактів і глобальний...", setTheme: "Тема додатку", themeDark: "Темна (Dark)", themeLight: "Світла (Light)",
+                setWall: "Шпалери чату", addPrivacy: "Приватність", optPublic: "Публічна (Пошук)", optPrivate: "Приватна",
+                addContactName: "Ім'я контакту", addContactNameHolder: "Наприклад: Артем",
+                addDesc: "Опис", addDescHolder: "Про що ця група?", addMembers: "Учасники (юзернейми через кому)", addMembersHolder: "Наприклад: name, name1",
+                tabLogin: "Вхід", tabRegister: "Реєстрація", authWelcomeBack: "З поверненням!", authSubLogin: "Увійдіть до свого акаунту",
+                authPass: "Пароль", authPassHolder: "Ваш пароль", authBtnLogin: "Увійти", authWelcome: "Ласкаво просимо!", authSubReg: "Створіть свій профіль",
+                authNameHolder: "Ваше ім'я", authRegPassHolder: "Придумайте пароль", authBio: "Про себе", authBioHolder: "Розкажіть про себе...",
+                authBtnReg: "Створити акаунт", bankTitle: "Банк Aura", bankSub: "Поповніть баланс", bankRate: "Курс: 1 AUR = 1 грн = 2.5 руб = 0.025 $",
+                bankAmount: "Сума поповнення", bankVisual: "*Це тестовий інтерфейс.", bankPay: "Оплатити",
+                membersList: "Учасники:"
             },
             zh: {
                 fav: "收藏夹", placeholderMsg: "写信息...", btnSend: "发送",
@@ -1083,7 +1174,7 @@
                 btnCancel: "取消", btnSave: "保存", setTitle: "设置", setLang: "语言",
                 setColor: "强调色", optYes: "是", optNo: "否",
                 btnClose: "关闭", addTitle: "新聊天", addType: "类型", optUser: "用户", 
-                optGroup: "组", optChannel: "渠道", addTarget: "用户名或名称",
+                optGroup: "组", optChannel: "渠道", addTarget: "用户名",
                 placeholderTarget: "例如：name", btnAdd: "创建", statusCheck: "检查中...", 
                 statusShort: "太短", statusTaken: "已占用！", statusFree: "自由",
                 statusErr: "网络错误", archiveTab: "档案", menuArchive: "归档", menuUnarchive: "从档案中", 
@@ -1095,9 +1186,22 @@
                 confirmCache: "清除所有聊天记录？释放内存。",
                 confirmReset: "警告！这将完全删除您的个人资料。继续？",
                 deleteAccount: "删除帐户", confirmDelAcc: "您确定要永久删除您的帐户吗？此操作不可逆！",
-                deletedAccount: "已删除的帐户", sendGiftTitle: "礼品店"
+                deletedAccount: "已删除的帐户", sendGiftTitle: "礼品店", sendGiftSub: "选择保费礼物",
+                placeholderSearch: "搜索", setTheme: "主题", themeDark: "黑暗", themeLight: "光",
+                setWall: "墙纸", addPrivacy: "隐私", optPublic: "上市", optPrivate: "私人的",
+                addContactName: "联系人姓名", addContactNameHolder: "例如：姓名",
+                addDesc: "描述", addDescHolder: "说明...", addMembers: "成员", addMembersHolder: "name, name1",
+                tabLogin: "登录", tabRegister: "注册", authWelcomeBack: "欢迎回来！", authSubLogin: "登录帐户",
+                authPass: "密码", authPassHolder: "密码", authBtnLogin: "登录", authWelcome: "欢迎！", authSubReg: "建立个人资料",
+                authNameHolder: "您的名字", authRegPassHolder: "创建密码", authBio: "关于我", authBioHolder: "告诉自己...",
+                authBtnReg: "创建账户", bankTitle: "银行 Aura", bankSub: "充值余额", bankRate: "汇率: 1 AUR = 1 UAH = 2.5 RUB = 0.025 USD",
+                bankAmount: "数量", bankVisual: "*测试", bankPay: "支付",
+                membersList: "成员:"
             }
         };
+
+        // Запуск мультиязычности СРАЗУ, чтобы авторизация перевелась
+        changeLanguage(true);
 
         let currentTarget = translations[localSettings.lang || 'ru'].fav; 
         let chatLoop;
@@ -1127,6 +1231,12 @@
             if(giftType === 'heart') return '<svg viewBox="0 0 24 24" width="100%" height="100%"><defs><linearGradient id="gHeartChat" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff8a80"/><stop offset="50%" stop-color="#ff1744"/><stop offset="100%" stop-color="#b71c1c"/></linearGradient></defs><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="url(#gHeartChat)" stroke="#d50000" stroke-width="1"/></svg>';
             if(giftType === 'diamond') return '<svg viewBox="0 0 24 24" width="100%" height="100%"><defs><linearGradient id="gDiamondChat" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e0f7fa"/><stop offset="50%" stop-color="#00e5ff"/><stop offset="100%" stop-color="#006064"/></linearGradient></defs><polygon points="12 2 2 8 12 22 22 8 12 2" fill="url(#gDiamondChat)" stroke="#00b8d4" stroke-width="1" stroke-linejoin="round"/><polygon points="12 2 6 8 12 22 18 8 12 2" fill="rgba(255,255,255,0.3)" stroke="#00b8d4" stroke-width="0.5"/><line x1="2" y1="8" x2="22" y2="8" stroke="#00b8d4" stroke-width="1"/></svg>';
             if(giftType === 'crown') return '<svg viewBox="0 0 24 24" width="100%" height="100%"><defs><linearGradient id="gCrownChat" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ffe082"/><stop offset="50%" stop-color="#ffb300"/><stop offset="100%" stop-color="#ff6f00"/></linearGradient></defs><path d="M2 20h20v2H2v-2zm1.6-4l2-10 4.4 5.5L12 2l2 9.5L18.4 6l2 10H3.6z" fill="url(#gCrownChat)" stroke="#ff8f00" stroke-width="1" stroke-linejoin="round"/><circle cx="12" cy="2" r="1.5" fill="#fff"/><circle cx="3.6" cy="6" r="1.5" fill="#fff"/><circle cx="20.4" cy="6" r="1.5" fill="#fff"/></svg>';
+            // НОВЫЕ ПОДАРКИ
+            if(giftType === 'rose') return '<svg viewBox="0 0 24 24" width="100%" height="100%"><defs><linearGradient id="gRoseChat" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fff176"/><stop offset="100%" stop-color="#f57f17"/></linearGradient></defs><path d="M12 2c-2 0-3 2-3 4 0 1 1 2 1 3-1 0-2-1-3-1-1.5 0-2.5 1-2.5 2.5 0 2 2 3 3 4-1 1-2 2-2 4 0 1.5 1.5 2.5 3 2.5 2 0 3-2 3-4 1 1 2 2 4 2 1.5 0 2.5-1 2.5-2.5 0-2-2-3-3-4 1-1 2-2 2-4 0-1.5-1-2.5-2.5-2.5-1 0-2 1-3 1 0-1 1-2 1-3 0-2-1-4-3-4z" fill="url(#gRoseChat)" stroke="#fbc02d" stroke-width="0.5"/><path d="M12 11c0 4 2 8 2 11" stroke="#4caf50" stroke-width="2" fill="none"/></svg>';
+            if(giftType === 'sphere') return '<svg viewBox="0 0 24 24" width="100%" height="100%"><defs><radialGradient id="gSphereChat" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#e040fb"/><stop offset="100%" stop-color="#4a148c"/></radialGradient></defs><circle cx="12" cy="12" r="10" fill="url(#gSphereChat)" stroke="#7b1fa2" stroke-width="1"/><circle cx="8" cy="8" r="3" fill="rgba(255,255,255,0.4)" filter="blur(2px)"/><path d="M12 2a10 10 0 000 20 10 10 0 000-20z" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="0.5"/></svg>';
+            if(giftType === 'crystal') return '<svg viewBox="0 0 24 24" width="100%" height="100%"><defs><linearGradient id="gCrystalChat" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#b2dfdb"/><stop offset="50%" stop-color="#009688"/><stop offset="100%" stop-color="#004d40"/></linearGradient></defs><polygon points="12 2 16 8 12 22 8 8" fill="url(#gCrystalChat)" stroke="#00bfa5" stroke-width="1"/><polygon points="12 2 12 22 8 8" fill="rgba(255,255,255,0.2)"/></svg>';
+            if(giftType === 'dragon') return '<svg viewBox="0 0 24 24" width="100%" height="100%"><defs><linearGradient id="gDragonChat" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff5252"/><stop offset="50%" stop-color="#d50000"/><stop offset="100%" stop-color="#212121"/></linearGradient></defs><path d="M22 12c0-5-4-9-9-9-3 0-6 2-8 5-1 2-2 4-2 6 0 2 2 3 4 2 2-1 3-3 5-3 2 0 4 1 5 3 0 1-1 2-2 2-2 0-3-1-4-2-1-1-3 0-2 2 1 1 3 1 4 1 3 0 5-2 5-5z" fill="url(#gDragonChat)" stroke="#ff1744" stroke-width="1"/><circle cx="16" cy="8" r="1" fill="#fff"/></svg>';
+            if(giftType === 'universe') return '<svg viewBox="0 0 24 24" width="100%" height="100%"><defs><radialGradient id="gUniverseChat" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffffff"/><stop offset="40%" stop-color="#00d2ff"/><stop offset="100%" stop-color="#3a0ca3"/></radialGradient></defs><circle cx="12" cy="12" r="11" fill="url(#gUniverseChat)" stroke="#00d2ff" stroke-width="1"/><circle cx="12" cy="12" r="6" fill="rgba(255,255,255,0.3)"/><path d="M2 12 a10 4 0 0 0 20 0" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="1"/><path d="M2 12 a10 4 0 0 1 20 0" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1"/></svg>';
             return '';
         }
 
@@ -1161,7 +1271,7 @@
                     tempRegAvatar = event.target.result;
                     const display = document.getElementById('regAvatarDisplay');
                     for(let el of display.childNodes) if(el.nodeType === 3 || el.nodeName === 'SVG' || el.className==='cam-icon') display.removeChild(el);
-                    display.style.backgroundImage = `url(${tempRegAvatar})`;
+                    display.style.backgroundImage = `url('${tempRegAvatar}')`; // Фикс бага 7 (кавычки)
                     display.style.border = '2px solid var(--accent)';
                 }
                 reader.readAsDataURL(file);
@@ -1229,6 +1339,7 @@
                 localChats = JSON.parse(localStorage.getItem('auraChats_' + USER)) || [];
                 localMessages = JSON.parse(localStorage.getItem('auraMessages_' + USER)) || {};
                 hiddenMsgs = JSON.parse(localStorage.getItem('auraHiddenMsgs_' + USER)) || {};
+                exchangedGifts = JSON.parse(localStorage.getItem('auraExchangedGifts_' + USER)) || {};
 
                 document.getElementById('authModal').classList.remove('active');
                 setTimeout(() => {
@@ -1283,6 +1394,9 @@
             hiddenMsgs = {};
             localStorage.setItem('auraHiddenMsgs_' + USER, JSON.stringify(hiddenMsgs));
 
+            exchangedGifts = {};
+            localStorage.setItem('auraExchangedGifts_' + USER, JSON.stringify(exchangedGifts));
+
             document.getElementById('authModal').classList.remove('active');
             setTimeout(() => {
                 document.getElementById('authModal').style.display = 'none';
@@ -1332,14 +1446,16 @@
             const display = document.getElementById('profileAvatarDisplay');
             const miniDisplay = document.getElementById('sidebarMyAvatar');
             
-            for(let el of display.childNodes) if(el.nodeType === 3) display.removeChild(el);
+            for(let el of display.childNodes) if(el.nodeType === 3 || el.nodeName === 'SVG' || el.className==='cam-icon') display.removeChild(el);
             
             if (localProfile.avatar) {
-                display.style.backgroundImage = `url(${localProfile.avatar})`;
-                miniDisplay.style.backgroundImage = `url(${localProfile.avatar})`; miniDisplay.innerText = '';
+                display.style.backgroundImage = `url('${localProfile.avatar}')`; // Фикс
+                display.innerHTML = '<div class="cam-icon"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></div>';
+                miniDisplay.style.backgroundImage = `url('${localProfile.avatar}')`; miniDisplay.innerText = '';
             } else {
                 let initial = localProfile.name ? localProfile.name.substring(0, 1).toUpperCase() : 'A';
-                display.insertBefore(document.createTextNode(initial), display.firstChild); display.style.backgroundImage = '';
+                display.innerHTML = initial + '<div class="cam-icon"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></div>';
+                display.style.backgroundImage = '';
                 miniDisplay.innerText = initial; miniDisplay.style.backgroundImage = '';
             }
         }
@@ -1375,7 +1491,7 @@
             const dict = translations[localSettings.lang || 'ru'];
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
-                if(dict[key]) el.innerText = dict[key];
+                if(dict[key]) el.innerHTML = dict[key]; // Используем innerHTML чтобы не ломать span/svg
             });
             document.querySelectorAll('[data-i18n-ph]').forEach(el => {
                 const key = el.getAttribute('data-i18n-ph');
@@ -1384,11 +1500,11 @@
 
             const currentFavString = translations.ru.fav || translations.en.fav || translations.uk.fav || translations.zh.fav;
 
-            if(currentTarget === currentFavString) {
+            if(currentTarget === currentFavString || currentTarget === "Избранное") {
                 currentTarget = dict.fav;
-                document.getElementById('currentChatName').innerText = dict.fav;
+                if(document.getElementById('currentChatName')) document.getElementById('currentChatName').innerText = dict.fav;
             }
-            renderSidebarChats();
+            if(document.getElementById('chatList')) renderSidebarChats();
 
             if (!isInit && currentTarget) {
                 updateChatHeaderStatus(currentTarget);
@@ -1408,8 +1524,8 @@
             } else {
                 document.documentElement.style.setProperty('--accent-gradient', `linear-gradient(135deg, ${color}, #8a2be2)`);
             }
-            renderSidebarChats();
-            if (currentTarget === translations[localSettings.lang || 'ru'].fav) {
+            if(document.getElementById('chatList')) renderSidebarChats();
+            if (currentTarget === translations[localSettings.lang || 'ru'].fav && document.getElementById('currentChatAvatar')) {
                 document.getElementById('currentChatAvatar').style.background = 'var(--accent-gradient)';
             }
         }
@@ -1547,13 +1663,16 @@
 
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.chat-options-btn') && !e.target.closest('.dropdown-menu')) {
-                document.getElementById('chatDropdown').style.display = 'none';
+                let dMenu = document.getElementById('chatDropdown');
+                if(dMenu) dMenu.style.display = 'none';
             }
             if (!e.target.closest('.stickers-panel') && !e.target.closest('.media-btn')) {
-                document.getElementById('stickersPanel').style.display = 'none';
+                let sPanel = document.getElementById('stickersPanel');
+                if(sPanel) sPanel.style.display = 'none';
             }
             if (!e.target.closest('.msg-context-menu')) {
-                document.getElementById('msgContextMenu').style.display = 'none';
+                let mMenu = document.getElementById('msgContextMenu');
+                if(mMenu) mMenu.style.display = 'none';
             }
             if (!e.target.closest('.swipe-container')) {
                 document.querySelectorAll('.chat-item.swiped-open').forEach(el => {
@@ -1587,24 +1706,57 @@
             }
             
             if (query.length > 2) {
-                let exists = Array.from(items).some(item => item.getAttribute('data-name').toLowerCase() === query || item.getAttribute('data-realname').toLowerCase() === query);
-                if (!exists) {
-                    globalSearchSection.innerHTML = `
-                        <div style="padding: 10px 15px; color: var(--accent); font-size: 0.85rem; font-weight: bold;">Глобальный поиск</div>
-                        <div class="chat-item" onclick="joinGlobalChat('${query}')">
-                            <div class="avatar-mini" style="background: var(--accent-gradient);"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
-                            <div style="flex:1; display: flex; flex-direction: column; justify-content: center; min-width: 0;">
-                                <div style="font-weight: 600; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${query}</div>
-                                <div style="font-size: 0.8rem; color: var(--text-muted);">Нажмите, чтобы открыть/вступить</div>
+                let existsLocally = Array.from(items).some(item => item.getAttribute('data-name').toLowerCase() === query || item.getAttribute('data-realname').toLowerCase() === query);
+                if (!existsLocally) {
+                    // Ищем в публичных группах
+                    let publicGroups = JSON.parse(localStorage.getItem('auraPublicGroups')) || {};
+                    let pubKey = Object.keys(publicGroups).find(k => k.toLowerCase() === query || publicGroups[k].realName.toLowerCase() === query);
+                    
+                    if (pubKey) {
+                        let pg = publicGroups[pubKey];
+                        let pgIcon = pg.avatar ? `<div class="avatar-mini" style="background-image: url('${pg.avatar}'); color: transparent;"></div>` : `<div class="avatar-mini" style="background: var(--accent-gradient);">${pg.realName.substring(0,1).toUpperCase()}</div>`;
+                        globalSearchSection.innerHTML = `
+                            <div style="padding: 10px 15px; color: var(--accent); font-size: 0.85rem; font-weight: bold;">Публичные группы</div>
+                            <div class="chat-item" onclick="joinPublicGroup('${pg.name}')">
+                                ${pgIcon}
+                                <div style="flex:1; display: flex; flex-direction: column; justify-content: center; min-width: 0;">
+                                    <div style="font-weight: 600; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${pg.realName}</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">Нажмите, чтобы вступить</div>
+                                </div>
                             </div>
-                        </div>
-                    `;
+                        `;
+                    } else {
+                        globalSearchSection.innerHTML = `
+                            <div style="padding: 10px 15px; color: var(--accent); font-size: 0.85rem; font-weight: bold;">Глобальный поиск</div>
+                            <div class="chat-item" onclick="joinGlobalChat('${query}')">
+                                <div class="avatar-mini" style="background: var(--accent-gradient);"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+                                <div style="flex:1; display: flex; flex-direction: column; justify-content: center; min-width: 0;">
+                                    <div style="font-weight: 600; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${query}</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">Запрос на чат/вступление</div>
+                                </div>
+                            </div>
+                        `;
+                    }
                     globalSearchSection.style.display = 'block';
                 } else {
                     globalSearchSection.style.display = 'none';
                 }
             } else {
                 globalSearchSection.style.display = 'none';
+            }
+        }
+
+        function joinPublicGroup(target) {
+            let publicGroups = JSON.parse(localStorage.getItem('auraPublicGroups')) || {};
+            let pg = publicGroups[target];
+            if(pg && !localChats.find(c => c.name === target)) {
+                // Добавляем себе
+                localChats.push({ name: pg.name, realName: pg.realName, type: pg.type, avatar: pg.avatar, bio: pg.bio, isArchived: false, isDeleted: false, members: pg.members });
+                localStorage.setItem('auraChats_' + USER, JSON.stringify(localChats));
+                renderSidebarChats();
+                selectChat(target, pg.type);
+                document.getElementById('searchInput').value = '';
+                filterChats();
             }
         }
 
@@ -1662,7 +1814,7 @@
                 if (isDeleted) {
                     iconHtml = `<div class="avatar-mini" style="background: rgba(100,100,100,0.5); color: #888;">${iconDeleted}</div>`;
                 } else if (chat.avatar) {
-                    iconHtml = `<div class="avatar-mini" style="background-image: url(${chat.avatar}); color: transparent;"></div>`;
+                    iconHtml = `<div class="avatar-mini" style="background-image: url('${chat.avatar}'); color: transparent;"></div>`;
                 } else {
                     let initial = chat.realName ? chat.realName.substring(0, 1).toUpperCase() : (chat.name ? chat.name.substring(0, 1).toUpperCase() : 'U');
                     iconHtml = `<div class="avatar-mini">${initial}</div>`;
@@ -1781,14 +1933,18 @@
                     statusDiv.innerText = dict.statusChannel;
                     statusDiv.style.color = "var(--text-muted)";
                     inputArea.style.display = 'none'; 
+                    callBtn.style.display = 'none'; // Убрал звонки для каналов
                 } else if (chatObj.type === 'group') {
                     statusDiv.innerText = dict.statusGroup;
                     statusDiv.style.color = "var(--accent)";
                     inputArea.style.display = 'flex';
+                    callBtn.style.display = 'none'; // Убрал звонки для групп
                 } else {
                     inputArea.style.display = 'flex';
+                    // Исправление бага статуса "В сети"
                     let lastSeen = localStorage.getItem('auraOnline_' + targetName);
-                    if(lastSeen && (Date.now() - parseInt(lastSeen) < 15000)) {
+                    // Увеличил таймаут до 60 секунд для удобства локального тестирования
+                    if(lastSeen && (Date.now() - parseInt(lastSeen) < 60000)) {
                         statusDiv.innerHTML = `<span style="display:inline-block; width:8px; height:8px; background:var(--success); border-radius:50%; margin-right:5px;"></span>${dict.statusOnline}`;
                         statusDiv.style.color = "var(--success)";
                     } else {
@@ -1802,7 +1958,7 @@
         function startCall(e) {
             e.stopPropagation();
             if(!currentTarget || currentTarget === translations[localSettings.lang || 'ru'].fav) return;
-            alert(`📞 Звонок пользователю/в группу ${currentTarget}...\n\n(Функция звонков находится в стадии разработки)`);
+            alert(`📞 Звонок пользователю ${currentTarget}...\n\n(Функция звонков находится в стадии разработки)`);
         }
 
         /* --- ВЫБОР ЧАТА И ШАПКА --- */
@@ -1844,7 +2000,7 @@
                     avatarDiv.style.color = '#888';
                     avatarDiv.style.backgroundImage = '';
                 } else if (chatObj.avatar) {
-                    avatarDiv.style.backgroundImage = `url(${chatObj.avatar})`; 
+                    avatarDiv.style.backgroundImage = `url('${chatObj.avatar}')`; // Фикс
                     avatarDiv.innerHTML = '';
                     avatarDiv.style.background = 'none';
                 } else {
@@ -1917,7 +2073,7 @@
                     currentGroupAvatar = event.target.result;
                     const display = document.getElementById('groupAvatarDisplay');
                     for(let el of display.childNodes) if(el.nodeName === 'SVG') display.removeChild(el);
-                    display.style.backgroundImage = `url(${currentGroupAvatar})`;
+                    display.style.backgroundImage = `url('${currentGroupAvatar}')`; // Фикс
                     display.style.borderStyle = 'solid'; display.style.borderColor = 'var(--accent)';
                 }
                 reader.readAsDataURL(file);
@@ -2028,30 +2184,32 @@
             alert("Подарок успешно выставлен в ваш профиль!");
         }
 
-        // ОБМЕН ПОДАРКА НА БАЛАНС
+        // ОБМЕН ПОДАРКА НА БАЛАНС (ФИКС БАГА)
         function exchangeGift(msgIndex, type) {
-            // Исправление бага с двойным обменом
-            if(localMessages[currentTarget] && localMessages[currentTarget][msgIndex]) {
-                if(localMessages[currentTarget][msgIndex].text.startsWith('[gift_exchanged]')) {
-                    alert("Этот подарок уже обменян!");
-                    return;
-                }
+            // Исправление бага с двойным обменом и API перезаписью
+            if(!exchangedGifts[currentTarget]) exchangedGifts[currentTarget] = [];
+            if(exchangedGifts[currentTarget].includes(msgIndex)) {
+                alert("Этот подарок уже обменян!");
+                return;
             }
 
-            let price = 0;
-            if(type === 'star') price = 12; // Половина стоимости округленно
-            if(type === 'heart') price = 25;
-            if(type === 'diamond') price = 50;
-            if(type === 'crown') price = 75;
+            const GIFT_PRICES = { star: 25, heart: 50, diamond: 100, crown: 150, rose: 200, sphere: 350, crystal: 500, dragon: 750, universe: 1000 };
+            let price = Math.floor(GIFT_PRICES[type] / 2) || 10;
 
             // Начисляем баланс
             localProfile.balance += price;
             localStorage.setItem('auraProfile_' + USER, JSON.stringify(localProfile));
             updateBalanceDisplay();
 
-            // Обновляем статус сообщения
-            localMessages[currentTarget][msgIndex].text = '[gift_exchanged]' + type;
-            localStorage.setItem('auraMessages_' + USER, JSON.stringify(localMessages));
+            // Сохраняем в локальный кэш обменов, чтобы API не перезатерло
+            exchangedGifts[currentTarget].push(msgIndex);
+            localStorage.setItem('auraExchangedGifts_' + USER, JSON.stringify(exchangedGifts));
+
+            // Обновляем статус сообщения (если есть локально)
+            if(localMessages[currentTarget] && localMessages[currentTarget][msgIndex]) {
+                localMessages[currentTarget][msgIndex].text = '[gift_exchanged]' + type;
+                localStorage.setItem('auraMessages_' + USER, JSON.stringify(localMessages));
+            }
 
             alert(`Подарок успешно обменян! На ваш баланс зачислено ${price} AUR.`);
             
@@ -2085,7 +2243,7 @@
         function adminSendFreeGift() {
             let targetUser = document.getElementById('adminTargetUser').value;
             let giftRaw = document.getElementById('adminGiftType').value;
-            let giftType = giftRaw.split('|')[1]; // Получаем тип (star, heart, diamond, crown)
+            let giftType = giftRaw.split('|')[1]; // Получаем тип (star, heart, diamond, crown, rose...)
 
             if (!targetUser) return;
 
@@ -2168,7 +2326,7 @@
                 avatarDisplay.innerHTML = iconDeleted;
                 avatarDisplay.style.color = '#888';
             } else if(chatObj.avatar) {
-                avatarDisplay.style.background = `url(${chatObj.avatar}) center/cover`; 
+                avatarDisplay.style.background = `url('${chatObj.avatar}') center/cover`; // Фикс бага 7 (кавычки)
                 avatarDisplay.innerHTML = '';
             } else {
                 avatarDisplay.style.background = 'var(--accent-gradient)';
@@ -2190,6 +2348,23 @@
                 pinnedDiv.style.display = 'none';
             }
 
+            // Добавление участников (Фикс)
+            let membersDiv = document.getElementById('viewProfileMembers');
+            let membersList = document.getElementById('membersListContainer');
+            if (chatObj.type === 'group' || chatObj.type === 'channel') {
+                membersDiv.style.display = 'flex';
+                membersList.innerHTML = '';
+                let memStr = chatObj.members || "";
+                let mArr = memStr.split(',').map(s=>s.trim()).filter(Boolean);
+                if(!mArr.includes(USER)) mArr.unshift(USER + " (Вы)");
+                mArr.forEach((m, idx) => {
+                    let role = idx === 0 ? '<span style="color: var(--gold); font-size: 0.7rem; margin-left: 5px; font-weight:bold;">Админ</span>' : '';
+                    membersList.innerHTML += `<div style="font-size: 0.95rem; padding: 6px 0; border-bottom: 1px solid var(--glass-border);">@${m} ${role}</div>`;
+                });
+            } else {
+                membersDiv.style.display = 'none';
+            }
+
             document.getElementById('chatDropdown').style.display = 'none';
             openModal('viewProfileModal');
         }
@@ -2197,7 +2372,7 @@
         function openMyProfileView() {
             const avatarDisplay = document.getElementById('myViewAvatar');
             if(localProfile.avatar) {
-                avatarDisplay.style.background = `url(${localProfile.avatar}) center/cover`; 
+                avatarDisplay.style.background = `url('${localProfile.avatar}') center/cover`; 
                 avatarDisplay.innerHTML = '';
             } else {
                 avatarDisplay.style.background = 'var(--accent-gradient)';
@@ -2261,11 +2436,13 @@
                 localProfile = { name: USER, avatar: null, bio: "Нет описания", balance: oldProfile.balance || 0, pinnedGift: oldProfile.pinnedGift || null };
                 
                 hiddenMsgs = JSON.parse(localStorage.getItem('auraHiddenMsgs_' + oldUser)) || {};
+                exchangedGifts = JSON.parse(localStorage.getItem('auraExchangedGifts_' + oldUser)) || {};
                 
                 localStorage.removeItem('auraChats_' + oldUser);
                 localStorage.removeItem('auraMessages_' + oldUser);
                 localStorage.removeItem('auraProfile_' + oldUser);
                 localStorage.removeItem('auraHiddenMsgs_' + oldUser);
+                localStorage.removeItem('auraExchangedGifts_' + oldUser);
                 localStorage.removeItem('auraAuth_' + oldUser);
 
                 currentTarget = translations[localSettings.lang || 'ru'].fav;
@@ -2326,6 +2503,7 @@
             const contactName = document.getElementById('newChatContactName').value.trim();
             const type = document.getElementById('chatType').value;
             const bio = document.getElementById('newGroupBio').value.trim();
+            const members = document.getElementById('newGroupMembers').value.trim();
             const statusLabel = document.getElementById('addChatStatus');
             const dict = translations[localSettings.lang || 'ru'];
             
@@ -2371,7 +2549,7 @@
             }
 
             if (!localChats.find(c => c.name === target)) {
-                localChats.push({ name: target, realName: pulledName, type: type, avatar: pulledAvatar, bio: pulledBio, isArchived: false, isDeleted: false });
+                localChats.push({ name: target, realName: pulledName, type: type, avatar: pulledAvatar, bio: pulledBio, isArchived: false, isDeleted: false, members: members });
                 localStorage.setItem('auraChats_' + USER, JSON.stringify(localChats));
             } else {
                 let existing = localChats.find(c => c.name === target);
@@ -2380,8 +2558,33 @@
                     existing.avatar = pulledAvatar;
                     existing.realName = pulledName;
                     existing.bio = pulledBio;
+                } else {
+                    existing.members = members;
                 }
                 localStorage.setItem('auraChats_' + USER, JSON.stringify(localChats));
+            }
+
+            // Фикс 5: Добавление публичных групп для других юзеров
+            if (type === 'group' || type === 'channel') {
+                let privacyEl = document.getElementById('chatPrivacy');
+                let isPrivate = privacyEl ? privacyEl.value === 'private' : false;
+                if (!isPrivate) {
+                    let publicGroups = JSON.parse(localStorage.getItem('auraPublicGroups')) || {};
+                    publicGroups[target] = { name: target, realName: pulledName, type: type, avatar: pulledAvatar, bio: pulledBio, members: members, admin: USER };
+                    localStorage.setItem('auraPublicGroups', JSON.stringify(publicGroups));
+                }
+
+                // Добавление юзеров в группу при создании
+                if (members) {
+                    let mArr = members.split(',').map(s=>s.trim()).filter(Boolean);
+                    mArr.forEach(m => {
+                        let mChats = JSON.parse(localStorage.getItem('auraChats_' + m)) || [];
+                        if(!mChats.find(c => c.name === target)) {
+                            mChats.push({ name: target, realName: pulledName, type: type, avatar: pulledAvatar, bio: pulledBio, isArchived: false, isDeleted: false, members: members });
+                            localStorage.setItem('auraChats_' + m, JSON.stringify(mChats));
+                        }
+                    });
+                }
             }
             
             closeModal('addModal');
@@ -2466,10 +2669,25 @@
                     const res = await fetch(`${API_URL}/chat/${USER}/${currentTarget}`);
                     const data = await res.json();
                     msgs = data.messages || [];
+                    
+                    // Фикс бага 1: API перезаписывает локальные статусы подарков
+                    let ex = exchangedGifts[currentTarget] || [];
+                    msgs.forEach((m, idx) => {
+                        if(ex.includes(idx) && m.text.startsWith('[gift]')) {
+                            m.text = m.text.replace('[gift]', '[gift_exchanged]');
+                        }
+                    });
+
                     localMessages[currentTarget] = msgs;
                     localStorage.setItem('auraMessages_' + USER, JSON.stringify(localMessages));
                 } catch (e) {
-                    // Если нет сети, используем локальные msgs
+                    // Если нет сети, используем локальные msgs, но тоже проверим обмены
+                    let ex = exchangedGifts[currentTarget] || [];
+                    msgs.forEach((m, idx) => {
+                        if(ex.includes(idx) && m.text.startsWith('[gift]')) {
+                            m.text = m.text.replace('[gift]', '[gift_exchanged]');
+                        }
+                    });
                 }
             }
 
@@ -2564,6 +2782,7 @@
             if(chatLoop) clearInterval(chatLoop);
             
             chatLoop = setInterval(() => {
+                // Обновляем статус каждую секунду
                 localStorage.setItem('auraOnline_' + USER, Date.now());
                 
                 let myStoredChats = JSON.parse(localStorage.getItem('auraChats_' + USER)) || [];
@@ -2586,6 +2805,15 @@
                                 avatarsUpdated = true;
                             }
                         }
+                    } else if (c.type === 'group' || c.type === 'channel') {
+                        let publicGroups = JSON.parse(localStorage.getItem('auraPublicGroups')) || {};
+                        let pg = publicGroups[c.name];
+                        if (pg && (pg.avatar !== c.avatar || pg.bio !== c.bio || pg.members !== c.members)) {
+                            c.avatar = pg.avatar;
+                            c.bio = pg.bio;
+                            c.members = pg.members;
+                            avatarsUpdated = true;
+                        }
                     }
                 });
                 
@@ -2593,7 +2821,7 @@
                     localStorage.setItem('auraChats_' + USER, JSON.stringify(localChats));
                     renderSidebarChats();
                     if (currentTarget !== translations[localSettings.lang || 'ru'].fav && localChats.find(c => c.name === currentTarget)) {
-                        selectChat(currentTarget, 'user');
+                        selectChat(currentTarget, localChats.find(c => c.name === currentTarget).type);
                     }
                 } else if(currentTarget) {
                     updateChatHeaderStatus(currentTarget);
@@ -2641,6 +2869,11 @@
                 if(giftType === 'heart') giftData.name = 'Пылающее Сердце';
                 if(giftType === 'diamond') giftData.name = 'Редкий Бриллиант';
                 if(giftType === 'crown') giftData.name = 'Корона Императора';
+                if(giftType === 'rose') giftData.name = 'Золотая Роза';
+                if(giftType === 'sphere') giftData.name = 'Космическая Сфера';
+                if(giftType === 'crystal') giftData.name = 'Магический Кристалл';
+                if(giftType === 'dragon') giftData.name = 'Плазменный Дракон';
+                if(giftType === 'universe') giftData.name = 'Aura Universe';
                 
                 msgDiv.style.background = 'transparent';
                 msgDiv.style.boxShadow = 'none';
@@ -2677,6 +2910,10 @@
             chatDiv.appendChild(msgDiv);
             chatDiv.scrollTop = chatDiv.scrollHeight;
         }
+
+        // Поддержка "В сети" для других вкладок
+        window.addEventListener('mousemove', () => { if(USER) localStorage.setItem('auraOnline_' + USER, Date.now()); });
+        window.addEventListener('keydown', () => { if(USER) localStorage.setItem('auraOnline_' + USER, Date.now()); });
 
         window.onload = () => {
             if (!localStorage.getItem('auraUser')) {
