@@ -135,7 +135,7 @@
         }
         .aur-balance:hover { background: rgba(255, 215, 0, 0.1); transform: translateY(-2px); }
 
-        .chat-list { flex: 1; overflow-y: auto; overflow-x: hidden; padding-top: 10px; }
+        .chat-list { flex: 1; overflow-y: auto; overflow-x: hidden; padding-top: 10px; position: relative;}
         
         /* СВАЙП КОНТЕЙНЕР */
         .swipe-container { position: relative; overflow: hidden; margin: 5px 10px; border-radius: 15px; touch-action: pan-y; }
@@ -242,13 +242,13 @@
         .chat-history { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; z-index: 2; }
         
         .msg { 
-            max-width: 75%; padding: 10px 15px; border-radius: 20px; line-height: 1.4; word-wrap: break-word; font-size: 0.95rem;
+            max-width: 75%; padding: 10px 15px; border-radius: 20px; line-height: 1.4; word-break: break-word; font-size: 0.95rem;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: relative; cursor: default;
         }
         .msg.received { background: var(--bg-element); border: 1px solid var(--glass-border); align-self: flex-start; border-bottom-left-radius: 4px; }
         .msg.sent { background: var(--accent-gradient); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 4px 15px var(--accent-glow); }
         
-        .msg-media { max-width: 100%; border-radius: 12px; margin-top: 5px; cursor: pointer; }
+        .msg-media { max-width: 100%; max-height: 300px; object-fit: contain; border-radius: 12px; margin-top: 5px; cursor: pointer; }
         .msg-audio { width: 250px; height: 50px; margin-top: 5px; outline: none; border-radius: 25px; background: rgba(255,255,255,0.1); }
         .msg-sticker { width: 120px; height: 120px; }
 
@@ -492,7 +492,7 @@
             .stickers-panel { grid-template-columns: repeat(3, 1fr); left: 10px; right: 10px; }
             
             /* Фикс переполнения в шапке на телефонах */
-            .chat-header-info { padding: 5px; flex: 1; min-width: 0; }
+            .chat-header-info { padding: 5px; flex: 1; min-width: 0; overflow: hidden;}
         }
         
         #authModal { z-index: 99999; background: var(--bg-main); }
@@ -673,7 +673,7 @@
 
     <div class="sidebar">
         <div class="sidebar-search">
-            <input type="text" id="searchInput" placeholder="Поиск контактов..." oninput="filterChats()">
+            <input type="text" id="searchInput" placeholder="Поиск контактов и глобальный..." oninput="filterChats()">
         </div>
 
         <div class="archive-header" id="archiveToggleBtn" onclick="toggleArchiveFolder()" style="display: none;">
@@ -722,7 +722,10 @@
                 </div>
             </div>
             
-            <div style="position: relative;">
+            <div style="position: relative; display: flex; align-items: center;">
+                <button class="chat-options-btn" id="callBtn" onclick="startCall(event)" title="Звонок" style="margin-right: 5px;">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                </button>
                 <button class="chat-options-btn" onclick="toggleChatMenu(event)">
                     <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><circle cx="12" cy="12" r="2"></circle><circle cx="12" cy="5" r="2"></circle><circle cx="12" cy="19" r="2"></circle></svg>
                 </button>
@@ -785,6 +788,8 @@
             <p id="viewProfileType" style="color: var(--accent); font-size: 0.9rem; font-weight: bold; margin-bottom: 15px;">User</p>
             <p id="viewProfileBio" style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.4; background: rgba(0,0,0,0.1); padding: 10px; border-radius: 10px; word-break: break-word;">Нет описания</p>
             
+            <div id="viewProfilePinnedGift" style="margin-top: 15px; display: none; align-items: center; justify-content: center; gap: 10px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 15px; border: 1px dashed var(--accent);"></div>
+
             <div class="modal-actions" style="justify-content: center; margin-top: 25px;">
                 <button class="btn-cancel" onclick="closeModal('viewProfileModal')" data-i18n="btnClose">Закрыть</button>
             </div>
@@ -798,6 +803,8 @@
             <p id="myViewUsername" style="color: var(--accent); font-size: 0.9rem; font-weight: bold; margin-bottom: 15px;">@user</p>
             <p id="myViewBio" style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.4; background: rgba(0,0,0,0.1); padding: 10px; border-radius: 10px; word-break: break-word;">Нет описания</p>
             
+            <div id="myViewPinnedGift" style="margin-top: 15px; display: none; align-items: center; justify-content: center; gap: 10px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 15px; border: 1px solid var(--accent);"></div>
+
             <div class="modal-actions" style="justify-content: center; margin-top: 25px;">
                 <button class="btn-cancel" onclick="closeModal('viewMyProfileModal')" data-i18n="btnClose">Закрыть</button>
                 <button class="btn-save" onclick="closeModal('viewMyProfileModal'); setTimeout(()=>openModal('profileModal'), 300)" data-i18n="btnEdit">Редактировать</button>
@@ -951,6 +958,15 @@
                     <option value="channel" data-i18n="optChannel">Канал</option>
                 </select>
             </div>
+            
+            <div class="form-group" id="groupPrivacyArea" style="display: none;">
+                <label>Приватность</label>
+                <select id="chatPrivacy">
+                    <option value="public">Публичная (Поиск по юзу/названию)</option>
+                    <option value="private">Приватная (Вход по заявке)</option>
+                </select>
+            </div>
+
             <div class="form-group">
                 <label data-i18n="addTarget" id="targetLabel">Юзернейм пользователя</label>
                 <input type="text" id="newChatTarget" data-i18n-ph="placeholderTarget" placeholder="Например: name">
@@ -991,7 +1007,7 @@
 
         let USER = localStorage.getItem('auraUser') || ""; 
         
-        let localProfile = USER ? (JSON.parse(localStorage.getItem('auraProfile_' + USER)) || { name: USER, avatar: null, bio: "Нет описания", balance: 0 }) : { balance: 0 };
+        let localProfile = USER ? (JSON.parse(localStorage.getItem('auraProfile_' + USER)) || { name: USER, avatar: null, bio: "Нет описания", balance: 0, pinnedGift: null }) : { balance: 0, pinnedGift: null };
         if (localProfile.balance === undefined) localProfile.balance = 0; // Для совместимости со старыми профилями
 
         let localChats = USER ? (JSON.parse(localStorage.getItem('auraChats_' + USER)) || []) : [];
@@ -1106,6 +1122,14 @@
             }[tag]));
         }
 
+        function getGiftSvg(giftType) {
+            if(giftType === 'star') return '<svg viewBox="0 0 24 24" width="100%" height="100%"><defs><linearGradient id="gStarChat" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fffde7"/><stop offset="50%" stop-color="#fdd835"/><stop offset="100%" stop-color="#f57f17"/></linearGradient></defs><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="url(#gStarChat)" stroke="#fbc02d" stroke-width="1" stroke-linejoin="round"/></svg>';
+            if(giftType === 'heart') return '<svg viewBox="0 0 24 24" width="100%" height="100%"><defs><linearGradient id="gHeartChat" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff8a80"/><stop offset="50%" stop-color="#ff1744"/><stop offset="100%" stop-color="#b71c1c"/></linearGradient></defs><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="url(#gHeartChat)" stroke="#d50000" stroke-width="1"/></svg>';
+            if(giftType === 'diamond') return '<svg viewBox="0 0 24 24" width="100%" height="100%"><defs><linearGradient id="gDiamondChat" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e0f7fa"/><stop offset="50%" stop-color="#00e5ff"/><stop offset="100%" stop-color="#006064"/></linearGradient></defs><polygon points="12 2 2 8 12 22 22 8 12 2" fill="url(#gDiamondChat)" stroke="#00b8d4" stroke-width="1" stroke-linejoin="round"/><polygon points="12 2 6 8 12 22 18 8 12 2" fill="rgba(255,255,255,0.3)" stroke="#00b8d4" stroke-width="0.5"/><line x1="2" y1="8" x2="22" y2="8" stroke="#00b8d4" stroke-width="1"/></svg>';
+            if(giftType === 'crown') return '<svg viewBox="0 0 24 24" width="100%" height="100%"><defs><linearGradient id="gCrownChat" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ffe082"/><stop offset="50%" stop-color="#ffb300"/><stop offset="100%" stop-color="#ff6f00"/></linearGradient></defs><path d="M2 20h20v2H2v-2zm1.6-4l2-10 4.4 5.5L12 2l2 9.5L18.4 6l2 10H3.6z" fill="url(#gCrownChat)" stroke="#ff8f00" stroke-width="1" stroke-linejoin="round"/><circle cx="12" cy="2" r="1.5" fill="#fff"/><circle cx="3.6" cy="6" r="1.5" fill="#fff"/><circle cx="20.4" cy="6" r="1.5" fill="#fff"/></svg>';
+            return '';
+        }
+
         function updateBalanceDisplay() {
             document.getElementById('mainBalanceLabel').innerText = localProfile.balance || 0;
             document.getElementById('storeBalanceLabel').innerText = localProfile.balance || 0;
@@ -1201,7 +1225,7 @@
                 USER = username;
                 localStorage.setItem('auraUser', USER);
                 
-                localProfile = JSON.parse(localStorage.getItem('auraProfile_' + USER)) || { name: USER, avatar: null, bio: "Нет описания", balance: 0 };
+                localProfile = JSON.parse(localStorage.getItem('auraProfile_' + USER)) || { name: USER, avatar: null, bio: "Нет описания", balance: 0, pinnedGift: null };
                 localChats = JSON.parse(localStorage.getItem('auraChats_' + USER)) || [];
                 localMessages = JSON.parse(localStorage.getItem('auraMessages_' + USER)) || {};
                 hiddenMsgs = JSON.parse(localStorage.getItem('auraHiddenMsgs_' + USER)) || {};
@@ -1237,11 +1261,17 @@
                 return;
             }
 
+            const confirmCode = prompt("Для завершения регистрации введите код подтверждения (для теста введите 1234):");
+            if(confirmCode !== "1234") {
+                alert("Неверный код подтверждения!");
+                return;
+            }
+
             USER = username;
             localStorage.setItem('auraUser', USER);
             localStorage.setItem('auraAuth_' + USER, pass); // Сохраняем пароль
             
-            localProfile = { name: name, avatar: tempRegAvatar, bio: bio, balance: 0 };
+            localProfile = { name: name, avatar: tempRegAvatar, bio: bio, balance: 0, pinnedGift: null };
             localStorage.setItem('auraProfile_' + USER, JSON.stringify(localProfile));
             
             localChats = [];
@@ -1534,9 +1564,9 @@
             }
         });
 
-        /* --- ПОИСК ЧАТОВ --- */
+        /* --- ПОИСК ЧАТОВ И ГЛОБАЛЬНЫЙ --- */
         function filterChats() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
             const items = document.querySelectorAll('.chat-wrapper-item');
             
             items.forEach(item => {
@@ -1548,6 +1578,50 @@
                     item.style.display = 'none';
                 }
             });
+
+            let globalSearchSection = document.getElementById('globalSearchResults');
+            if(!globalSearchSection) {
+                globalSearchSection = document.createElement('div');
+                globalSearchSection.id = 'globalSearchResults';
+                document.getElementById('chatList').appendChild(globalSearchSection);
+            }
+            
+            if (query.length > 2) {
+                let exists = Array.from(items).some(item => item.getAttribute('data-name').toLowerCase() === query || item.getAttribute('data-realname').toLowerCase() === query);
+                if (!exists) {
+                    globalSearchSection.innerHTML = `
+                        <div style="padding: 10px 15px; color: var(--accent); font-size: 0.85rem; font-weight: bold;">Глобальный поиск</div>
+                        <div class="chat-item" onclick="joinGlobalChat('${query}')">
+                            <div class="avatar-mini" style="background: var(--accent-gradient);"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+                            <div style="flex:1; display: flex; flex-direction: column; justify-content: center; min-width: 0;">
+                                <div style="font-weight: 600; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${query}</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">Нажмите, чтобы открыть/вступить</div>
+                            </div>
+                        </div>
+                    `;
+                    globalSearchSection.style.display = 'block';
+                } else {
+                    globalSearchSection.style.display = 'none';
+                }
+            } else {
+                globalSearchSection.style.display = 'none';
+            }
+        }
+
+        function joinGlobalChat(target) {
+            let isPrivate = confirm(`Сэмулировать, что группа/канал @${target} является ПРИВАТНЫМ? (ОК - Приватный, Отмена - Публичный)`);
+            if (isPrivate) {
+                alert(`Заявка на вступление в @${target} отправлена администраторам/создателю! Ожидайте подтверждения.`);
+            } else {
+                if (!localChats.find(c => c.name === target)) {
+                    localChats.push({ name: target, realName: target, type: 'group', avatar: null, bio: "Глобальная группа", isArchived: false, isDeleted: false });
+                    localStorage.setItem('auraChats_' + USER, JSON.stringify(localChats));
+                    renderSidebarChats();
+                }
+                selectChat(target, 'group');
+                document.getElementById('searchInput').value = '';
+                filterChats();
+            }
         }
 
         /* --- РЕНДЕР ЧАТОВ --- */
@@ -1555,6 +1629,12 @@
             const list = document.getElementById('chatList');
             const archiveList = document.getElementById('archivedChatsList');
             const dict = translations[localSettings.lang || 'ru'];
+            
+            // Сохраняем секцию глобального поиска, если она есть
+            let globalSearchHtml = '';
+            const globalSec = document.getElementById('globalSearchResults');
+            if(globalSec) globalSearchHtml = globalSec.outerHTML;
+
             list.innerHTML = ''; archiveList.innerHTML = '';
 
             const favName = dict.fav;
@@ -1623,6 +1703,8 @@
                 }
             });
 
+            if(globalSearchHtml) list.innerHTML += globalSearchHtml;
+
             const archBtn = document.getElementById('archiveToggleBtn');
             if (hasArchive) {
                 archBtn.style.display = 'flex';
@@ -1633,7 +1715,6 @@
                 isArchiveOpen = false;
             }
 
-            // Повторно применяем фильтр, если юзер что-то ищет
             filterChats();
         }
 
@@ -1675,20 +1756,24 @@
         function updateChatHeaderStatus(targetName) {
             const statusDiv = document.getElementById('statusInfo');
             const inputArea = document.getElementById('chatInputArea');
+            const callBtn = document.getElementById('callBtn');
             const dict = translations[localSettings.lang || 'ru'];
             
             if (targetName === dict.fav) {
                 statusDiv.innerText = dict.statusFav;
                 statusDiv.style.color = "var(--accent)";
                 inputArea.style.display = 'flex';
+                callBtn.style.display = 'none';
                 return;
             }
             
+            callBtn.style.display = 'flex';
             const chatObj = localChats.find(c => c.name === targetName);
             if (chatObj) {
                 if (chatObj.isDeleted) {
                     statusDiv.innerText = "";
                     inputArea.style.display = 'none'; 
+                    callBtn.style.display = 'none';
                     return;
                 }
 
@@ -1712,6 +1797,12 @@
                     }
                 }
             }
+        }
+
+        function startCall(e) {
+            e.stopPropagation();
+            if(!currentTarget || currentTarget === translations[localSettings.lang || 'ru'].fav) return;
+            alert(`📞 Звонок пользователю/в группу ${currentTarget}...\n\n(Функция звонков находится в стадии разработки)`);
         }
 
         /* --- ВЫБОР ЧАТА И ШАПКА --- */
@@ -1931,8 +2022,22 @@
             closeModal('giftModal');
         }
 
+        function pinGift(type) {
+            localProfile.pinnedGift = type;
+            localStorage.setItem('auraProfile_' + USER, JSON.stringify(localProfile));
+            alert("Подарок успешно выставлен в ваш профиль!");
+        }
+
         // ОБМЕН ПОДАРКА НА БАЛАНС
         function exchangeGift(msgIndex, type) {
+            // Исправление бага с двойным обменом
+            if(localMessages[currentTarget] && localMessages[currentTarget][msgIndex]) {
+                if(localMessages[currentTarget][msgIndex].text.startsWith('[gift_exchanged]')) {
+                    alert("Этот подарок уже обменян!");
+                    return;
+                }
+            }
+
             let price = 0;
             if(type === 'star') price = 12; // Половина стоимости округленно
             if(type === 'heart') price = 25;
@@ -2029,6 +2134,7 @@
             const type = document.getElementById('chatType').value;
             document.getElementById('avatarUploadArea').style.display = type === 'user' ? 'none' : 'block';
             document.getElementById('groupExtraFields').style.display = type === 'user' ? 'none' : 'block';
+            document.getElementById('groupPrivacyArea').style.display = type === 'user' ? 'none' : 'block';
             
             document.getElementById('contactNameGroup').style.display = type === 'user' ? 'block' : 'none';
             document.getElementById('targetLabel').innerText = type === 'user' ? 'Юзернейм пользователя' : 'Название группы/канала';
@@ -2074,6 +2180,16 @@
             document.getElementById('viewProfileType').innerText = chatObj.type === 'group' ? dict.optGroup : (chatObj.type === 'channel' ? dict.optChannel : dict.optUser);
             document.getElementById('viewProfileBio').innerText = chatObj.bio || "Нет описания";
 
+            let theirProfile = JSON.parse(localStorage.getItem('auraProfile_' + currentTarget));
+            let pinnedDiv = document.getElementById('viewProfilePinnedGift');
+            if (theirProfile && theirProfile.pinnedGift) {
+                let svg = getGiftSvg(theirProfile.pinnedGift);
+                pinnedDiv.innerHTML = `<div style="width: 40px; height: 40px;">${svg}</div> <span style="font-weight:bold; color:var(--accent);">Любимый подарок</span>`;
+                pinnedDiv.style.display = 'flex';
+            } else {
+                pinnedDiv.style.display = 'none';
+            }
+
             document.getElementById('chatDropdown').style.display = 'none';
             openModal('viewProfileModal');
         }
@@ -2092,6 +2208,15 @@
             document.getElementById('myViewName').innerText = localProfile.name || USER;
             document.getElementById('myViewUsername').innerText = '@' + USER;
             document.getElementById('myViewBio').innerText = localProfile.bio || "Нет описания";
+
+            let pinnedGiftDiv = document.getElementById('myViewPinnedGift');
+            if (localProfile.pinnedGift) {
+                let svg = getGiftSvg(localProfile.pinnedGift);
+                pinnedGiftDiv.innerHTML = `<div style="width: 40px; height: 40px;">${svg}</div> <span style="font-weight:bold; color:var(--accent);">Любимый подарок</span>`;
+                pinnedGiftDiv.style.display = 'flex';
+            } else {
+                pinnedGiftDiv.style.display = 'none';
+            }
 
             openModal('viewMyProfileModal');
         }
@@ -2133,7 +2258,7 @@
                 localMessages = JSON.parse(localStorage.getItem('auraMessages_' + oldUser)) || {};
                 
                 let oldProfile = JSON.parse(localStorage.getItem('auraProfile_' + oldUser)) || {};
-                localProfile = { name: USER, avatar: null, bio: "Нет описания", balance: oldProfile.balance || 0 };
+                localProfile = { name: USER, avatar: null, bio: "Нет описания", balance: oldProfile.balance || 0, pinnedGift: oldProfile.pinnedGift || null };
                 
                 hiddenMsgs = JSON.parse(localStorage.getItem('auraHiddenMsgs_' + oldUser)) || {};
                 
@@ -2511,22 +2636,11 @@
                 let giftType = text.replace(isExchanged ? '[gift_exchanged]' : '[gift]', '');
                 let giftData = { svg: '', name: 'Подарок' };
                 
-                if(giftType === 'star') giftData = { 
-                    svg: '<svg viewBox="0 0 24 24" width="100%" height="100%"><defs><linearGradient id="gStarChat" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fffde7"/><stop offset="50%" stop-color="#fdd835"/><stop offset="100%" stop-color="#f57f17"/></linearGradient></defs><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="url(#gStarChat)" stroke="#fbc02d" stroke-width="1" stroke-linejoin="round"/></svg>', 
-                    name: 'Aura Star' 
-                };
-                if(giftType === 'heart') giftData = { 
-                    svg: '<svg viewBox="0 0 24 24" width="100%" height="100%"><defs><linearGradient id="gHeartChat" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff8a80"/><stop offset="50%" stop-color="#ff1744"/><stop offset="100%" stop-color="#b71c1c"/></linearGradient></defs><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="url(#gHeartChat)" stroke="#d50000" stroke-width="1"/></svg>', 
-                    name: 'Пылающее Сердце' 
-                };
-                if(giftType === 'diamond') giftData = { 
-                    svg: '<svg viewBox="0 0 24 24" width="100%" height="100%"><defs><linearGradient id="gDiamondChat" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e0f7fa"/><stop offset="50%" stop-color="#00e5ff"/><stop offset="100%" stop-color="#006064"/></linearGradient></defs><polygon points="12 2 2 8 12 22 22 8 12 2" fill="url(#gDiamondChat)" stroke="#00b8d4" stroke-width="1" stroke-linejoin="round"/><polygon points="12 2 6 8 12 22 18 8 12 2" fill="rgba(255,255,255,0.3)" stroke="#00b8d4" stroke-width="0.5"/><line x1="2" y1="8" x2="22" y2="8" stroke="#00b8d4" stroke-width="1"/></svg>', 
-                    name: 'Редкий Бриллиант' 
-                };
-                if(giftType === 'crown') giftData = { 
-                    svg: '<svg viewBox="0 0 24 24" width="100%" height="100%"><defs><linearGradient id="gCrownChat" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ffe082"/><stop offset="50%" stop-color="#ffb300"/><stop offset="100%" stop-color="#ff6f00"/></linearGradient></defs><path d="M2 20h20v2H2v-2zm1.6-4l2-10 4.4 5.5L12 2l2 9.5L18.4 6l2 10H3.6z" fill="url(#gCrownChat)" stroke="#ff8f00" stroke-width="1" stroke-linejoin="round"/><circle cx="12" cy="2" r="1.5" fill="#fff"/><circle cx="3.6" cy="6" r="1.5" fill="#fff"/><circle cx="20.4" cy="6" r="1.5" fill="#fff"/></svg>', 
-                    name: 'Корона Императора' 
-                };
+                giftData.svg = getGiftSvg(giftType);
+                if(giftType === 'star') giftData.name = 'Aura Star';
+                if(giftType === 'heart') giftData.name = 'Пылающее Сердце';
+                if(giftType === 'diamond') giftData.name = 'Редкий Бриллиант';
+                if(giftType === 'crown') giftData.name = 'Корона Императора';
                 
                 msgDiv.style.background = 'transparent';
                 msgDiv.style.boxShadow = 'none';
@@ -2539,7 +2653,10 @@
                     descText = 'Обменян на баланс';
                 } else if (sender !== USER) {
                     // Кнопка обмена только для того, кто получил
-                    actionBtn = `<button class="btn-exchange" onclick="exchangeGift(${index}, '${giftType}')">Обменять на AUR</button>`;
+                    actionBtn = `
+                        <button class="btn-exchange" onclick="exchangeGift(${index}, '${giftType}')">Обменять на AUR</button>
+                        <button class="btn-cancel" style="margin-top: 5px; font-size: 0.8rem; padding: 4px 8px;" onclick="pinGift('${giftType}')">Выставить в профиль</button>
+                    `;
                 }
 
                 contentHtml = `
