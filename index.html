@@ -437,7 +437,7 @@
                 
                 <div class="form-group" style="width: 100%; text-align: left;">
                     <label>Имя <span style="color:var(--danger)">*</span></label>
-                    <input type="text" id="regName" placeholder="Например: name">
+                    <input type="text" id="regName" placeholder="Например: Артём">
                 </div>
                 
                 <div class="form-group" style="width: 100%; text-align: left;">
@@ -731,7 +731,7 @@
             </div>
             <div class="form-group">
                 <label data-i18n="addTarget">Юзернейм или Название</label>
-                <input type="text" id="newChatTarget" data-i18n-ph="placeholderTarget" placeholder="Например: name">
+                <input type="text" id="newChatTarget" data-i18n-ph="placeholderTarget" placeholder="Например: admin">
                 <div id="addChatStatus" class="status-msg" style="text-align: right; min-height: 20px;"></div>
             </div>
             
@@ -742,7 +742,7 @@
                 </div>
                 <div class="form-group">
                     <label>Участники (юзернеймы)</label>
-                    <input type="text" id="newGroupMembers" placeholder="Например: name, name1">
+                    <input type="text" id="newGroupMembers" placeholder="Например: artem, max">
                 </div>
             </div>
 
@@ -771,7 +771,6 @@
         
         let hiddenMsgs = USER ? (JSON.parse(localStorage.getItem('auraHiddenMsgs_' + USER)) || {}) : {};
 
-        // ИСПРАВЛЕНИЕ 1: Переместили translations ВВЕРХ, до использования в currentTarget
         const translations = {
             ru: {
                 fav: "Избранное", placeholderMsg: "Напишите сообщение...", btnSend: "Отправить",
@@ -1237,6 +1236,9 @@
             let hasArchive = false;
 
             localChats.forEach(chat => {
+                const favStrings = [translations.ru.fav, translations.en.fav, translations.uk.fav, translations.zh.fav];
+                if (favStrings.includes(chat.name)) return;
+                
                 let defaultIcon = chat.type === 'group' ? iconGroup : (chat.type === 'channel' ? iconChannel : iconUser);
                 let isDeleted = chat.isDeleted === true;
                 
@@ -1313,6 +1315,13 @@
             delete localMessages[name];
             localStorage.setItem('auraChats_' + USER, JSON.stringify(localChats));
             localStorage.setItem('auraMessages_' + USER, JSON.stringify(localMessages));
+            
+            let deletedChats = JSON.parse(localStorage.getItem('auraDeletedChats_' + USER)) || [];
+            if (!deletedChats.includes(name)) {
+                deletedChats.push(name);
+                localStorage.setItem('auraDeletedChats_' + USER, JSON.stringify(deletedChats));
+            }
+
             if(currentTarget === name) selectChat(translations[localSettings.lang || 'ru'].fav, 'favorites');
             renderSidebarChats();
         }
@@ -1718,6 +1727,13 @@
             
             if(!target) return;
 
+            const favStrings = [translations.ru.fav, translations.en.fav, translations.uk.fav, translations.zh.fav];
+            if (favStrings.includes(target)) {
+                closeModal('addModal');
+                selectChat(dict.fav, 'favorites');
+                return;
+            }
+
             if(type === 'user') {
                 statusLabel.style.color = 'var(--text-muted)'; statusLabel.innerText = dict.statusCheck;
                 try {
@@ -1729,6 +1745,12 @@
                 } catch (e) {
                     statusLabel.style.color = 'var(--danger)'; statusLabel.innerText = dict.statusErr + " (Локально)";
                 }
+            }
+
+            let deletedChats = JSON.parse(localStorage.getItem('auraDeletedChats_' + USER)) || [];
+            if (deletedChats.includes(target)) {
+                deletedChats = deletedChats.filter(n => n !== target);
+                localStorage.setItem('auraDeletedChats_' + USER, JSON.stringify(deletedChats));
             }
 
             if (!localChats.find(c => c.name === target)) {
@@ -1834,9 +1856,12 @@
                 if (res.ok) {
                     const data = await res.json();
                     let updated = false;
+                    let deletedChats = JSON.parse(localStorage.getItem('auraDeletedChats_' + USER)) || [];
+                    const favStrings = [translations.ru.fav, translations.en.fav, translations.uk.fav, translations.zh.fav];
+                    
                     if(data.chats && Array.isArray(data.chats)) {
                         data.chats.forEach(chatName => {
-                            if(chatName !== USER && !localChats.find(c => c.name === chatName)) {
+                            if(chatName !== USER && !localChats.find(c => c.name === chatName) && !deletedChats.includes(chatName) && !favStrings.includes(chatName)) {
                                 localChats.push({ name: chatName, type: 'user', avatar: null, bio: "Нет описания", isArchived: false, isDeleted: false });
                                 updated = true;
                             }
