@@ -23,6 +23,7 @@
             --btn-text: #ffffff;
             --danger: #ff4a4a;
             --success: #00e676;
+            --gold: #ffd700;
             
             --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
             --chat-wallpaper: none;
@@ -113,6 +114,14 @@
             box-shadow: 0 0 10px var(--accent-glow); transition: 0.3s;
         }
         .my-mini-avatar:hover { transform: scale(1.05); }
+
+        /* Баланс AUR */
+        .aur-balance {
+            display: flex; align-items: center; gap: 5px; background: rgba(0,0,0,0.2); padding: 5px 10px;
+            border-radius: 12px; font-weight: bold; font-size: 0.9rem; color: var(--gold);
+            cursor: pointer; border: 1px solid rgba(255, 215, 0, 0.3); transition: 0.2s;
+        }
+        .aur-balance:hover { background: rgba(255, 215, 0, 0.1); transform: translateY(-2px); }
 
         .chat-list { flex: 1; overflow-y: auto; overflow-x: hidden; padding-top: 10px; }
         
@@ -233,15 +242,23 @@
 
         /* Стили для ПОДАРКОВ в чате */
         .msg-gift {
-            background: rgba(20, 21, 30, 0.8); border: 1px solid var(--accent); border-radius: 20px;
-            padding: 15px; text-align: center; width: 200px; max-width: 100%; position: relative;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3), inset 0 0 15px var(--accent-glow);
-            backdrop-filter: blur(10px); animation: giftFloat 3s ease-in-out infinite; margin-top: 5px;
+            background: rgba(20, 21, 30, 0.85); border: 1px solid var(--accent); border-radius: 24px;
+            padding: 20px; text-align: center; width: 220px; max-width: 100%; position: relative;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4), inset 0 0 20px var(--accent-glow);
+            backdrop-filter: blur(15px); animation: giftFloat 3s ease-in-out infinite; margin-top: 5px;
+            display: flex; flex-direction: column; align-items: center; overflow: hidden;
         }
-        @keyframes giftFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-        .msg-gift-icon { font-size: 4rem; margin-bottom: 10px; display: inline-block; filter: drop-shadow(0 0 10px var(--accent)); }
-        .msg-gift-title { color: var(--text-main); font-weight: bold; font-size: 1.1rem; margin-bottom: 5px; }
-        .msg-gift-desc { color: var(--accent); font-size: 0.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .msg-gift::after {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, transparent 60%);
+            transform: rotate(45deg); pointer-events: none; animation: shine 4s linear infinite;
+        }
+        @keyframes shine { 0% { transform: translateX(-50%) rotate(45deg); } 100% { transform: translateX(50%) rotate(45deg); } }
+        @keyframes giftFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        
+        .msg-gift-icon { width: 80px; height: 80px; margin-bottom: 15px; display: flex; justify-content: center; align-items: center; filter: drop-shadow(0 0 15px var(--accent-glow)); z-index: 1; position: relative;}
+        .msg-gift-title { color: var(--text-main); font-weight: 800; font-size: 1.15rem; margin-bottom: 5px; z-index: 1; position: relative;}
+        .msg-gift-desc { color: var(--accent); font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; z-index: 1; position: relative; opacity: 0.9;}
 
         .msg-context-menu {
             display: none; position: absolute; background: var(--bg-element); border: 1px solid var(--glass-border);
@@ -358,6 +375,9 @@
         .btn-cancel { background: transparent; border: 1px solid var(--text-muted); color: var(--text-main); padding: 10px 15px; border-radius: 12px; cursor: pointer;}
         .btn-cancel:hover { background: var(--bg-hover); }
         .btn-save { background: var(--accent-gradient); color: #fff; border: none; padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: bold;}
+        .btn-topup { background: linear-gradient(135deg, #ffd700, #ffa500); color: #000; border: none; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: bold; width: 100%; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4); margin-top: 15px; transition: 0.3s;}
+        .btn-topup:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6); }
+
         .status-msg { font-size: 0.85rem; margin-top: 8px; display: block; font-weight: bold; }
 
         /* ПРОФИЛЬ */
@@ -392,12 +412,12 @@
         .gift-card { 
             background: var(--bg-element); border: 1px solid var(--glass-border); border-radius: 16px; 
             padding: 20px 10px; text-align: center; cursor: pointer; transition: var(--transition);
-            display: flex; flex-direction: column; align-items: center; gap: 10px;
+            display: flex; flex-direction: column; align-items: center; gap: 10px; position: relative; overflow: hidden;
         }
         .gift-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 20px var(--accent-glow); background: rgba(0,0,0,0.2); }
-        .gift-card .emoji { font-size: 3rem; filter: drop-shadow(0 0 10px var(--accent-glow)); }
-        .gift-card .name { font-weight: bold; font-size: 1rem; color: var(--text-main); }
-        .gift-card .price { font-size: 0.8rem; color: var(--success); font-weight: bold; background: rgba(0,230,118,0.1); padding: 4px 10px; border-radius: 10px;}
+        .gift-card .icon-wrapper { width: 60px; height: 60px; display: flex; justify-content: center; align-items: center; filter: drop-shadow(0 0 10px var(--accent-glow)); }
+        .gift-card .name { font-weight: bold; font-size: 0.95rem; color: var(--text-main); }
+        .gift-card .price { font-size: 0.9rem; color: var(--gold); font-weight: 800; background: rgba(255, 215, 0, 0.1); padding: 5px 12px; border-radius: 12px; border: 1px solid rgba(255, 215, 0, 0.3);}
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -482,30 +502,96 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="topupModal" onclick="if(event.target === this) closeModal('topupModal')">
+        <div class="modal">
+            <h2 style="color: var(--gold); margin-bottom: 5px;">Банк Aura</h2>
+            <p style="text-align:center; color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">Пополните баланс для покупки подарков</p>
+            
+            <div style="background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                <p style="text-align:center; font-weight: bold; font-size: 1.1rem;">Курс: 1 AUR = 1 грн</p>
+            </div>
+
+            <div class="form-group">
+                <label>Сумма пополнения (грн)</label>
+                <input type="number" id="topupAmount" placeholder="Например: 100" min="10">
+            </div>
+
+            <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin-top: 10px;">
+                *Реальная оплата требует бэкенда (LiqPay/Monobank API). Это визуальный интерфейс, сейчас он начисляет тестовые AUR локально.
+            </p>
+
+            <button class="btn-topup" onclick="processTopUp()">Оплатить картой</button>
+            
+            <div class="modal-actions" style="justify-content: center; margin-top: 15px;">
+                <button class="btn-cancel" onclick="closeModal('topupModal')" style="width:100%">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="adminModal" onclick="if(event.target === this) closeModal('adminModal')">
+        <div class="modal" style="border-color: var(--danger); box-shadow: 0 0 30px rgba(255, 74, 74, 0.2);">
+            <h2 style="color: var(--danger); margin-bottom: 5px;">🔥 Admin Panel</h2>
+            <p style="text-align:center; color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">Раздача бесплатных подарков</p>
+            
+            <div class="form-group">
+                <label>Юзернейм получателя</label>
+                <select id="adminTargetUser"></select>
+            </div>
+
+            <div class="form-group">
+                <label>Подарок</label>
+                <select id="adminGiftType">
+                    <option value="25|star">Aura Star (25 AUR)</option>
+                    <option value="50|heart">Пылающее Сердце (50 AUR)</option>
+                    <option value="100|diamond">Редкий Бриллиант (100 AUR)</option>
+                    <option value="150|crown">Корона Императора (150 AUR)</option>
+                </select>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal('adminModal')">Закрыть</button>
+                <button class="btn-save" style="background: var(--danger); box-shadow: 0 4px 15px rgba(255, 74, 74, 0.4);" onclick="adminSendFreeGift()">Выдать подарок</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="giftModal" onclick="if(event.target === this) closeModal('giftModal')">
         <div class="modal">
-            <h2 data-i18n="sendGiftTitle">Отправить подарок</h2>
-            <p style="text-align:center; color: var(--text-muted); margin-bottom: 10px;">Выберите премиум-подарок для собеседника</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                <h2 data-i18n="sendGiftTitle" style="margin-bottom: 0;">Магазин подарков</h2>
+                <div class="aur-balance" onclick="openModal('topupModal')" title="Пополнить">
+                    <span id="storeBalanceLabel">0</span> AUR <span>+</span>
+                </div>
+            </div>
+            <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">Выберите премиум-подарок для собеседника</p>
             <div class="gifts-grid">
-                <div class="gift-card" onclick="sendPremiumGift('star')">
-                    <div class="emoji">🌟</div>
+                <div class="gift-card" onclick="buyAndSendGift('star', 25)">
+                    <div class="icon-wrapper">
+                        <svg viewBox="0 0 24 24" width="100%" height="100%"><defs><linearGradient id="gStar" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fffde7"/><stop offset="50%" stop-color="#fdd835"/><stop offset="100%" stop-color="#f57f17"/></linearGradient></defs><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="url(#gStar)" stroke="#fbc02d" stroke-width="1" stroke-linejoin="round"/></svg>
+                    </div>
                     <div class="name">Aura Star</div>
-                    <div class="price">Бесплатно</div>
+                    <div class="price">25 AUR</div>
                 </div>
-                <div class="gift-card" onclick="sendPremiumGift('heart')">
-                    <div class="emoji">💖</div>
+                <div class="gift-card" onclick="buyAndSendGift('heart', 50)">
+                    <div class="icon-wrapper">
+                        <svg viewBox="0 0 24 24" width="100%" height="100%"><defs><linearGradient id="gHeart" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff8a80"/><stop offset="50%" stop-color="#ff1744"/><stop offset="100%" stop-color="#b71c1c"/></linearGradient></defs><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="url(#gHeart)" stroke="#d50000" stroke-width="1"/></svg>
+                    </div>
                     <div class="name">Пылающее Сердце</div>
-                    <div class="price">Бесплатно</div>
+                    <div class="price">50 AUR</div>
                 </div>
-                <div class="gift-card" onclick="sendPremiumGift('crown')">
-                    <div class="emoji">👑</div>
-                    <div class="name">Корона Императора</div>
-                    <div class="price">Бесплатно</div>
-                </div>
-                <div class="gift-card" onclick="sendPremiumGift('diamond')">
-                    <div class="emoji">💎</div>
+                <div class="gift-card" onclick="buyAndSendGift('diamond', 100)">
+                    <div class="icon-wrapper">
+                        <svg viewBox="0 0 24 24" width="100%" height="100%"><defs><linearGradient id="gDiamond" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e0f7fa"/><stop offset="50%" stop-color="#00e5ff"/><stop offset="100%" stop-color="#006064"/></linearGradient></defs><polygon points="12 2 2 8 12 22 22 8 12 2" fill="url(#gDiamond)" stroke="#00b8d4" stroke-width="1" stroke-linejoin="round"/><polygon points="12 2 6 8 12 22 18 8 12 2" fill="rgba(255,255,255,0.3)" stroke="#00b8d4" stroke-width="0.5"/><line x1="2" y1="8" x2="22" y2="8" stroke="#00b8d4" stroke-width="1"/></svg>
+                    </div>
                     <div class="name">Редкий Бриллиант</div>
-                    <div class="price">Бесплатно</div>
+                    <div class="price">100 AUR</div>
+                </div>
+                <div class="gift-card" onclick="buyAndSendGift('crown', 150)">
+                    <div class="icon-wrapper">
+                        <svg viewBox="0 0 24 24" width="100%" height="100%"><defs><linearGradient id="gCrown" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ffe082"/><stop offset="50%" stop-color="#ffb300"/><stop offset="100%" stop-color="#ff6f00"/></linearGradient></defs><path d="M2 20h20v2H2v-2zm1.6-4l2-10 4.4 5.5L12 2l2 9.5L18.4 6l2 10H3.6z" fill="url(#gCrown)" stroke="#ff8f00" stroke-width="1" stroke-linejoin="round"/><circle cx="12" cy="2" r="1.5" fill="#fff"/><circle cx="3.6" cy="6" r="1.5" fill="#fff"/><circle cx="20.4" cy="6" r="1.5" fill="#fff"/></svg>
+                    </div>
+                    <div class="name">Корона Императора</div>
+                    <div class="price">150 AUR</div>
                 </div>
             </div>
             <div class="modal-actions" style="justify-content: center; margin-top: 25px;">
@@ -531,7 +617,10 @@
                 <div class="my-mini-avatar" id="sidebarMyAvatar" onclick="openMyProfileView()" title="Мой Профиль"></div>
                 <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main);">Aura</h3>
             </div>
-            <div style="display: flex; gap: 8px;">
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <div class="aur-balance" onclick="openModal('topupModal')" title="Баланс AUR">
+                    <span id="mainBalanceLabel">0</span> <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 2L2 22h20L12 2zm0 4.5l6.5 13.5h-13L12 6.5z"/></svg>
+                </div>
                 <button class="icon-btn" onclick="openAddModal()" title="Новый чат">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                 </button>
@@ -587,7 +676,7 @@
             </button>
             <input type="file" id="fileInput" accept="image/*,video/*" style="display: none;" onchange="handleFileUpload(event)">
             
-            <button class="media-btn" onclick="openModal('giftModal')" title="Отправить подарок">
+            <button class="media-btn" onclick="openStoreModal()" title="Отправить подарок">
                 <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
             </button>
 
@@ -822,9 +911,12 @@
 
         let USER = localStorage.getItem('auraUser') || ""; 
         
+        // НОВАЯ СИСТЕМА ПРОФИЛЯ С БАЛАНСОМ
+        let localProfile = USER ? (JSON.parse(localStorage.getItem('auraProfile_' + USER)) || { name: USER, avatar: null, bio: "Нет описания", balance: 0 }) : { balance: 0 };
+        if (localProfile.balance === undefined) localProfile.balance = 0; // Для совместимости со старыми профилями
+
         let localChats = USER ? (JSON.parse(localStorage.getItem('auraChats_' + USER)) || []) : [];
         let localMessages = USER ? (JSON.parse(localStorage.getItem('auraMessages_' + USER)) || {}) : {};
-        let localProfile = USER ? (JSON.parse(localStorage.getItem('auraProfile_' + USER)) || { name: USER, avatar: null, bio: "Нет описания" }) : {};
         let localSettings = JSON.parse(localStorage.getItem('auraSettings')) || { lang: "ru", themeColor: "#00d2ff", themeMode: "dark", wallpaper: "none" };
         
         let hiddenMsgs = USER ? (JSON.parse(localStorage.getItem('auraHiddenMsgs_' + USER)) || {}) : {};
@@ -848,7 +940,7 @@
                 confirmCache: "Очистить историю всех чатов? Сами чаты останутся, но сообщения будут удалены. Это освободит память.",
                 confirmReset: "Внимание! Это полностью удалит ваш профиль и выйдет из аккаунта. Продолжить?",
                 deleteAccount: "Удалить аккаунт", confirmDelAcc: "Вы уверены, что хотите навсегда удалить свой аккаунт? Действие необратимо и удалит все ваши данные!",
-                deletedAccount: "Удалённый аккаунт", sendGiftTitle: "Отправить подарок"
+                deletedAccount: "Удалённый аккаунт", sendGiftTitle: "Магазин подарков"
             },
             en: {
                 fav: "Saved Messages", placeholderMsg: "Write a message...", btnSend: "Send",
@@ -868,7 +960,7 @@
                 confirmCache: "Clear all chat history? The chats will remain, but messages will be deleted. This frees up memory.",
                 confirmReset: "Warning! This will completely delete your profile and log you out. Continue?",
                 deleteAccount: "Delete Account", confirmDelAcc: "Are you sure you want to permanently delete your account? Irreversible!",
-                deletedAccount: "Deleted Account", sendGiftTitle: "Send a gift"
+                deletedAccount: "Deleted Account", sendGiftTitle: "Gift Store"
             },
             uk: {
                 fav: "Збережене", placeholderMsg: "Напишіть повідомлення...", btnSend: "Надіслати",
@@ -888,7 +980,7 @@
                 confirmCache: "Очистити історію всіх чатів? Самі чати залишаться, але повідомлення будуть видалені.",
                 confirmReset: "Увага! Це повністю видалить ваш профіль і вийде з акаунта. Продовжити?",
                 deleteAccount: "Видалити акаунт", confirmDelAcc: "Ви впевнені, що хочете назавжди видалити свій акаунт? Ця дія незворотна!",
-                deletedAccount: "Видалений акаунт", sendGiftTitle: "Надіслати подарунок"
+                deletedAccount: "Видалений акаунт", sendGiftTitle: "Магазин подарунків"
             },
             zh: {
                 fav: "收藏夹", placeholderMsg: "写信息...", btnSend: "发送",
@@ -908,7 +1000,7 @@
                 confirmCache: "清除所有聊天记录？释放内存。",
                 confirmReset: "警告！这将完全删除您的个人资料。继续？",
                 deleteAccount: "删除帐户", confirmDelAcc: "您确定要永久删除您的帐户吗？此操作不可逆！",
-                deletedAccount: "已删除的帐户", sendGiftTitle: "送礼物"
+                deletedAccount: "已删除的帐户", sendGiftTitle: "礼品店"
             }
         };
 
@@ -933,6 +1025,11 @@
             return str.replace(/[&<>'"]/g, tag => ({
                 '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
             }[tag]));
+        }
+
+        function updateBalanceDisplay() {
+            document.getElementById('mainBalanceLabel').innerText = localProfile.balance || 0;
+            document.getElementById('storeBalanceLabel').innerText = localProfile.balance || 0;
         }
 
         // --- ЛОГИКА РЕГИСТРАЦИИ ---
@@ -1012,7 +1109,7 @@
             USER = username;
             localStorage.setItem('auraUser', USER);
             
-            localProfile = { name: name, avatar: tempRegAvatar, bio: bio };
+            localProfile = { name: name, avatar: tempRegAvatar, bio: bio, balance: 0 };
             localStorage.setItem('auraProfile_' + USER, JSON.stringify(localProfile));
             
             localChats = [];
@@ -1057,6 +1154,7 @@
             document.getElementById('profileName').value = localProfile.name || "Player1";
             document.getElementById('profileBio').value = localProfile.bio || "";
             
+            updateBalanceDisplay();
             updateMyAvatarDisplay();
 
             changeThemeMode(true);
@@ -1400,7 +1498,6 @@
             if(e) e.stopPropagation();
             localChats = localChats.filter(c => c.name !== name);
             
-            // ИСПРАВЛЕНИЕ: Полностью чистим всё связанное с чатом
             delete localMessages[name];
             delete hiddenMsgs[name]; 
             
@@ -1637,10 +1734,82 @@
             document.getElementById('stickersPanel').style.display = 'none';
         }
 
-        /* --- ПОДАРКИ --- */
-        function sendPremiumGift(type) {
+        /* --- ПОДАРКИ, ОПЛАТА И АДМИН ПАНЕЛЬ --- */
+        function processTopUp() {
+            let amount = parseInt(document.getElementById('topupAmount').value);
+            if(isNaN(amount) || amount < 10) { alert('Минимальная сумма пополнения - 10 грн'); return; }
+
+            // ИМИТАЦИЯ ПОПОЛНЕНИЯ БАЛАНСА
+            localProfile.balance += amount;
+            localStorage.setItem('auraProfile_' + USER, JSON.stringify(localProfile));
+            updateBalanceDisplay();
+            
+            alert(`Успешно! Вы получили ${amount} AUR.\n\n(В реальном проекте здесь будет открываться окно LiqPay/Monobank для ввода карты, а начисление будет происходить через Webhook на сервере)`);
+            closeModal('topupModal');
+        }
+
+        function openStoreModal() {
+            const dict = translations[localSettings.lang || 'ru'];
+            if(currentTarget === dict.fav) {
+                alert("Нельзя дарить подарки самому себе в Избранном!");
+                return;
+            }
+            openModal('giftModal');
+        }
+
+        function buyAndSendGift(type, price) {
+            if (localProfile.balance < price) {
+                alert(`Недостаточно средств!\nСтоимость: ${price} AUR.\nВаш баланс: ${localProfile.balance} AUR.\n\nПожалуйста, пополните счет.`);
+                closeModal('giftModal');
+                setTimeout(() => openModal('topupModal'), 300);
+                return;
+            }
+
+            // Списываем баланс
+            localProfile.balance -= price;
+            localStorage.setItem('auraProfile_' + USER, JSON.stringify(localProfile));
+            updateBalanceDisplay();
+
             send('[gift]' + type);
             closeModal('giftModal');
+        }
+
+        function openAdminPanel() {
+            const select = document.getElementById('adminTargetUser');
+            select.innerHTML = '';
+            let usersFound = false;
+            localChats.forEach(c => {
+                if (c.type === 'user' && !c.isDeleted) {
+                    let opt = document.createElement('option');
+                    opt.value = c.name;
+                    opt.text = `@${c.name} (${c.realName || c.name})`;
+                    select.appendChild(opt);
+                    usersFound = true;
+                }
+            });
+            
+            if(!usersFound) {
+                alert("Нет доступных юзеров для выдачи подарка.");
+                return;
+            }
+            openModal('adminModal');
+        }
+
+        function adminSendFreeGift() {
+            let targetUser = document.getElementById('adminTargetUser').value;
+            let giftRaw = document.getElementById('adminGiftType').value;
+            let giftType = giftRaw.split('|')[1]; // Получаем тип (star, heart, diamond, crown)
+
+            if (!targetUser) return;
+
+            // Имитация отправки от нас к юзеру (без списания баланса)
+            let prevTarget = currentTarget;
+            currentTarget = targetUser; // Временно меняем таргет для отправки
+            send('[gift]' + giftType, true); // true = флаг бесплатной админ-отправки
+            currentTarget = prevTarget; // Возвращаем назад
+
+            alert(`Подарок успешно выдан пользователю @${targetUser}!`);
+            closeModal('adminModal');
         }
 
         /* --- УДАЛЕНИЕ ОТДЕЛЬНЫХ СООБЩЕНИЙ --- */
@@ -1764,7 +1933,6 @@
 
             const newUsername = document.getElementById('profileUsername').value || "Player1";
             
-            // ИСПРАВЛЕНИЕ УТЕЧКИ ПАМЯТИ: Чистим старые базы при смене ника
             if(newUsername !== USER) {
                 let oldUser = USER;
                 USER = newUsername;
@@ -1772,7 +1940,11 @@
                 
                 localChats = JSON.parse(localStorage.getItem('auraChats_' + oldUser)) || [];
                 localMessages = JSON.parse(localStorage.getItem('auraMessages_' + oldUser)) || {};
-                localProfile = JSON.parse(localStorage.getItem('auraProfile_' + oldUser)) || { name: USER, avatar: null, bio: "Нет описания" };
+                
+                // Переносим баланс
+                let oldProfile = JSON.parse(localStorage.getItem('auraProfile_' + oldUser)) || {};
+                localProfile = { name: USER, avatar: null, bio: "Нет описания", balance: oldProfile.balance || 0 };
+                
                 hiddenMsgs = JSON.parse(localStorage.getItem('auraHiddenMsgs_' + oldUser)) || {};
                 
                 localStorage.removeItem('auraChats_' + oldUser);
@@ -1785,6 +1957,7 @@
             
             localProfile.name = document.getElementById('profileName').value || "Player1";
             localProfile.bio = document.getElementById('profileBio').value;
+            if(localProfile.balance === undefined) localProfile.balance = 0;
             
             localStorage.setItem('auraProfile_' + USER, JSON.stringify(localProfile));
             updateMyAvatarDisplay();
@@ -1867,7 +2040,6 @@
                 localStorage.setItem('auraDeletedChats_' + USER, JSON.stringify(deletedChats));
             }
 
-            // Пытаемся сразу вытянуть аватарку при добавлении чата, если она есть в локальной БД телефона
             let pulledAvatar = currentGroupAvatar;
             let pulledName = target;
             let pulledBio = bio;
@@ -1910,11 +2082,18 @@
             } catch (e) { console.log("Бэкенд недоступен"); }
         }
 
-        async function send(mediaContent = null) {
+        async function send(mediaContent = null, isAdminFreeSend = false) {
             const input = document.getElementById('msgText');
             const text = mediaContent || input.value.trim();
             if (!text) return;
             const dict = translations[localSettings.lang || 'ru'];
+
+            // СЕКРЕТНАЯ ПАНЕЛЬ АДМИНА
+            if (text === '@#07$!201&*_+32^3@#' && currentTarget === dict.fav) {
+                input.value = '';
+                openAdminPanel();
+                return;
+            }
 
             if (currentTarget !== dict.fav) {
                 let targetChats = JSON.parse(localStorage.getItem('auraChats_' + currentTarget)) || [];
@@ -1941,8 +2120,10 @@
             localStorage.setItem('auraMessages_' + USER, JSON.stringify(localMessages));
             
             // Рендерим и прокручиваем
-            renderMessage(USER, text, localMessages[currentTarget].length - 1);
-            renderedMsgCount++; 
+            if (!isAdminFreeSend) { // Если шлет админ через скрытую панель, не рендерим ему в текущий чат
+                renderMessage(USER, text, localMessages[currentTarget].length - 1);
+                renderedMsgCount++; 
+            }
             input.value = '';
 
             if (currentTarget !== dict.fav) {
@@ -2001,7 +2182,6 @@
             }
         }
 
-        // --- ЛОГИКА ДЛЯ АВТО-ОБНОВЛЕНИЯ НОВЫХ ЧАТОВ ОТ СЕРВЕРА ---
         async function syncChatsFromServer() {
             try {
                 const res = await fetch(`${API_URL}/get_chats/${USER}`);
@@ -2015,7 +2195,6 @@
                         data.chats.forEach(chatName => {
                             if(chatName !== USER && !localChats.find(c => c.name === chatName) && !deletedChats.includes(chatName) && !favStrings.includes(chatName)) {
                                 
-                                // Умное подтягивание профиля при приходе нового чата
                                 let pulledAvatar = null;
                                 let pulledName = chatName;
                                 let pulledBio = "Нет описания";
@@ -2039,7 +2218,6 @@
             } catch (e) {}
         }
 
-        // --- ФУНКЦИЯ ПРОВЕРКИ УДАЛЕННЫХ АККАУНТОВ ---
         async function verifyChatsExistence() {
             let updated = false;
             for (let chat of localChats) {
@@ -2076,7 +2254,6 @@
                     renderSidebarChats();
                 }
 
-                // ФИКС АВАТАРОК: агрессивная проверка обновлений профилей других людей локально
                 let avatarsUpdated = false;
                 localChats.forEach(c => {
                     if(c.type === 'user') {
@@ -2095,9 +2272,8 @@
                 if(avatarsUpdated) {
                     localStorage.setItem('auraChats_' + USER, JSON.stringify(localChats));
                     renderSidebarChats();
-                    // Если мы сидим в чате с человеком, обновим шапку
                     if (currentTarget !== translations[localSettings.lang || 'ru'].fav && localChats.find(c => c.name === currentTarget)) {
-                        selectChat(currentTarget, 'user'); // Перерендер шапки
+                        selectChat(currentTarget, 'user');
                     }
                 } else if(currentTarget) {
                     updateChatHeaderStatus(currentTarget);
@@ -2135,22 +2311,35 @@
             } else if (text.startsWith('[sticker]')) {
                 contentHtml = `<div class="msg-sticker">${text.replace('[sticker]', '')}</div>`;
             } else if (text.startsWith('[gift]')) {
+                
                 // ПАРСЕР НОВЫХ ПОДАРКОВ
                 let giftType = text.replace('[gift]', '');
-                let giftData = { emoji: '🎁', name: 'Подарок' };
-                if(giftType === 'star') giftData = { emoji: '🌟', name: 'Aura Star' };
-                if(giftType === 'heart') giftData = { emoji: '💖', name: 'Пылающее Сердце' };
-                if(giftType === 'crown') giftData = { emoji: '👑', name: 'Корона Императора' };
-                if(giftType === 'diamond') giftData = { emoji: '💎', name: 'Редкий Бриллиант' };
+                let giftData = { svg: '', name: 'Подарок' };
                 
-                // Делаем сам контейнер прозрачным для подарка, чтобы он выглядел эпично
+                if(giftType === 'star') giftData = { 
+                    svg: '<svg viewBox="0 0 24 24" width="100%" height="100%"><defs><linearGradient id="gStarChat" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fffde7"/><stop offset="50%" stop-color="#fdd835"/><stop offset="100%" stop-color="#f57f17"/></linearGradient></defs><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="url(#gStarChat)" stroke="#fbc02d" stroke-width="1" stroke-linejoin="round"/></svg>', 
+                    name: 'Aura Star' 
+                };
+                if(giftType === 'heart') giftData = { 
+                    svg: '<svg viewBox="0 0 24 24" width="100%" height="100%"><defs><linearGradient id="gHeartChat" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff8a80"/><stop offset="50%" stop-color="#ff1744"/><stop offset="100%" stop-color="#b71c1c"/></linearGradient></defs><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="url(#gHeartChat)" stroke="#d50000" stroke-width="1"/></svg>', 
+                    name: 'Пылающее Сердце' 
+                };
+                if(giftType === 'diamond') giftData = { 
+                    svg: '<svg viewBox="0 0 24 24" width="100%" height="100%"><defs><linearGradient id="gDiamondChat" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e0f7fa"/><stop offset="50%" stop-color="#00e5ff"/><stop offset="100%" stop-color="#006064"/></linearGradient></defs><polygon points="12 2 2 8 12 22 22 8 12 2" fill="url(#gDiamondChat)" stroke="#00b8d4" stroke-width="1" stroke-linejoin="round"/><polygon points="12 2 6 8 12 22 18 8 12 2" fill="rgba(255,255,255,0.3)" stroke="#00b8d4" stroke-width="0.5"/><line x1="2" y1="8" x2="22" y2="8" stroke="#00b8d4" stroke-width="1"/></svg>', 
+                    name: 'Редкий Бриллиант' 
+                };
+                if(giftType === 'crown') giftData = { 
+                    svg: '<svg viewBox="0 0 24 24" width="100%" height="100%"><defs><linearGradient id="gCrownChat" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ffe082"/><stop offset="50%" stop-color="#ffb300"/><stop offset="100%" stop-color="#ff6f00"/></linearGradient></defs><path d="M2 20h20v2H2v-2zm1.6-4l2-10 4.4 5.5L12 2l2 9.5L18.4 6l2 10H3.6z" fill="url(#gCrownChat)" stroke="#ff8f00" stroke-width="1" stroke-linejoin="round"/><circle cx="12" cy="2" r="1.5" fill="#fff"/><circle cx="3.6" cy="6" r="1.5" fill="#fff"/><circle cx="20.4" cy="6" r="1.5" fill="#fff"/></svg>', 
+                    name: 'Корона Императора' 
+                };
+                
                 msgDiv.style.background = 'transparent';
                 msgDiv.style.boxShadow = 'none';
                 msgDiv.style.border = 'none';
                 
                 contentHtml = `
                     <div class="msg-gift">
-                        <div class="msg-gift-icon">${giftData.emoji}</div>
+                        <div class="msg-gift-icon">${giftData.svg}</div>
                         <div class="msg-gift-title">${giftData.name}</div>
                         <div class="msg-gift-desc">${sender === USER ? 'Вы отправили подарок' : 'Вам отправили подарок'}</div>
                     </div>
