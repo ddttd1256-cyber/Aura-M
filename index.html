@@ -1094,7 +1094,15 @@
             if(!isInit) saveSettings();
             
             document.querySelectorAll('.wp-option').forEach(w => w.classList.remove('active'));
-            if(el) el.classList.add('active');
+            if(el) {
+                el.classList.add('active');
+            } else {
+                document.querySelectorAll('.wp-option').forEach(w => {
+                    if (w.getAttribute('onclick') && w.getAttribute('onclick').includes(val)) {
+                        w.classList.add('active');
+                    }
+                });
+            }
         }
 
         function saveSettings() { localStorage.setItem('auraSettings', JSON.stringify(localSettings)); }
