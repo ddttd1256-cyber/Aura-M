@@ -1164,7 +1164,7 @@
                 placeholderSearch: "Пошук контактів і глобальний...", setTheme: "Тема додатку", themeDark: "Темна (Dark)", themeLight: "Світла (Light)",
                 setWall: "Шпалери чату", addPrivacy: "Приватність", optPublic: "Публічна (Пошук)", optPrivate: "Приватна",
                 addContactName: "Ім'я контакту", addContactNameHolder: "Наприклад: Артем",
-                addDesc: "Опис", addDescHolder: "Про що ця група?", addMembers: "Учасники (юзернейми через кому)", addMembersHolder: "Наприклад: name, name1",
+                addDesc: "Опис", addDescHolder: "Про що ця група?", addMembers: "Учасники (юзернеймы через кому)", addMembersHolder: "Наприклад: name, name1",
                 tabLogin: "Вхід", tabRegister: "Реєстрація", authWelcomeBack: "З поверненням!", authSubLogin: "Увійдіть до свого акаунту",
                 authPass: "Пароль", authPassHolder: "Ваш пароль", authBtnLogin: "Увійти", authWelcome: "Ласкаво просимо!", authSubReg: "Створіть свій профіль",
                 authNameHolder: "Ваше ім'я", authRegPassHolder: "Придумайте пароль", authBio: "Про себе", authBioHolder: "Розкажіть про себе...",
@@ -1204,10 +1204,12 @@
             }
         };
 
-        // Запуск мультиязычности СРАЗУ, чтобы авторизация перевелась
+        // СНАЧАЛА объявляем currentTarget
+        let currentTarget = translations[localSettings.lang || 'ru'].fav; 
+
+        // И только ПОТОМ вызываем функцию, которая его использует
         changeLanguage(true);
 
-        let currentTarget = translations[localSettings.lang || 'ru'].fav; 
         let chatLoop;
         let currentGroupAvatar = null;
         let isArchiveOpen = false;
