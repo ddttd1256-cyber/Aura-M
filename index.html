@@ -1204,12 +1204,8 @@
             }
         };
 
-        // СНАЧАЛА объявляем currentTarget
+        // ВСЕ ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ОБЪЯВЛЯЕМ ЗДЕСЬ, ДО ВЫЗОВА ЛЮБЫХ ФУНКЦИЙ
         let currentTarget = translations[localSettings.lang || 'ru'].fav; 
-
-        // И только ПОТОМ вызываем функцию, которая его использует
-        changeLanguage(true);
-
         let chatLoop;
         let currentGroupAvatar = null;
         let isArchiveOpen = false;
