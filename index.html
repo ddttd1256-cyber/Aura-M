@@ -245,12 +245,19 @@
 
         .chat-history { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; z-index: 2; }
         
+        /* ИСПРАВЛЕНИЕ: Улучшенная читаемость сообщений на обоях */
         .msg { 
             max-width: 75%; padding: 10px 15px; border-radius: 20px; line-height: 1.4; word-break: break-word; font-size: 0.95rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: relative; cursor: default;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); position: relative; cursor: default;
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
         }
-        .msg.received { background: var(--bg-element); border: 1px solid var(--glass-border); align-self: flex-start; border-bottom-left-radius: 4px; }
-        .msg.sent { background: var(--accent-gradient); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 4px 15px var(--accent-glow); }
+        .msg.received { background: var(--bg-element); color: var(--text-main); border: 1px solid var(--glass-border); align-self: flex-start; border-bottom-left-radius: 4px; }
+        .msg.sent { background: var(--accent-gradient); color: #ffffff; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 4px 15px var(--accent-glow); }
+        
+        /* Адаптация теней для светлой темы */
+        [data-theme="light"] .msg.received { text-shadow: none; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        [data-theme="light"] .msg.sent { text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
         
         .msg-media { max-width: 100%; max-height: 300px; object-fit: contain; border-radius: 12px; margin-top: 5px; cursor: pointer; }
         .msg-audio { width: 250px; height: 50px; margin-top: 5px; outline: none; border-radius: 25px; background: rgba(255,255,255,0.1); }
@@ -263,6 +270,7 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.4), inset 0 0 20px var(--accent-glow);
             backdrop-filter: blur(15px); animation: giftFloat 3s ease-in-out infinite; margin-top: 5px;
             display: flex; flex-direction: column; align-items: center; overflow: hidden;
+            text-shadow: none !important; /* Отключаем тень текста для блока подарка */
         }
         .msg-gift.exchanged {
             filter: grayscale(1); border-color: var(--text-muted); box-shadow: none; animation: none;
@@ -285,6 +293,7 @@
             margin-top: 15px; padding: 8px 15px; background: linear-gradient(135deg, var(--gold), #ffa500);
             border: none; border-radius: 12px; color: #000; font-weight: bold; cursor: pointer;
             z-index: 2; position: relative; transition: 0.2s; width: 100%; box-shadow: 0 4px 10px rgba(255, 215, 0, 0.4);
+            text-shadow: none;
         }
         .btn-exchange:hover { transform: scale(1.05); }
 
@@ -359,7 +368,6 @@
         }
         .modal-overlay.active .modal { transform: translateY(0) scale(1); }
         
-        /* Исправление шапок модалок чтобы не наезжало на баланс */
         .modal-header-flex {
             display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;
         }
@@ -1275,7 +1283,7 @@
                     Array.from(display.childNodes).forEach(el => {
                         if(el.nodeType === 3 || el.nodeName === 'SVG' || el.className==='cam-icon') display.removeChild(el);
                     });
-                    display.style.backgroundImage = `url('${tempRegAvatar}')`; // Фикс бага 7 (кавычки)
+                    display.style.backgroundImage = `url('${tempRegAvatar}')`; 
                     display.style.border = '2px solid var(--accent)';
                 }
                 reader.readAsDataURL(file);
@@ -1420,7 +1428,7 @@
                         document.querySelector('.main-area').style.animation = 'fadeIn 0.8s ease forwards';
                     }, 800);
                 }
-            }, 2000); // Увеличено время с 1000 до 2000, чтобы пульсация анимации успела проиграться
+            }, 2000); 
             
             registerUser(USER, localProfile.name);
             if(window.innerWidth > 768) selectChat(currentTarget, 'favorites');
@@ -1455,7 +1463,7 @@
             });
             
             if (localProfile.avatar) {
-                display.style.backgroundImage = `url('${localProfile.avatar}')`; // Фикс
+                display.style.backgroundImage = `url('${localProfile.avatar}')`;
                 display.innerHTML = '<div class="cam-icon"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></div>';
                 miniDisplay.style.backgroundImage = `url('${localProfile.avatar}')`; miniDisplay.innerText = '';
             } else {
@@ -1497,7 +1505,7 @@
             const dict = translations[localSettings.lang || 'ru'];
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
-                if(dict[key]) el.innerHTML = dict[key]; // Используем innerHTML чтобы не ломать span/svg
+                if(dict[key]) el.innerHTML = dict[key]; 
             });
             document.querySelectorAll('[data-i18n-ph]').forEach(el => {
                 const key = el.getAttribute('data-i18n-ph');
@@ -2006,7 +2014,7 @@
                     avatarDiv.style.color = '#888';
                     avatarDiv.style.backgroundImage = '';
                 } else if (chatObj.avatar) {
-                    avatarDiv.style.backgroundImage = `url('${chatObj.avatar}')`; // Фикс
+                    avatarDiv.style.backgroundImage = `url('${chatObj.avatar}')`; 
                     avatarDiv.innerHTML = '';
                     avatarDiv.style.background = 'none';
                 } else {
@@ -2081,7 +2089,7 @@
                     Array.from(display.childNodes).forEach(el => {
                         if(el.nodeName === 'SVG') display.removeChild(el);
                     });
-                    display.style.backgroundImage = `url('${currentGroupAvatar}')`; // Фикс
+                    display.style.backgroundImage = `url('${currentGroupAvatar}')`; 
                     display.style.borderStyle = 'solid'; display.style.borderColor = 'var(--accent)';
                 }
                 reader.readAsDataURL(file);
@@ -2251,7 +2259,7 @@
         function adminSendFreeGift() {
             let targetUser = document.getElementById('adminTargetUser').value;
             let giftRaw = document.getElementById('adminGiftType').value;
-            let giftType = giftRaw.split('|')[1]; // Получаем тип (star, heart, diamond, crown, rose...)
+            let giftType = giftRaw.split('|')[1]; 
 
             if (!targetUser) return;
 
@@ -2334,7 +2342,7 @@
                 avatarDisplay.innerHTML = iconDeleted;
                 avatarDisplay.style.color = '#888';
             } else if(chatObj.avatar) {
-                avatarDisplay.style.background = `url('${chatObj.avatar}') center/cover`; // Фикс бага 7 (кавычки)
+                avatarDisplay.style.background = `url('${chatObj.avatar}') center/cover`; 
                 avatarDisplay.innerHTML = '';
             } else {
                 avatarDisplay.style.background = 'var(--accent-gradient)';
@@ -2356,7 +2364,6 @@
                 pinnedDiv.style.display = 'none';
             }
 
-            // Добавление участников (Фикс)
             let membersDiv = document.getElementById('viewProfileMembers');
             let membersList = document.getElementById('membersListContainer');
             if (chatObj.type === 'group' || chatObj.type === 'channel') {
@@ -2572,7 +2579,6 @@
                 localStorage.setItem('auraChats_' + USER, JSON.stringify(localChats));
             }
 
-            // Фикс 5: Добавление публичных групп для других юзеров
             if (type === 'group' || type === 'channel') {
                 let privacyEl = document.getElementById('chatPrivacy');
                 let isPrivate = privacyEl ? privacyEl.value === 'private' : false;
@@ -2582,7 +2588,6 @@
                     localStorage.setItem('auraPublicGroups', JSON.stringify(publicGroups));
                 }
 
-                // Добавление юзеров в группу при создании
                 if (members) {
                     let mArr = members.split(',').map(s=>s.trim()).filter(Boolean);
                     mArr.forEach(m => {
@@ -2625,6 +2630,7 @@
             }
 
             if (currentTarget !== dict.fav) {
+                // Создание чата у получателя
                 let targetChats = JSON.parse(localStorage.getItem('auraChats_' + currentTarget)) || [];
                 let existingChat = targetChats.find(c => c.name === USER);
                 
@@ -2637,6 +2643,7 @@
                 }
                 localStorage.setItem('auraChats_' + currentTarget, JSON.stringify(targetChats));
 
+                // Создание сообщения у получателя
                 let targetAllMsgs = JSON.parse(localStorage.getItem('auraMessages_' + currentTarget)) || {};
                 if(!targetAllMsgs[USER]) targetAllMsgs[USER] = [];
                 targetAllMsgs[USER].push({sender: USER, text: text});
@@ -2649,7 +2656,7 @@
             localStorage.setItem('auraMessages_' + USER, JSON.stringify(localMessages));
             
             // Рендерим и прокручиваем
-            if (!isAdminFreeSend) { // Если шлет админ через скрытую панель, не рендерим ему в текущий чат
+            if (!isAdminFreeSend) { 
                 renderMessage(USER, text, localMessages[currentTarget].length - 1);
                 renderedMsgCount++; 
             }
@@ -2678,7 +2685,6 @@
                     const data = await res.json();
                     msgs = data.messages || [];
                     
-                    // Фикс бага 1: API перезаписывает локальные статусы подарков
                     let ex = exchangedGifts[currentTarget] || [];
                     msgs.forEach((m, idx) => {
                         if(ex.includes(idx) && m.text.startsWith('[gift]')) {
@@ -2689,7 +2695,7 @@
                     localMessages[currentTarget] = msgs;
                     localStorage.setItem('auraMessages_' + USER, JSON.stringify(localMessages));
                 } catch (e) {
-                    // Если нет сети, используем локальные msgs, но тоже проверим обмены
+                    // Если нет сети, используем локальные msgs
                     let ex = exchangedGifts[currentTarget] || [];
                     msgs.forEach((m, idx) => {
                         if(ex.includes(idx) && m.text.startsWith('[gift]')) {
@@ -2793,10 +2799,24 @@
                 // Обновляем статус каждую секунду
                 localStorage.setItem('auraOnline_' + USER, Date.now());
                 
+                // Фикс бага с появлением чата у получателя! Синхронизируем localStorage в реальном времени
                 let myStoredChats = JSON.parse(localStorage.getItem('auraChats_' + USER)) || [];
-                if(myStoredChats.length > localChats.length) {
+                if(JSON.stringify(myStoredChats) !== JSON.stringify(localChats)) {
                     localChats = myStoredChats;
                     renderSidebarChats();
+                }
+
+                // И сообщения тоже подтягиваем из памяти, чтобы они сразу появлялись
+                let myStoredMsgs = JSON.parse(localStorage.getItem('auraMessages_' + USER)) || {};
+                if(JSON.stringify(myStoredMsgs) !== JSON.stringify(localMessages)) {
+                    localMessages = myStoredMsgs;
+                    loadChat(); // Перезагружаем чат, если появились новые сообщения
+                }
+                
+                let myStoredHidden = JSON.parse(localStorage.getItem('auraHiddenMsgs_' + USER)) || {};
+                if(JSON.stringify(myStoredHidden) !== JSON.stringify(hiddenMsgs)) {
+                    hiddenMsgs = myStoredHidden;
+                    loadChat();
                 }
 
                 let avatarsUpdated = false;
@@ -2804,9 +2824,6 @@
                     if(c.type === 'user') {
                         let p = JSON.parse(localStorage.getItem('auraProfile_' + c.name));
                         if(p) {
-                            // Не заменяем кастомное имя (Contact Name) на имя профиля, если мы задавали его сами.
-                            // Но если realName совпадает с name или старому профилю, обновляем.
-                            // Для упрощения: если мы изменили фото или био собеседника:
                             if (p.avatar !== c.avatar || p.bio !== c.bio) {
                                 c.avatar = p.avatar;
                                 c.bio = p.bio;
