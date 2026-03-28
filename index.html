@@ -5256,10 +5256,10 @@
         // Срабатывает, когда весь HTML загружен и готов к работе.
         // ==========================================================================
         
-        window.onload = () => {
+       document.addEventListener('DOMContentLoaded', () => {
             // Проверяем, есть ли авторизованный пользователь
             if (!localStorage.getItem('auraUser')) {
-                // Если нет - запускаем красивую анимацию логотипа и показываем форму входа
+                // Если нет - запускаем анимацию и показываем форму входа
                 setTimeout(() => {
                     const splash = document.getElementById('splash');
                     splash.style.opacity = '0';
@@ -5268,17 +5268,16 @@
                         splash.style.display = 'none';
                         document.getElementById('authModal').style.display = 'flex';
                         
-                        // Небольшая задержка для плавного появления модалки
                         setTimeout(() => {
                             document.getElementById('authModal').classList.add('active');
                         }, 50);
                     }, 800);
-                }, 1500); // 1.5 секунды любуемся логотипом
+                }, 1500); 
             } else {
                 // Если пользователь уже вошел - сразу стартуем ядро приложения
                 startNormalApp();
             }
-        };
+        });
 
     </script>
 </body>
