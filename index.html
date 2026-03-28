@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Aura Messenger</title>
     <style>
-        /* --- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ (Переработаны для максимального контраста) --- */
+        /* Базовые стили и переменные (Темная тема по умолчанию) */
         :root {
-            /* Переменные для Тёмной Темы (Default) */
             --bg-main: linear-gradient(135deg, #0d0f12 0%, #1a1b26 100%);
             --glass-bg: rgba(25, 26, 35, 0.5);
             --glass-border: rgba(255, 255, 255, 0.08);
@@ -29,7 +28,7 @@
             --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
             --chat-wallpaper: none;
 
-            /* Переменные для магазина NFT (Темная тема) */
+            /* Переменные для магазина НФТ */
             --gift-bg: #1a1a24;
             --gift-text: #ffffff;
             --gift-border: rgba(255, 255, 255, 0.1);
@@ -37,7 +36,7 @@
             --gift-hover-bg: rgba(0, 0, 0, 0.4);
         }
 
-        /* --- ИСПРАВЛЕНИЕ №1: Светлая Тема (Максимальный контраст текста) --- */
+        /* ИСПРАВЛЕНИЕ №1: Читабельный текст в светлой теме */
         [data-theme="light"] {
             --bg-main: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
             --glass-bg: rgba(255, 255, 255, 0.7);
@@ -46,14 +45,13 @@
             --bg-element: rgba(240, 242, 245, 0.9);
             --bg-hover: rgba(0, 0, 0, 0.05);
             
-            /* Жестко контрастный текст (почти черный) */
-            --text-main: #0a0b0d; 
-            --text-muted: #2f3236;
-            --btn-text: #ffffff; /* Белый текст на синих кнопках */
+            /* Жесткий черный текст для идеального контраста */
+            --text-main: #111111; 
+            --text-muted: #444444; 
+            --btn-text: #ffffff;
 
-            /* Переменные для магазина NFT (Светлая тема) */
             --gift-bg: #ffffff;
-            --gift-text: #0a0b0d; /* Почти черный текст в картах */
+            --gift-text: #111111;
             --gift-border: rgba(0, 0, 0, 0.1);
             --gift-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
             --gift-hover-bg: #f8f9fa;
@@ -71,7 +69,6 @@
             transition: background 0.5s ease, color 0.5s ease;
         }
 
-        /* Глобальные стили SVG иконок */
         svg { display: inline-block; vertical-align: middle; }
         .icon-btn svg { width: 22px; height: 22px; stroke-width: 2px; }
         .media-btn svg { width: 24px; height: 24px; stroke-width: 2px; transition: transform 0.2s; }
@@ -119,33 +116,28 @@
             z-index: 10;
         }
         
-        /* --- ИСПРАВЛЕНИЕ №3: Поиск (Выравнивание Лупы) --- */
+        /* ИСПРАВЛЕНИЕ №3: Лупа сместилась -> Теперь идеально по центру */
         .sidebar-search {
             padding: 15px 15px 5px 15px;
             position: relative;
-            display: flex; align-items: center; /* Добавлено flex для родителя */
         }
         .sidebar-search input {
-            width: 100%; padding: 10px 15px 10px 42px; /* Изменен padding-left */
-            border-radius: 15px; 
+            width: 100%; padding: 10px 15px 10px 42px; border-radius: 15px; 
             background: rgba(0,0,0,0.15); border: 1px solid var(--glass-border); 
-            color: var(--text-main); outline: none; transition: var(--transition); font-size: 0.95rem;
+            color: var(--text-main); outline: none; transition: var(--transition);
         }
-        /* Фикс лупы: dead center */
         .sidebar-search svg {
-            position: absolute; left: 26px; top: 50%; transform: translateY(-50%); /* Идеальное центрирование */
-            color: var(--text-muted); width: 19px; height: 19px; pointer-events: none; z-index: 2;
+            position: absolute; left: 28px; top: 50%; transform: translateY(-40%); /* Центрирование лупы */
+            color: var(--text-muted); width: 18px; height: 18px; pointer-events: none;
         }
-        [data-theme="light"] .sidebar-search input { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.15); color: #000; }
+        [data-theme="light"] .sidebar-search input { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.2); color: #111; }
         .sidebar-search input:focus { border-color: var(--accent); }
 
-        /* Разделитель глобального поиска */
         .search-divider {
             padding: 5px 15px; font-size: 0.8rem; font-weight: bold; color: var(--accent);
             text-transform: uppercase; letter-spacing: 1px; background: rgba(0,0,0,0.1);
         }
 
-        /* Панель профиля внизу */
         .sidebar-footer { 
             padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; 
             border-top: 1px solid var(--glass-border); background: rgba(0,0,0,0.05);
@@ -161,7 +153,6 @@
         }
         .my-mini-avatar:hover { transform: scale(1.05); }
 
-        /* Баланс AUR */
         .aur-balance {
             display: flex; align-items: center; gap: 5px; background: rgba(0,0,0,0.2); padding: 5px 10px;
             border-radius: 12px; font-weight: bold; font-size: 0.9rem; color: var(--gold);
@@ -171,7 +162,6 @@
 
         .chat-list { flex: 1; overflow-y: auto; overflow-x: hidden; padding-top: 10px; position: relative;}
         
-        /* СВАЙП КОНТЕЙНЕР */
         .swipe-container { position: relative; overflow: hidden; margin: 5px 10px; border-radius: 15px; touch-action: pan-y; }
         .swipe-actions {
             position: absolute; right: 0; top: 0; height: 100%; display: flex;
@@ -211,9 +201,6 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.2); background-size: cover; background-position: center; flex-shrink: 0;
         }
 
-        /* --- ИСПРАВЛЕНИЕ №8: Удалены статусы Online/Offline (CSS) --- */
-
-        /* Архивный заголовок */
         .archive-header {
             display: flex; justify-content: space-between; align-items: center;
             padding: 10px 25px; cursor: pointer; color: var(--text-muted); font-weight: bold;
@@ -231,7 +218,6 @@
             opacity: 0.05; pointer-events: none; z-index: 0;
         }
 
-        /* ШАПКА ЧАТА */
         .chat-header { 
             padding: 15px 20px; background: var(--bg-sidebar); border-bottom: 1px solid var(--glass-border); 
             display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(10px); z-index: 5;
@@ -257,6 +243,7 @@
             flex-shrink: 0;
         }
         .chat-options-btn:hover { background: var(--glass-bg); color: var(--text-main); }
+        
         .dropdown-menu {
             position: absolute; right: 20px; top: 60px; background: var(--bg-element);
             border: 1px solid var(--glass-border); border-radius: 12px; padding: 8px;
@@ -280,59 +267,54 @@
         .msg.received { background: var(--bg-element); color: var(--text-main); border: 1px solid var(--glass-border); align-self: flex-start; border-bottom-left-radius: 4px; }
         .msg.sent { background: var(--accent-gradient); color: #ffffff; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 4px 15px var(--accent-glow); }
         
-        [data-theme="light"] .msg.received { text-shadow: none; box-shadow: 0 2px 10px rgba(0,0,0,0.05); color: var(--text-main); }
+        [data-theme="light"] .msg.received { text-shadow: none; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         [data-theme="light"] .msg.sent { text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
         
         .msg-media { max-width: 100%; max-height: 300px; object-fit: contain; border-radius: 12px; margin-top: 5px; cursor: pointer; }
         .msg-audio { width: 250px; height: 50px; margin-top: 5px; outline: none; border-radius: 25px; background: rgba(255,255,255,0.1); }
         .msg-sticker { width: 120px; height: 120px; }
 
-        /* --- ИСПРАВЛЕНИЕ №9: Покруче NFT в чате (Glow эффекты) --- */
+        /* ИСПРАВЛЕНИЕ №9: Визуал НФТ в чате возвращен в изначальный красивый вид + свечение */
         .msg-gift {
-            background: rgba(20, 21, 30, 0.9); border: 2px solid var(--accent); border-radius: 24px;
+            background: rgba(20, 21, 30, 0.85); border: 1px solid var(--accent); border-radius: 24px;
             padding: 20px; text-align: center; width: 220px; max-width: 100%; position: relative;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4), inset 0 0 30px var(--accent-glow);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4), inset 0 0 20px var(--accent-glow);
             backdrop-filter: blur(15px); margin-top: 5px;
             display: flex; flex-direction: column; align-items: center; overflow: hidden;
-            text-shadow: none !important; animation: giftInit 0.5s ease-out;
+            text-shadow: none !important;
         }
-        .msg-gift.exchanged {
-            filter: grayscale(1); border-color: var(--text-muted); box-shadow: none; animation: none;
-        }
-        /* Эффект свечения */
+        .msg-gift.exchanged { filter: grayscale(1); border-color: var(--text-muted); box-shadow: none; animation: none; }
         .msg-gift::after {
             content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle at center, rgba(255,255,255,0.15) 0%, transparent 60%);
+            background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, transparent 60%);
             transform: rotate(45deg); pointer-events: none; animation: shine 4s linear infinite;
         }
         .msg-gift.exchanged::after { display: none; }
+        @keyframes shine { 0% { transform: translateX(-50%) rotate(45deg); } 100% { transform: translateX(50%) rotate(45deg); } }
         
-        /* Особое свечение для дорогих NFT (Item 9) */
+        /* Свечение для дорогих НФТ (Мишка, Токсик) */
         .nft-glow {
             border-color: var(--gold) !important;
-            box-shadow: 0 0 30px var(--gold), inset 0 0 40px rgba(255, 215, 0, 0.4) !important;
+            box-shadow: 0 0 20px var(--gold), inset 0 0 30px rgba(255, 215, 0, 0.5) !important;
         }
-
-        @keyframes shine { 0% { transform: translateX(-50%) rotate(45deg); } 100% { transform: translateX(50%) rotate(45deg); } }
-        @keyframes giftInit { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         
-        .msg-gift-icon { width: 85px; height: 85px; margin-bottom: 15px; display: flex; justify-content: center; align-items: center; filter: drop-shadow(0 0 15px var(--accent-glow)); z-index: 1; position: relative; font-size: 3rem;}
-        .msg-gift-title { color: #ffffff; font-weight: 800; font-size: 1.2rem; margin-bottom: 5px; z-index: 1; position: relative;}
+        .msg-gift-icon { width: 80px; height: 80px; margin-bottom: 15px; display: flex; justify-content: center; align-items: center; filter: drop-shadow(0 0 15px var(--accent-glow)); z-index: 1; position: relative; font-size: 3rem;}
+        .nft-glow .msg-gift-icon { filter: drop-shadow(0 0 20px var(--gold)); }
+        
+        .msg-gift-title { color: #ffffff; font-weight: 800; font-size: 1.15rem; margin-bottom: 5px; z-index: 1; position: relative;}
         .msg-gift-desc { color: var(--accent); font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; z-index: 1; position: relative; opacity: 0.9;}
+        .msg-gift.exchanged .msg-gift-desc { color: var(--text-muted); }
         
-        /* Исправление цвета в светлой теме для NFT карты */
-        [data-theme="light"] .msg-gift .msg-gift-title { color: #ffffff; }
-        [data-theme="light"] .msg-gift .msg-gift-desc { color: var(--accent); }
+        [data-theme="light"] .msg-gift-title { color: #ffffff; }
 
         .btn-exchange {
-            margin-top: 15px; padding: 10px 18px; background: linear-gradient(135deg, var(--gold), #ffa500);
+            margin-top: 15px; padding: 8px 15px; background: linear-gradient(135deg, var(--gold), #ffa500);
             border: none; border-radius: 12px; color: #000; font-weight: bold; cursor: pointer;
             z-index: 2; position: relative; transition: 0.2s; width: 100%; box-shadow: 0 4px 10px rgba(255, 215, 0, 0.4);
-            text-shadow: none; font-size: 0.9rem;
+            text-shadow: none;
         }
-        .btn-exchange:hover { transform: scale(1.03); box-shadow: 0 6px 15px rgba(255, 215, 0, 0.6); }
+        .btn-exchange:hover { transform: scale(1.05); }
 
-        /* Контекстное меню сообщения */
         .msg-context-menu {
             display: none; position: absolute; background: var(--bg-element); border: 1px solid var(--glass-border);
             padding: 8px; border-radius: 12px; z-index: 1000; flex-direction: column; gap: 5px;
@@ -346,7 +328,6 @@
         .msg-context-btn.del-all { color: var(--danger); }
         .msg-context-btn.del-all:hover { background: rgba(255, 74, 74, 0.1); }
 
-        /* Зона ввода */
         .chat-input-area { 
             padding: 15px 20px; background: var(--bg-sidebar); border-top: 1px solid var(--glass-border); 
             display: flex; gap: 10px; align-items: center; z-index: 5; backdrop-filter: blur(10px);
@@ -361,7 +342,6 @@
         .media-btn.recording { color: var(--danger); animation: pulse 1s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
 
-        /* Панель стикеров */
         .stickers-panel {
             position: absolute; bottom: 80px; left: 20px; background: var(--bg-element);
             border: 1px solid var(--glass-border); border-radius: 15px; padding: 15px;
@@ -371,18 +351,15 @@
         .sticker-item { width: 50px; height: 50px; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; }
         .sticker-item:hover { transform: scale(1.2); }
 
-        /* Поля ввода и выборки */
+        /* ИСПРАВЛЕНИЕ №1: Инпуты в светлой теме */
         input[type="text"], input[type="password"], input[type="number"], textarea, select { 
             flex: 1; padding: 12px 20px; border-radius: 20px; border: 1px solid var(--glass-border); 
             background: rgba(0,0,0,0.1); color: var(--text-main); outline: none; transition: var(--transition); font-size: 1rem;
         }
-        
-        /* Исправление контраста полей ввода в светлой теме (Пункт 1) */
         [data-theme="light"] input[type="text"], [data-theme="light"] input[type="password"], [data-theme="light"] input[type="number"], [data-theme="light"] textarea, [data-theme="light"] select { 
-            background: rgba(0,0,0,0.05); color: #000000; border-color: rgba(0,0,0,0.2);
+            background: rgba(0,0,0,0.05); color: #111; border-color: rgba(0,0,0,0.2);
         }
-        [data-theme="light"] input::placeholder, [data-theme="light"] textarea::placeholder { color: #50555c; }
-        
+        [data-theme="light"] input::placeholder, [data-theme="light"] textarea::placeholder { color: #555; }
         input[type="text"]:focus, input[type="password"]:focus, input[type="number"]:focus, textarea:focus, select:focus { box-shadow: 0 0 0 2px var(--accent); }
         
         .send-btn { 
@@ -398,9 +375,6 @@
             cursor: pointer; transition: 0.3s;
         }
         button.icon-btn:hover { background: var(--accent); color: #fff; box-shadow: 0 0 10px var(--accent-glow); }
-        /* Контраст кнопок в светлой теме */
-        [data-theme="light"] button.icon-btn { color: #000; border-color: rgba(0,0,0,0.2); }
-        [data-theme="light"] button.icon-btn:hover { color: #fff; border-color: transparent; }
 
         /* Модальные окна */
         .modal-overlay { 
@@ -409,139 +383,120 @@
         }
         .modal-overlay.active { display: flex; opacity: 1; }
         .modal { 
-            background: var(--bg-sidebar); padding: 30px; border-radius: 24px; width: 420px; max-width: 95vw;
+            background: var(--bg-sidebar); padding: 30px; border-radius: 24px; width: 400px; max-width: 95vw;
             border: 1px solid var(--glass-border); box-shadow: 0 20px 50px rgba(0,0,0,0.4); 
             transform: translateY(30px) scale(0.95); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column;
         }
         .modal-overlay.active .modal { transform: translateY(0) scale(1); }
         
-        .modal-header-flex { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
-        .modal h2 { margin-bottom: 0px; font-size: 1.6rem; text-align: left; color: var(--text-main); }
-        [data-theme="light"] .modal h2 { color: #000; }
+        .modal-header-flex { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
+        .modal h2 { margin-bottom: 20px; font-size: 1.5rem; text-align: center; color: var(--text-main); }
+        .modal-header-flex h2 { margin-bottom: 0; text-align: left; }
 
-        .form-group { margin-bottom: 18px; width: 100%; }
-        .form-group label { 
-            display: block; margin-bottom: 8px; font-size: 0.85rem; color: var(--text-muted); 
-            text-transform: uppercase; letter-spacing: 1px; font-weight: bold;
+        .form-group { margin-bottom: 20px; width: 100%; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+        
+        .form-group input, .form-group select, .form-group textarea { 
+            width: 100%; border-radius: 12px; padding: 12px 15px; background: var(--bg-element); border: 1px solid var(--glass-border); 
+            color: var(--text-main); outline: none; transition: var(--transition); font-family: inherit; resize: none;
         }
-        [data-theme="light"] .form-group label { color: var(--text-muted); }
+        .form-group select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a0aabf' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 15px center; }
+        select option { background-color: #1a1b26; color: #ffffff; }
+        [data-theme="light"] select option { background-color: #ffffff; color: #000000; }
 
-        /* Вкладки авторизации */
-        .auth-tabs { display: flex; border-bottom: 2px solid var(--glass-border); margin-bottom: 25px; gap: 10px;}
-        .auth-tab { flex: 1; text-align: center; padding: 12px; cursor: pointer; color: var(--text-muted); transition: 0.3s; font-weight: bold; font-size: 1.1rem;}
-        .auth-tab.active { color: var(--accent); border-bottom: 3px solid var(--accent); }
-        [data-theme="light"] .auth-tab.active { color: var(--accent); }
+        .auth-tabs { display: flex; border-bottom: 1px solid var(--glass-border); margin-bottom: 20px; }
+        .auth-tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; color: var(--text-muted); transition: 0.3s; font-weight: bold; }
+        .auth-tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
 
-        /* Списки настроек */
-        .settings-list { display: flex; flex-direction: column; gap: 10px; }
+        .settings-list { display: flex; flex-direction: column; gap: 8px; }
         .settings-list-item {
-            padding: 16px 20px; background: var(--bg-element); border: 1px solid var(--glass-border);
-            border-radius: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
-            transition: 0.2s; color: var(--text-main); font-weight: 600; font-size: 1rem;
+            padding: 15px 20px; background: var(--bg-element); border: 1px solid var(--glass-border);
+            border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+            transition: 0.2s; color: var(--text-main); font-weight: 500; font-size: 0.95rem;
         }
-        .settings-list-item:hover { background: var(--bg-hover); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.15); }
-        .settings-list-item.danger { color: var(--danger); border-color: rgba(255, 74, 74, 0.3); }
-        .settings-list-item.danger:hover { background: rgba(255, 74, 74, 0.1); box-shadow: 0 5px 15px rgba(255, 74, 74, 0.2); }
-        .settings-list-item svg { width: 18px; height: 18px; color: var(--text-muted); stroke-width: 2.5px;}
+        .settings-list-item:hover { background: var(--bg-hover); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .settings-list-item.danger { color: var(--danger); }
+        .settings-list-item svg { width: 18px; height: 18px; color: var(--text-muted); }
         .settings-list-item.danger svg { color: var(--danger); }
         
         .modal-header-back { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
-        .modal-header-back h2 { margin-bottom: 0; }
-        .modal-header-back .icon-btn { background: transparent; border: none; box-shadow: none; color: var(--text-main);}
-        .modal-header-back .icon-btn:hover { color: var(--accent); background: transparent; }
+        .modal-header-back h2 { margin-bottom: 0; text-align: left; }
+        .modal-header-back .icon-btn { background: transparent; border: none; box-shadow: none; }
+        .modal-header-back .icon-btn:hover { color: var(--accent); }
         
-        /* Выбор обоев */
-        .wallpaper-options { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; padding-bottom: 5px; max-height: 220px; overflow-y: auto; overflow-x: hidden;}
-        .wp-option { width: 55px; height: 55px; border-radius: 12px; cursor: pointer; border: 3px solid transparent; background-size: cover; background-position: center; flex-shrink: 0; transition: transform 0.2s;}
-        .wp-option:hover { transform: scale(1.1); }
-        .wp-option.active { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+        .wallpaper-options { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; padding-bottom: 5px; max-height: 200px; overflow-y: auto; overflow-x: hidden;}
+        .wp-option { width: 50px; height: 50px; border-radius: 10px; cursor: pointer; border: 2px solid transparent; background-size: cover; background-position: center; flex-shrink: 0;}
+        .wp-option.active { border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
 
-        /* Кнопки модалок */
-        .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 25px; flex-shrink: 0; }
-        .btn-cancel { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: var(--text-main); padding: 12px 20px; border-radius: 14px; cursor: pointer; font-weight: 600; font-size: 0.95rem;}
-        [data-theme="light"] .btn-cancel { border-color: rgba(0,0,0,0.2); color: #000; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; flex-shrink: 0; }
+        .btn-cancel { background: transparent; border: 1px solid var(--text-muted); color: var(--text-main); padding: 10px 15px; border-radius: 12px; cursor: pointer;}
         .btn-cancel:hover { background: var(--bg-hover); }
-        
-        .btn-save { background: var(--accent-gradient); color: #fff; border: none; padding: 12px 24px; border-radius: 14px; cursor: pointer; font-weight: bold; font-size: 0.95rem;}
-        .btn-save:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 5px 15px var(--accent-glow); }
-        
-        .btn-topup { background: linear-gradient(135deg, #ffd700, #ffa500); color: #000; border: none; padding: 14px; border-radius: 15px; cursor: pointer; font-weight: 800; width: 100%; box-shadow: 0 5px 20px rgba(255, 215, 0, 0.5); margin-top: 15px; transition: 0.3s; font-size: 1.1rem;}
-        .btn-topup:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255, 215, 0, 0.7); }
+        .btn-save { background: var(--accent-gradient); color: #fff; border: none; padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: bold;}
+        .btn-topup { background: linear-gradient(135deg, #ffd700, #ffa500); color: #000; border: none; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: bold; width: 100%; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4); margin-top: 15px; transition: 0.3s;}
+        .btn-topup:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6); }
 
         .status-msg { font-size: 0.85rem; margin-top: 8px; display: block; font-weight: bold; }
 
-        /* --- ПРОФИЛЬ (CSS) --- */
+        /* ПРОФИЛЬ */
         .profile-layout { display: flex; flex-direction: column; align-items: center; width: 100%; }
         .profile-avatar-large {
-            width: 130px; height: 130px; border-radius: 50%; border: 4px solid var(--accent);
-            display: flex; justify-content: center; align-items: center; font-size: 3rem; font-weight: bold; color: #fff;
+            width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--accent);
+            display: flex; justify-content: center; align-items: center; font-size: 2.5rem; font-weight: bold; color: #fff;
             background-color: var(--bg-element); background-size: cover; background-position: center;
-            box-shadow: 0 0 25px var(--accent-glow); margin-bottom: 25px; cursor: pointer; position: relative; flex-shrink: 0; transition: 0.3s;
+            box-shadow: 0 0 20px var(--accent-glow); margin-bottom: 20px; cursor: pointer; position: relative; flex-shrink: 0;
         }
-        .profile-avatar-large:hover { transform: scale(1.03); }
         .profile-avatar-large .cam-icon {
-            position: absolute; bottom: 0; right: 0; background: var(--bg-element); border-radius: 50%; padding: 10px; border: 2px solid var(--glass-border); color: var(--text-main); display: flex; justify-content: center; align-items: center;
+            position: absolute; bottom: 0; right: 0; background: var(--bg-element); border-radius: 50%; padding: 8px; border: 1px solid var(--glass-border); color: var(--text-main); display: flex; justify-content: center; align-items: center;
         }
         
-        .profile-line-input { width: 100%; display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
-        .profile-line-input span { font-size: 0.9rem; color: var(--text-muted); min-width: 45px; text-align: right; text-transform: uppercase; font-weight: bold;}
+        .profile-line-input { width: 100%; display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .profile-line-input span { font-size: 0.85rem; color: var(--text-muted); min-width: 40px; text-align: right; }
         .profile-line-input .line-field {
-            flex: 1; border: none; border-bottom: 2px solid rgba(255,255,255,0.2); background: transparent; color: var(--text-main); font-size: 1.15rem;
-            padding: 8px 0; outline: none; transition: 0.3s;
+            flex: 1; border: none; border-bottom: 2px solid var(--text-muted); background: transparent; color: var(--text-main); font-size: 1.1rem;
+            padding: 5px 0; outline: none; transition: 0.3s;
         }
-        [data-theme="light"] .profile-line-input .line-field { border-bottom-color: rgba(0,0,0,0.2); color: #000; }
         .profile-line-input .line-field:focus { border-bottom-color: var(--accent); }
 
         .group-avatar-preview {
-            width: 80px; height: 80px; border-radius: 50%; border: 3px dashed var(--text-muted);
+            width: 70px; height: 70px; border-radius: 50%; border: 2px dashed var(--text-muted);
             display: flex; justify-content: center; align-items: center; color: var(--text-muted);
-            background-size: cover; background-position: center; cursor: pointer; margin: 0 auto 15px auto; transition: 0.2s;
+            background-size: cover; background-position: center; cursor: pointer; margin: 0 auto 15px auto;
         }
-        .group-avatar-preview:hover { border-color: var(--accent); color: var(--accent); }
-        .group-avatar-preview svg { width: 35px; height: 35px; }
+        .group-avatar-preview svg { width: 30px; height: 30px; }
 
-        /* СЕТКА NFT В МОДАЛКЕ (Item 2: Заменено с подарков) */
+        /* ИСПРАВЛЕНИЕ №2: СЕТКА НФТ В МОДАЛКЕ */
         .gifts-grid { 
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); 
-            gap: 15px; margin-top: 15px; 
-            max-height: 55vh; overflow-y: auto; overflow-x: hidden;
-            padding-bottom: 15px; padding-right: 5px;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
+            gap: 15px; margin-top: 10px; 
+            max-height: 50vh; overflow-y: auto; overflow-x: hidden;
+            padding-bottom: 10px;
         }
         .gift-card { 
-            background: var(--gift-bg); border: 1px solid var(--gift-border); border-radius: 18px; 
-            padding: 22px 12px; text-align: center; cursor: pointer; transition: var(--transition);
-            display: flex; flex-direction: column; align-items: center; gap: 12px; position: relative; overflow: hidden;
+            background: var(--gift-bg); border: 1px solid var(--gift-border); border-radius: 16px; 
+            padding: 20px 10px; text-align: center; cursor: pointer; transition: var(--transition);
+            display: flex; flex-direction: column; align-items: center; gap: 10px; position: relative; overflow: hidden;
             color: var(--gift-text);
             box-shadow: var(--gift-shadow);
         }
-        .gift-card:hover { transform: translateY(-5px) scale(1.02); border-color: var(--accent); box-shadow: 0 12px 25px rgba(0,0,0,0.15), 0 0 15px var(--accent-glow); background: var(--gift-hover-bg); }
+        .gift-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 20px var(--accent-glow); background: var(--gift-hover-bg); }
         
-        /* Свечение для крутых карт (Item 9) */
-        .gift-card.nft-glow-card {
-            border-color: var(--gold);
-            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.2);
-        }
-        .gift-card.nft-glow-card:hover {
-            box-shadow: 0 15px 30px rgba(255, 215, 0, 0.4), 0 0 20px rgba(255, 215, 0, 0.6) !important;
-        }
+        .gift-card.nft-glow-card { border-color: var(--gold); box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); }
+        .gift-card.nft-glow-card:hover { box-shadow: 0 0 25px var(--gold); }
 
-        .gift-card .icon-wrapper { width: 65px; height: 65px; display: flex; justify-content: center; align-items: center; filter: drop-shadow(0 0 12px var(--accent-glow)); font-size: 2.8rem; }
+        .gift-card .icon-wrapper { width: 60px; height: 60px; display: flex; justify-content: center; align-items: center; filter: drop-shadow(0 0 10px var(--accent-glow)); font-size: 2.5rem; }
         .gift-card.nft-glow-card .icon-wrapper { filter: drop-shadow(0 0 15px var(--gold)); }
-        
-        .gift-card .name { font-weight: 800; font-size: 1rem; color: var(--gift-text); }
-        .gift-card .price { font-size: 0.95rem; color: var(--gold); font-weight: 800; background: rgba(255, 215, 0, 0.1); padding: 6px 14px; border-radius: 12px; border: 1px solid rgba(255, 215, 0, 0.3); line-height: 1.3;}
-        
-        [data-theme="light"] .gift-card .name { color: #000; }
 
-        /* Скроллбар */
+        .gift-card .name { font-weight: bold; font-size: 0.95rem; }
+        .gift-card .price { font-size: 0.9rem; color: var(--gold); font-weight: 800; background: rgba(255, 215, 0, 0.1); padding: 5px 12px; border-radius: 12px; border: 1px solid rgba(255, 215, 0, 0.3); line-height: 1.3;}
+        
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(150,150,150,0.3); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
         
-        /* --- АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ (Responsive Bugs Item 10) --- */
+        /* АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ */
         @media (max-width: 768px) {
             body { display: block; position: relative; overflow: hidden; }
             .sidebar { 
@@ -558,36 +513,20 @@
                 transform: translateX(100%);
                 transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
             }
-            /* Когда чат открыт на мобильном */
             body.chat-active .main-area { transform: translateX(0); }
             
             .mobile-back-btn { display: flex; align-items: center; }
             .msg { max-width: 85%; }
-            
-            /* Исправление зоны ввода на мобильном */
-            .chat-input-area { padding: 10px; gap: 6px;}
-            input[type="text"], input[type="password"] { padding: 10px 15px; font-size: 0.95rem;}
+            .chat-input-area { padding: 10px; gap: 5px;}
+            input[type="text"], input[type="password"] { padding: 10px 15px; }
             .send-btn { padding: 10px 15px; }
-            .icon-btn { width: 38px; height: 38px; }
-            
-            .modal { padding: 20px; width: 92vw; border-radius: 20px; }
-            .modal h2 { font-size: 1.4rem; }
-            
-            .gifts-grid { grid-template-columns: repeat(2, 1fr); gap: 10px;}
-            
-            .stickers-panel { grid-template-columns: repeat(3, 1fr); left: 10px; right: 10px; bottom: 70px;}
-            
-            .chat-header { padding: 10px 15px; }
-            .chat-header-info { gap: 10px; padding: 0; flex: 1; min-width: 0; overflow: hidden;}
-            #currentChatName { font-size: 1rem; }
-            .avatar-mini { width: 40px; height: 40px; font-size: 1rem;}
+            .stickers-panel { grid-template-columns: repeat(3, 1fr); left: 10px; right: 10px; }
+            .chat-header-info { padding: 5px; flex: 1; min-width: 0; overflow: hidden;}
         }
         
-        #authModal { z-index: 99999; background: var(--bg-main); pointer-events: auto !important;}
-        #authModal .modal { pointer-events: auto !important; }
+        #authModal { z-index: 99999; background: var(--bg-main); }
     </style>
-</head>
-</head>
+    </head>
 <body>
 
     <div id="splash"><div class="splash-logo"></div></div>
@@ -809,6 +748,7 @@
                 <div style="min-width: 0; display: flex; flex-direction: column; overflow: hidden; justify-content: center;">
                     <h3 id="currentChatName" style="font-size: 1.15rem; font-weight: 700; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Избранное</h3>
                     <div id="currentChatUsername" style="color: var(--text-muted); font-size: 0.85rem; display: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px;">@user</div>
+                    
                     <div id="chatTypeInfo" style="color: var(--accent); font-size: 0.85rem; font-weight: bold; margin-top: 2px; display: none;"></div>
                 </div>
             </div>
@@ -1207,6 +1147,7 @@
             const username = document.getElementById('regUsername').value;
             const statusLabel = document.getElementById('regUsernameStatus');
             if (username.length < 3) { statusLabel.innerText = ""; return; }
+            
             if (localStorage.getItem('auraAuth_' + username)) {
                 statusLabel.style.color = 'var(--danger)';
                 statusLabel.innerText = "Юзернейм занят";
@@ -1260,8 +1201,12 @@
             };
             localStorage.setItem('auraProfile_' + USER, JSON.stringify(localProfile));
             
+            // Добавляем юзера в глобальный поиск
             let globalUsers = JSON.parse(localStorage.getItem('auraGlobalUsers')) || [];
-            if(!globalUsers.includes(USER)) { globalUsers.push(USER); localStorage.setItem('auraGlobalUsers', JSON.stringify(globalUsers)); }
+            if(!globalUsers.includes(USER)) { 
+                globalUsers.push(USER); 
+                localStorage.setItem('auraGlobalUsers', JSON.stringify(globalUsers)); 
+            }
             
             localStorage.setItem('auraChats_' + USER, JSON.stringify({}));
             
@@ -1281,11 +1226,17 @@
                 localStorage.setItem('auraUser', USER);
                 document.getElementById('authModal').classList.remove('active');
                 setTimeout(() => { document.getElementById('authModal').style.display = 'none'; startNormalApp(); }, 300);
-            } else { alert("Неверный юзернейм или пароль!"); }
+            } else { 
+                alert("Неверный юзернейм или пароль!"); 
+            }
         }
 
         // --- УПРАВЛЕНИЕ НАСТРОЙКАМИ ---
-        function openSettingsMain() { openModal('settingsModal'); openSettingsTab('settingsMainContent'); }
+        function openSettingsMain() { 
+            openModal('settingsModal'); 
+            openSettingsTab('settingsMainContent'); 
+        }
+        
         function openSettingsTab(tabId) {
             ['settingsMainContent', 'settingsAppearance', 'settingsLanguage', 'settingsData'].forEach(id => {
                 document.getElementById(id).style.display = 'none';
@@ -1294,13 +1245,13 @@
         }
         
         function changeThemeMode(isInit = false) {
-            localSettings.themeMode = document.getElementById('themeMode').value;
+            localSettings.themeMode = document.getElementById('themeMode').value || localSettings.theme || 'dark';
             document.body.setAttribute('data-theme', localSettings.themeMode);
             if(!isInit) saveSettings();
         }
         
         function changeTheme(isInit = false) {
-            localSettings.color = document.getElementById('themeColor').value;
+            localSettings.color = document.getElementById('themeColor').value || localSettings.color || '#00d2ff';
             document.documentElement.style.setProperty('--accent', localSettings.color);
             document.documentElement.style.setProperty('--accent-glow', localSettings.color + '99');
             document.documentElement.style.setProperty('--accent-gradient', `linear-gradient(135deg, ${localSettings.color}, #8a2be2)`);
@@ -1319,7 +1270,9 @@
         
         function selectLanguage(langCode) {
             localSettings.lang = langCode;
-            saveSettings(); changeLanguage(); openSettingsTab('settingsMainContent');
+            saveSettings(); 
+            changeLanguage(); 
+            openSettingsTab('settingsMainContent');
         }
         
         function changeLanguage(isInit = false) {
@@ -1335,28 +1288,44 @@
             if(!isInit) saveSettings();
         }
         
-        function saveSettings() { localStorage.setItem('auraSettings', JSON.stringify(localSettings)); }
+        function saveSettings() { 
+            localStorage.setItem('auraSettings', JSON.stringify(localSettings)); 
+        }
         
         function clearMessageCache() {
-            if(confirm("Вы уверены, что хотите очистить кэш сообщений?")) {
-                localStorage.removeItem('auraChats_' + USER); alert("Кэш сообщений очищен."); location.reload();
+            if(confirm("Вы уверены, что хотите очистить кэш сообщений? Это удалит все переписки на этом устройстве.")) {
+                localStorage.removeItem('auraChats_' + USER); 
+                alert("Кэш сообщений очищен."); 
+                location.reload();
             }
         }
         
         function fullAppReset() {
-            if(confirm("Выйти из аккаунта?")) { localStorage.removeItem('auraUser'); location.reload(); }
+            if(confirm("Выйти из аккаунта? Вам потребуется пароль для повторного входа.")) { 
+                localStorage.removeItem('auraUser'); 
+                location.reload(); 
+            }
         }
         
         function deleteAccount() {
-            if(confirm("Ваш аккаунт, баланс и чаты будут удалены навсегда. Уверены?")) {
-                localStorage.removeItem('auraAuth_' + USER); localStorage.removeItem('auraProfile_' + USER);
-                localStorage.removeItem('auraChats_' + USER); localStorage.removeItem('auraUser');
-                alert("Аккаунт удален."); location.reload();
+            if(confirm("Ваш аккаунт, баланс и чаты будут удалены навсегда. Вы уверены?")) {
+                localStorage.removeItem('auraAuth_' + USER); 
+                localStorage.removeItem('auraProfile_' + USER);
+                localStorage.removeItem('auraChats_' + USER); 
+                localStorage.removeItem('auraUser');
+                
+                // Удаляем из глобального списка
+                let globalUsers = JSON.parse(localStorage.getItem('auraGlobalUsers')) || [];
+                globalUsers = globalUsers.filter(u => u !== USER);
+                localStorage.setItem('auraGlobalUsers', JSON.stringify(globalUsers));
+                
+                alert("Аккаунт удален."); 
+                location.reload();
             }
         }
 
         // --- ИСПРАВЛЕНИЕ №5: ЕДИНАЯ БАЗА ИНФОРМАЦИИ (Аватарки и Профили) ---
-        // Эта функция - сердце мессенджера. Она гарантирует, что везде будет правильная аватарка и имя.
+        // Эта функция гарантирует, что везде в мессенджере будет правильная аватарка и имя.
         function getProfileData(targetId) {
             if (!targetId) return { name: "Неизвестно", avatar: null, bio: "Нет описания", type: "user" };
             
@@ -1416,10 +1385,10 @@
         function formatBalance(num) {
             const dict = translations[localSettings.lang || 'ru'];
             if (num >= 1000000) {
-                return (num / 1000000).toFixed(2).replace(/\.00$/, '') + dict.priceM; // млн
+                return (num / 1000000).toFixed(2).replace(/\.00$/, '') + dict.priceM;
             }
             if (num >= 1000) {
-                return (num / 1000).toFixed(1).replace(/\.0$/, '') + dict.priceK; // тыс
+                return (num / 1000).toFixed(1).replace(/\.0$/, '') + dict.priceK;
             }
             return num;
         }
@@ -1439,7 +1408,7 @@
             document.getElementById('myViewUsername').innerText = '@' + USER;
             document.getElementById('myViewBio').innerText = p.bio || "Нет описания";
 
-            // Отрисовка закрепленного НФТ (Пункт 2)
+            // Отрисовка закрепленного НФТ
             let pinned = document.getElementById('myViewPinnedGift');
             if (p.pinnedGift) {
                 let giftId = p.pinnedGift.replace('[nft]', '');
@@ -1546,7 +1515,7 @@
             document.getElementById('groupPrivacyArea').style.display = (type === 'group' || type === 'channel') ? 'block' : 'none';
             
             const dict = translations[localSettings.lang || 'ru'];
-            document.getElementById('targetLabel').innerText = type === 'user' ? dict.addTarget : "Уникальный ID/Username группы (англ)";
+            document.getElementById('targetLabel').innerText = type === 'user' ? dict.addTarget : "Уникальный ID/Username (англ)";
         }
 
         document.getElementById('groupAvatarUpload').addEventListener('change', function(e) {
@@ -1654,7 +1623,6 @@
                 // Ищем среди всех зарегистрированных пользователей
                 globalUsers.forEach(u => {
                     let p = getProfileData(u);
-                    // Ищем и по username, и по имени
                     if ((u.includes(query) || p.name.toLowerCase().includes(query)) && u !== USER && !msgsMap[u]) {
                         if (!foundGlobal.includes(u)) foundGlobal.push(u);
                     }
@@ -1683,13 +1651,11 @@
                 }
             }
 
-            if (!foundLocal && query.length < 2 && Object.keys(msgsMap).length !== 0) {
-                // Если ничего не ввели и нет чатов - покажет пустоту
-            } else if (!foundLocal && query.length >= 2 && chatList.innerHTML === '') {
+            if (!foundLocal && query.length >= 2 && chatList.innerHTML === '') {
                 chatList.innerHTML = '<p style="text-align:center; color:var(--text-muted); padding: 20px;">Ничего не найдено</p>';
             }
         }
-        // --- ОТРИСОВКА СПИСКА ЧАТОВ (С поддержкой свайпов и правильными аватарками - Пункт 5) ---
+        // --- ИСПРАВЛЕНИЕ №5: ОТРИСОВКА СПИСКА ЧАТОВ (С правильными аватарками) ---
         function appendChatItemToDOM(chatId, profile, displayName, msgs, container, isGlobal = false) {
             let lastMsgText = "";
             let msgTime = "";
@@ -1715,7 +1681,7 @@
             // Если это глобальный поиск, добавляем плашку
             let globalBadge = isGlobal ? `<span style="font-size:0.7rem; background:var(--accent); color:#fff; padding:2px 6px; border-radius:8px; margin-left:5px; font-weight:bold;">Global</span>` : '';
 
-            // Железобетонная вставка аватарки из getProfileData
+            // Железобетонная вставка аватарки
             let avatarHtml = profile.avatar 
                 ? `<div class="avatar-mini" style="background-image: url(${profile.avatar}); font-size: 0;"></div>`
                 : `<div class="avatar-mini">${displayName.charAt(0).toUpperCase()}</div>`;
@@ -1751,7 +1717,7 @@
 
             let hasArchived = false;
 
-            // Сортировка чатов по времени (новые сверху)
+            // Сортировка чатов по наличию сообщений (новые сверху)
             let sortedChats = Object.keys(msgsMap).sort((a, b) => {
                 let msgsA = msgsMap[a] || []; let msgsB = msgsMap[b] || [];
                 if(msgsA.length === 0) return 1; if(msgsB.length === 0) return -1;
@@ -1831,7 +1797,7 @@
             }
         }
 
-        // --- ИСПРАВЛЕНИЕ №9: МАГАЗИН КРУТЫХ НФТ ---
+        // --- ИСПРАВЛЕНИЕ №2 и №9: МАГАЗИН КРУТЫХ НФТ ---
         const nftCatalog = [
             { id: 'star', name: 'Aura Star', price: 25, icon: '⭐', glow: false },
             { id: 'heart', name: 'Пылающее Сердце', price: 50, icon: '❤️‍🔥', glow: false },
@@ -1843,6 +1809,7 @@
             { id: 'dragon', name: 'Плазменный Дракон', price: 750, icon: '🐉', glow: false },
             { id: 'universe', name: 'Aura Universe', price: 1000, icon: '🌌', glow: false },
             { id: 'cyber_heart', name: 'Кибер-Сердце', price: 4999, icon: '🫀', glow: false },
+            // Новые премиум НФТ
             { id: 'neon_bear', name: 'Neon Bear', price: 100000, icon: '🧸', glow: true },
             { id: 'toxic_obj', name: 'Toxic Object', price: 250000, icon: '☣️', glow: true },
             { id: 'nft_founder', name: 'AURA Founder', price: 1250000, icon: '🏛️', glow: true },
@@ -1894,7 +1861,9 @@
                 alert(dict.notEnoughAur || "Недостаточно AUR для покупки этой НФТ!");
             }
         }
-        // --- ЯДРО ЧАТА (ОТКРЫТИЕ И РЕНДЕРИНГ) ---
+        // =========================================================
+        // ЯДРО ЧАТА: ОТКРЫТИЕ, ЗАКРЫТИЕ И УПРАВЛЕНИЕ ИНТЕРФЕЙСОМ
+        // =========================================================
         let currentChatId = null;
         let currentChatType = 'user';
 
@@ -1905,19 +1874,31 @@
             let profile = getProfileData(target);
             let dict = translations[localSettings.lang || 'ru'];
 
+            // Устанавливаем имя текущего чата
             document.getElementById('currentChatName').innerText = escapeHTML(displayName);
-            document.getElementById('currentChatUsername').innerText = (target === dict.fav || type !== 'user') ? "" : "@" + target;
-            document.getElementById('currentChatUsername').style.display = (target === dict.fav || type !== 'user') ? "none" : "block";
             
+            // Логика отображения юзернейма (скрываем для Избранного и групп)
+            if (target === dict.fav || type !== 'user') {
+                document.getElementById('currentChatUsername').innerText = "";
+                document.getElementById('currentChatUsername').style.display = "none";
+            } else {
+                document.getElementById('currentChatUsername').innerText = "@" + target;
+                document.getElementById('currentChatUsername').style.display = "block";
+            }
+            
+            // Логика отображения типа чата (группа/канал) - Пункт 8 (без "В сети")
             let typeInfo = document.getElementById('chatTypeInfo');
             if (type === 'group') {
-                typeInfo.innerText = "Группа"; typeInfo.style.display = "block";
+                typeInfo.innerText = "Группа"; 
+                typeInfo.style.display = "block";
             } else if (type === 'channel') {
-                typeInfo.innerText = "Канал"; typeInfo.style.display = "block";
+                typeInfo.innerText = "Канал"; 
+                typeInfo.style.display = "block";
             } else {
-                typeInfo.style.display = "none"; // Пункт 8: Убран статус "В сети"
+                typeInfo.style.display = "none";
             }
 
+            // Установка аватарки в шапке чата
             const avatarDiv = document.getElementById('currentChatAvatar');
             if (profile.avatar) {
                 avatarDiv.style.backgroundImage = `url(${profile.avatar})`;
@@ -1927,10 +1908,14 @@
                 avatarDiv.innerText = displayName.charAt(0).toUpperCase();
             }
 
-            // Настройка меню ввода для каналов
-            document.getElementById('chatInputArea').style.display = (type === 'channel' && profile.creator !== USER) ? 'none' : 'flex';
-            document.getElementById('menuArchiveBtn').style.display = 'flex';
+            // Настройка меню ввода (скрываем инпут, если это чужой канал)
+            if (type === 'channel' && profile.creator !== USER) {
+                document.getElementById('chatInputArea').style.display = 'none';
+            } else {
+                document.getElementById('chatInputArea').style.display = 'flex';
+            }
             
+            // Проверка: находится ли чат в архиве, чтобы менять кнопки в меню
             let archived = JSON.parse(localStorage.getItem('auraArchive_' + USER)) || [];
             if (archived.includes(target)) {
                 document.getElementById('menuArchiveBtn').style.display = 'none';
@@ -1940,25 +1925,35 @@
                 document.getElementById('menuUnarchiveBtn').style.display = 'none';
             }
 
-            document.querySelectorAll('.chat-item').forEach(el => el.classList.remove('active'));
-            if(event && event.currentTarget) event.currentTarget.classList.add('active');
+            // Выделение активного чата в боковом меню
+            document.querySelectorAll('.chat-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
+            }
 
+            // Логика для мобильных устройств (открытие панели чата)
             if (window.innerWidth <= 768) {
                 document.body.classList.add('chat-active');
             }
 
+            // Запускаем рендеринг всех сообщений
             renderMessages();
         }
 
         function closeChatMobile(e) {
-            e.stopPropagation();
+            if (e) e.stopPropagation();
             document.body.classList.remove('chat-active');
             currentChatId = null;
         }
 
-        // Рендеринг сообщений (Защита XSS и отрисовка НФТ - Пункт 9)
+        // =========================================================
+        // РЕНДЕРИНГ СООБЩЕНИЙ (XSS защита + Новые НФТ)
+        // =========================================================
         function renderMessages() {
             if (!currentChatId) return;
+            
             const chatDiv = document.getElementById('chat');
             let msgsMap = JSON.parse(localStorage.getItem('auraChats_' + USER)) || {};
             let msgs = msgsMap[currentChatId] || [];
@@ -1971,76 +1966,118 @@
                 let sender = msg.sender || USER;
 
                 let msgDiv = document.createElement('div');
-                msgDiv.className = `msg ${sender === USER ? 'sent' : 'received'}`;
                 
-                // Добавляем долгий тап/правый клик для контекстного меню удаления
-                msgDiv.oncontextmenu = (e) => { e.preventDefault(); showMsgContextMenu(e, index); };
+                // Определение, отправлено нами или получено
+                if (sender === USER) {
+                    msgDiv.className = 'msg sent';
+                } else {
+                    msgDiv.className = 'msg received';
+                }
+                
+                // Обработчики для вызова меню сообщения (Удаление)
+                msgDiv.oncontextmenu = (e) => { 
+                    e.preventDefault(); 
+                    showMsgContextMenu(e, index); 
+                };
                 msgDiv.addEventListener('touchstart', (e) => handleLongPressStart(e, index), {passive: true});
                 msgDiv.addEventListener('touchend', handleLongPressEnd);
                 msgDiv.addEventListener('touchmove', handleLongPressEnd);
 
                 let contentHtml = '';
                 
+                // Детальная обработка каждого типа сообщения
                 if (msgType === 'gift') {
-                    // Парсим НФТ: [nft]id|icon|name
+                    // Парсинг НФТ: [nft]id|icon|name (Исправление №2 и №9)
                     let giftData = text.replace('[nft]', '').split('|');
-                    let gId = giftData[0]; let gIcon = giftData[1] || '💎'; let gName = giftData[2] || 'НФТ';
+                    let gId = giftData[0]; 
+                    let gIcon = giftData[1] || '💎'; 
+                    let gName = giftData[2] || 'НФТ';
                     
-                    let isPremium = ['neon_bear', 'toxic_obj', 'nft_founder', 'nft_matrix'].includes(gId);
-                    let glowClass = isPremium ? 'nft-glow' : ''; // Добавляем свечение крутым НФТ
+                    // Проверка на премиум НФТ для добавления эффекта свечения
+                    let isPremium = false;
+                    if (gId === 'neon_bear' || gId === 'toxic_obj' || gId === 'nft_founder' || gId === 'nft_matrix') {
+                        isPremium = true;
+                    }
+                    
+                    let glowClass = isPremium ? 'nft-glow' : ''; 
                     
                     contentHtml = `
                         <div class="msg-gift ${glowClass}">
-                            <div class="msg-gift-icon" style="font-size: 3.5rem;">${gIcon}</div>
+                            <div class="msg-gift-icon">${gIcon}</div>
                             <div class="msg-gift-title">${gName}</div>
                             <div class="msg-gift-desc">Premium НФТ</div>
                         </div>`;
-                } else if (msgType === 'image') {
+                } 
+                else if (msgType === 'image') {
                     contentHtml = `<img src="${text}" class="msg-media" onclick="window.open('${text}')">`;
-                } else if (msgType === 'audio') {
+                } 
+                else if (msgType === 'audio') {
                     contentHtml = `<audio src="${text}" controls class="msg-audio"></audio>`;
-                } else if (msgType === 'sticker') {
+                } 
+                else if (msgType === 'sticker') {
                     contentHtml = `<img src="assets/stickers/${text}.png" class="msg-sticker" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'100\\' height=\\'100\\' viewBox=\\'0 0 24 24\\' fill=\\'%2300d2ff\\'><circle cx=\\'12\\' cy=\\'12\\' r=\\'10\\'/></svg>'">`;
-                } else {
-                    // Строгая защита от XSS для текста
-                    contentHtml = escapeHTML(text).replace(/\n/g, '<br>');
+                } 
+                else {
+                    // Строгая защита от вредоносного кода при отправке текста
+                    let safeText = escapeHTML(text);
+                    safeText = safeText.replace(/\n/g, '<br>');
+                    contentHtml = safeText;
                 }
 
                 const dict = translations[localSettings.lang || 'ru'];
                 
-                // Отображаем имя отправителя в группах
-                let showSenderName = (sender !== USER && currentChatId !== dict.fav && msgType !== 'gift' && currentChatType !== 'user') 
-                    ? `<b style="opacity: 0.8; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; display:block; color: var(--accent);">${escapeHTML(sender)}</b>` 
-                    : '';
+                // Логика отображения имени отправителя (только для групп)
+                let showSenderName = '';
+                if (sender !== USER && currentChatId !== dict.fav && msgType !== 'gift' && currentChatType !== 'user') {
+                    showSenderName = `<b style="opacity: 0.8; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; display:block; color: var(--accent);">${escapeHTML(sender)}</b>`;
+                }
                     
                 msgDiv.innerHTML = showSenderName + contentHtml;
                 chatDiv.appendChild(msgDiv);
             });
             
+            // Прокрутка чата вниз к последнему сообщению
             chatDiv.scrollTop = chatDiv.scrollHeight;
         }
 
-        // --- ЛОГИКА ОТПРАВКИ СООБЩЕНИЙ ---
+        // =========================================================
+        // ЛОГИКА ОТПРАВКИ СООБЩЕНИЙ
+        // =========================================================
         function send() {
             sendMessage('text');
         }
 
         function handleKeyPress(e) {
-            if (e.key === 'Enter') send();
+            if (e.key === 'Enter') {
+                send();
+            }
         }
 
         function sendMessage(type = 'text', content = null) {
             if (!currentChatId) return;
             
-            let text = content !== null ? content : document.getElementById('msgText').value;
+            let text = "";
+            if (content !== null) {
+                text = content;
+            } else {
+                text = document.getElementById('msgText').value;
+            }
+            
+            // Защита от отправки пустого текста
             if (type === 'text' && text.trim() === '') return;
 
             const dict = translations[localSettings.lang || 'ru'];
+            
+            // Блокировка отправки самому себе (если это не Избранное)
             if (currentChatId === USER && currentChatId !== dict.fav) return;
 
+            // Получаем историю сообщений
             let msgs = JSON.parse(localStorage.getItem('auraChats_' + USER)) || {};
-            if (!msgs[currentChatId]) msgs[currentChatId] = [];
+            if (!msgs[currentChatId]) {
+                msgs[currentChatId] = [];
+            }
 
+            // Формируем объект нового сообщения
             let newMessage = {
                 sender: USER,
                 text: text,
@@ -2048,23 +2085,29 @@
                 time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             };
 
+            // Сохраняем сообщение у себя
             msgs[currentChatId].push(newMessage);
             localStorage.setItem('auraChats_' + USER, JSON.stringify(msgs));
 
-            // Симуляция отправки собеседнику
+            // Симуляция отправки сообщения собеседнику (для демо-тестов на одном ПК)
             if (currentChatType === 'user' && currentChatId !== dict.fav && currentChatId !== USER) {
                 let targetMsgs = JSON.parse(localStorage.getItem('auraChats_' + currentChatId)) || {};
-                if (!targetMsgs[USER]) targetMsgs[USER] = [];
+                if (!targetMsgs[USER]) {
+                    targetMsgs[USER] = [];
+                }
                 targetMsgs[USER].push(newMessage);
                 localStorage.setItem('auraChats_' + currentChatId, JSON.stringify(targetMsgs));
-            } else if (currentChatType === 'group') {
-                // Рассылка участникам группы
+            } 
+            // Рассылка участникам, если это группа
+            else if (currentChatType === 'group') {
                 let groupData = JSON.parse(localStorage.getItem('auraGroup_' + currentChatId));
                 if (groupData && groupData.members) {
                     groupData.members.forEach(member => {
                         if (member !== USER) {
                             let memberMsgs = JSON.parse(localStorage.getItem('auraChats_' + member)) || {};
-                            if (!memberMsgs[currentChatId]) memberMsgs[currentChatId] = [];
+                            if (!memberMsgs[currentChatId]) {
+                                memberMsgs[currentChatId] = [];
+                            }
                             memberMsgs[currentChatId].push(newMessage);
                             localStorage.setItem('auraChats_' + member, JSON.stringify(memberMsgs));
                         }
@@ -2072,34 +2115,53 @@
                 }
             }
 
-            if (type === 'text') document.getElementById('msgText').value = '';
+            // Очистка поля ввода, если это был текст
+            if (type === 'text') {
+                document.getElementById('msgText').value = '';
+            }
             
+            // Обновляем UI
             renderMessages();
             renderChats(); 
         }
 
-        // --- РЕШЕНИЕ ПРОБЛЕМЫ ПЕРЕПОЛНЕНИЯ ПАМЯТИ (Сжатие картинок - Пункт 10) ---
+        // =========================================================
+        // ИСПРАВЛЕНИЕ №10: СЖАТИЕ ИЗОБРАЖЕНИЙ (Решение проблемы с памятью)
+        // =========================================================
         function compressImage(file, callback) {
             const reader = new FileReader();
             reader.readAsDataURL(file);
-            reader.onload = event => {
+            reader.onload = function(event) {
                 const img = new Image();
                 img.src = event.target.result;
-                img.onload = () => {
+                img.onload = function() {
                     const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 800; const MAX_HEIGHT = 800;
-                    let width = img.width; let height = img.height;
+                    const MAX_WIDTH = 800; 
+                    const MAX_HEIGHT = 800;
+                    let width = img.width; 
+                    let height = img.height;
 
+                    // Пропорциональное уменьшение размеров картинки
                     if (width > height) {
-                        if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                        if (width > MAX_WIDTH) { 
+                            height *= MAX_WIDTH / width; 
+                            width = MAX_WIDTH; 
+                        }
                     } else {
-                        if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+                        if (height > MAX_HEIGHT) { 
+                            width *= MAX_HEIGHT / height; 
+                            height = MAX_HEIGHT; 
+                        }
                     }
-                    canvas.width = width; canvas.height = height;
+                    
+                    canvas.width = width; 
+                    canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
-                    // Сжимаем в JPEG с качеством 0.6 (решает вылеты из-за лимита LocalStorage)
-                    callback(canvas.toDataURL('image/jpeg', 0.6));
+                    
+                    // Сжимаем в JPEG с качеством 0.6 (кардинально экономит место в LocalStorage)
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
+                    callback(compressedBase64);
                 }
             }
         }
@@ -2109,66 +2171,93 @@
             if (!file) return;
             
             if (file.type.startsWith('image/')) {
-                compressImage(file, (compressedBase64) => {
+                // Вызываем нашу функцию сжатия
+                compressImage(file, function(compressedBase64) {
                     try {
                         sendMessage('image', compressedBase64);
                     } catch (err) {
-                        alert("Память браузера переполнена! Очистите кэш в настройках.");
+                        alert("Критическая ошибка: Память браузера переполнена! Очистите кэш в настройках.");
                     }
                 });
-            } else if (file.type.startsWith('audio/')) {
+            } 
+            else if (file.type.startsWith('audio/')) {
                 const reader = new FileReader();
                 reader.onload = function(event) {
-                    try { sendMessage('audio', event.target.result); }
-                    catch (err) { alert("Память браузера переполнена!"); }
+                    try { 
+                        sendMessage('audio', event.target.result); 
+                    } catch (err) { 
+                        alert("Критическая ошибка: Память браузера переполнена!"); 
+                    }
                 };
                 reader.readAsDataURL(file);
-            } else {
-                alert("Поддерживаются только фото и аудио.");
+            } 
+            else {
+                alert("Поддерживаются только фото и аудио форматы.");
             }
-            e.target.value = ''; // Сброс инпута
+            
+            // Сбрасываем input, чтобы можно было загрузить тот же файл еще раз
+            e.target.value = ''; 
         }
 
-        // --- ГОЛОСОВЫЕ СООБЩЕНИЯ И СТИКЕРЫ ---
+        // =========================================================
+        // ГОЛОСОВЫЕ СООБЩЕНИЯ И СТИКЕРЫ
+        // =========================================================
         let mediaRecorder;
         let audioChunks = [];
 
         function startVoiceRecord(e) {
             e.preventDefault();
             if (!currentChatId) return;
+            
             navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
                 mediaRecorder = new MediaRecorder(stream);
                 mediaRecorder.start();
+                
                 document.getElementById('micBtn').classList.add('recording');
                 audioChunks = [];
-                mediaRecorder.addEventListener("dataavailable", event => { audioChunks.push(event.data); });
+                
+                mediaRecorder.addEventListener("dataavailable", event => { 
+                    audioChunks.push(event.data); 
+                });
             }).catch(err => {
-                alert("Нет доступа к микрофону!");
+                alert("Ошибка: Нет доступа к микрофону!");
             });
         }
 
         function stopVoiceRecord(e) {
             e.preventDefault();
+            
             if (mediaRecorder && mediaRecorder.state === "recording") {
                 mediaRecorder.stop();
                 document.getElementById('micBtn').classList.remove('recording');
+                
                 mediaRecorder.addEventListener("stop", () => {
                     const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
                     const reader = new FileReader();
-                    reader.onload = (event) => {
-                        try { sendMessage('audio', event.target.result); }
-                        catch(err) { alert("Память браузера переполнена!"); }
+                    
+                    reader.onload = function(event) {
+                        try { 
+                            sendMessage('audio', event.target.result); 
+                        } catch(err) { 
+                            alert("Ошибка: Память браузера переполнена!"); 
+                        }
                     };
                     reader.readAsDataURL(audioBlob);
                 });
-                mediaRecorder.stream.getTracks().forEach(t => t.stop());
+                
+                // Отключаем треки микрофона, чтобы не горел индикатор в браузере
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
             }
         }
 
         function toggleStickers(e) {
             e.stopPropagation();
             const panel = document.getElementById('stickersPanel');
-            panel.style.display = panel.style.display === 'grid' ? 'none' : 'grid';
+            if (panel.style.display === 'grid') {
+                panel.style.display = 'none';
+            } else {
+                panel.style.display = 'grid';
+            }
         }
 
         function sendSticker(id) {
@@ -2176,21 +2265,30 @@
             document.getElementById('stickersPanel').style.display = 'none';
         }
         
-        // Закрытие выпадающих меню при клике в пустую область
-        document.addEventListener('click', (e) => {
+        // Глобальный слушатель для закрытия выпадающих окон при клике вне их области
+        document.addEventListener('click', function(e) {
+            const stickersPanel = document.getElementById('stickersPanel');
+            const chatDropdown = document.getElementById('chatDropdown');
+            const msgContextMenu = document.getElementById('msgContextMenu');
+            
             if (!e.target.closest('#stickersPanel') && !e.target.closest('button[title="Стикеры"]')) {
-                document.getElementById('stickersPanel').style.display = 'none';
+                if (stickersPanel) stickersPanel.style.display = 'none';
             }
             if (!e.target.closest('.dropdown-menu') && !e.target.closest('.chat-options-btn')) {
-                document.getElementById('chatDropdown').style.display = 'none';
+                if (chatDropdown) chatDropdown.style.display = 'none';
             }
-            document.getElementById('msgContextMenu').style.display = 'none';
+            if (msgContextMenu) {
+                msgContextMenu.style.display = 'none';
+            }
         });
-        // --- СВАЙПЫ ЧАТОВ (Touch-события для мобильных) ---
+        // =========================================================
+        // СВАЙПЫ ЧАТОВ (Touch-события для мобильных)
+        // =========================================================
         function handleSwipeStart(e, el) {
             touchStartX = e.touches[0].clientX;
             el.classList.add('is-swiping');
-            // Если другой элемент открыт, закрываем его
+            
+            // Если другой элемент уже открыт, закрываем его
             if (swipedItem && swipedItem !== el) {
                 swipedItem.querySelector('.chat-item').style.transform = 'translateX(0)';
                 swipedItem.classList.remove('swiped-open');
@@ -2214,7 +2312,7 @@
             let chatItem = el.querySelector('.chat-item');
             el.classList.remove('is-swiping');
 
-            // Если свайпнули больше чем на половину кнопок - открываем
+            // Если свайпнули больше чем на половину кнопок - фиксируем в открытом состоянии
             if (diffX > 55) {
                 chatItem.style.transform = 'translateX(-110px)';
                 el.classList.add('swiped-open');
@@ -2222,13 +2320,17 @@
             } else {
                 chatItem.style.transform = 'translateX(0)';
                 el.classList.remove('swiped-open');
-                if (swipedItem === el) swipedItem = null;
+                if (swipedItem === el) {
+                    swipedItem = null;
+                }
             }
         }
 
-        // --- УПРАВЛЕНИЕ ЧАТАМИ (Архив и Удаление) ---
+        // =========================================================
+        // УПРАВЛЕНИЕ ЧАТАМИ (Архив и Удаление)
+        // =========================================================
         function deleteChatRow(chatId) {
-            if (confirm("Удалить этот чат?")) {
+            if (confirm("Вы уверены, что хотите удалить этот чат?")) {
                 let msgs = JSON.parse(localStorage.getItem('auraChats_' + USER)) || {};
                 delete msgs[chatId];
                 localStorage.setItem('auraChats_' + USER, JSON.stringify(msgs));
@@ -2237,9 +2339,11 @@
                 archived = archived.filter(id => id !== chatId);
                 localStorage.setItem('auraArchive_' + USER, JSON.stringify(archived));
                 
+                // Если удалили открытый сейчас чат - возвращаем на Избранное
                 if (currentChatId === chatId) {
                     currentChatId = null;
                     document.getElementById('chat').innerHTML = '';
+                    
                     const dict = translations[localSettings.lang || 'ru'];
                     document.getElementById('currentChatName').innerText = dict.fav;
                     document.getElementById('currentChatUsername').innerText = "";
@@ -2247,17 +2351,22 @@
                     document.getElementById('currentChatAvatar').innerText = 'И';
                     document.body.classList.remove('chat-active');
                 }
+                
                 renderChats();
             }
         }
 
         function toggleArchive(chatId) {
             let archived = JSON.parse(localStorage.getItem('auraArchive_' + USER)) || [];
+            
             if (archived.includes(chatId)) {
-                archived = archived.filter(id => id !== chatId); // Достать
+                // Если уже в архиве - достаем
+                archived = archived.filter(id => id !== chatId); 
             } else {
-                archived.push(chatId); // В архив
+                // Иначе отправляем в архив
+                archived.push(chatId); 
             }
+            
             localStorage.setItem('auraArchive_' + USER, JSON.stringify(archived));
             renderChats();
         }
@@ -2265,6 +2374,7 @@
         function toggleArchiveFolder() {
             const list = document.getElementById('archivedChatsList');
             const arrow = document.getElementById('archiveArrow');
+            
             if (list.style.display === 'none') {
                 list.style.display = 'block';
                 arrow.classList.add('open');
@@ -2274,27 +2384,43 @@
             }
         }
 
-        // Меню внутри открытого чата (три точки)
+        // Меню внутри открытого чата (три точки в правом верхнем углу)
         function toggleChatMenu(e) {
             e.stopPropagation();
             const menu = document.getElementById('chatDropdown');
-            menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+            if (menu.style.display === 'flex') {
+                menu.style.display = 'none';
+            } else {
+                menu.style.display = 'flex';
+            }
         }
 
-        function archiveCurrentChat() { toggleArchive(currentChatId); document.getElementById('chatDropdown').style.display = 'none'; }
-        function unarchiveCurrentChat() { toggleArchive(currentChatId); document.getElementById('chatDropdown').style.display = 'none'; }
+        function archiveCurrentChat() { 
+            toggleArchive(currentChatId); 
+            document.getElementById('chatDropdown').style.display = 'none'; 
+        }
+        
+        function unarchiveCurrentChat() { 
+            toggleArchive(currentChatId); 
+            document.getElementById('chatDropdown').style.display = 'none'; 
+        }
         
         function deleteCurrentChat(type) {
             const dict = translations[localSettings.lang || 'ru'];
+            
             if (currentChatId === dict.fav || currentChatId === USER) {
-                alert("Избранное нельзя удалить!"); return;
+                alert("Избранное нельзя удалить!"); 
+                return;
             }
-            if (confirm(type === 'all' ? "Удалить переписку у обоих?" : "Удалить чат у себя?")) {
+            
+            let confirmMsg = type === 'all' ? "Удалить переписку у обоих?" : "Удалить чат у себя?";
+            
+            if (confirm(confirmMsg)) {
                 let msgs = JSON.parse(localStorage.getItem('auraChats_' + USER)) || {};
                 delete msgs[currentChatId];
                 localStorage.setItem('auraChats_' + USER, JSON.stringify(msgs));
 
-                // Удаление у собеседника (симуляция)
+                // Удаление у собеседника (если выбрано 'Удалить у всех' и это ЛС)
                 if (type === 'all' && currentChatType === 'user') {
                     let targetMsgs = JSON.parse(localStorage.getItem('auraChats_' + currentChatId)) || {};
                     delete targetMsgs[USER];
@@ -2306,15 +2432,20 @@
             }
         }
 
-        // --- УДАЛЕНИЕ ОТДЕЛЬНЫХ СООБЩЕНИЙ ---
+        // =========================================================
+        // УДАЛЕНИЕ ОТДЕЛЬНЫХ СООБЩЕНИЙ
+        // =========================================================
         let selectedMsgIndex = null;
 
         function handleLongPressStart(e, index) {
             longPressTimer = setTimeout(() => {
                 showMsgContextMenu(e.touches[0], index);
-            }, 500); // 500мс для вызова меню
+            }, 500); // 500мс удержания для вызова меню
         }
-        function handleLongPressEnd() { clearTimeout(longPressTimer); }
+        
+        function handleLongPressEnd() { 
+            clearTimeout(longPressTimer); 
+        }
 
         function showMsgContextMenu(e, index) {
             e.preventDefault();
@@ -2350,7 +2481,8 @@
             if (type === 'all' && currentChatType === 'user' && msgToDelete.sender === USER) {
                 let targetMsgs = JSON.parse(localStorage.getItem('auraChats_' + currentChatId)) || {};
                 let tMsgs = targetMsgs[USER] || [];
-                // Ищем точное совпадение
+                
+                // Ищем точное совпадение по тексту и времени
                 let targetIndex = tMsgs.findIndex(m => m.text === msgToDelete.text && m.time === msgToDelete.time);
                 if (targetIndex !== -1) {
                     tMsgs.splice(targetIndex, 1);
@@ -2360,14 +2492,20 @@
 
             document.getElementById('msgContextMenu').style.display = 'none';
             selectedMsgIndex = null;
+            
+            // Обновляем окна
             renderMessages();
-            renderChats(); // Обновить превью последнего сообщения
+            renderChats(); 
         }
 
-        // --- ПРОСМОТР ЧУЖИХ ПРОФИЛЕЙ И ГРУПП ---
+        // =========================================================
+        // ПРОСМОТР ЧУЖИХ ПРОФИЛЕЙ И ГРУПП
+        // =========================================================
         function openViewProfile(e) {
             e.stopPropagation();
-            if (!currentChatId || currentChatId === translations[localSettings.lang || 'ru'].fav) return;
+            const dict = translations[localSettings.lang || 'ru'];
+            
+            if (!currentChatId || currentChatId === dict.fav) return;
             
             // Используем нашу мощную функцию для получения всех данных
             let profile = getProfileData(currentChatId);
@@ -2392,6 +2530,7 @@
                 membersDiv.style.display = 'flex';
                 let container = document.getElementById('membersListContainer');
                 container.innerHTML = '';
+                
                 if (profile.members && profile.members.length > 0) {
                     profile.members.forEach(m => {
                         let p = getProfileData(m);
@@ -2406,7 +2545,7 @@
                 membersDiv.style.display = 'none';
             }
 
-            // Закрепленный НФТ
+            // Отрисовка закрепленного НФТ
             let pinned = document.getElementById('viewProfilePinnedGift');
             if (profile.pinnedGift && profile.type === 'user') {
                 let giftId = profile.pinnedGift.replace('[nft]', '');
@@ -2419,12 +2558,17 @@
             openModal('viewProfileModal');
         }
 
-        // --- ПОПОЛНЕНИЕ БАЛАНСА И АДМИН ПАНЕЛЬ ---
+        // =========================================================
+        // ПОПОЛНЕНИЕ БАЛАНСА И АДМИН ПАНЕЛЬ
+        // =========================================================
         function processTopUp() {
             let amount = parseInt(document.getElementById('topupAmount').value);
-            if (!amount || amount < 10) { alert("Минимальная сумма 10 грн!"); return; }
+            if (!amount || amount < 10) { 
+                alert("Минимальная сумма 10 грн!"); 
+                return; 
+            }
             
-            let aurAmount = amount * 2; // 1 AUR = 0.5 грн
+            let aurAmount = amount * 2; // Курс: 1 AUR = 0.5 грн
             
             let p = JSON.parse(localStorage.getItem('auraProfile_' + USER));
             p.balance = parseInt(p.balance || 0) + aurAmount;
@@ -2436,7 +2580,7 @@
             document.getElementById('topupAmount').value = '';
         }
 
-        // Админ-панель (Выдает НФТ бесплатно)
+        // Открытие админки (пасхалка для разработчика)
         function openAdminPanel() {
             const select = document.getElementById('adminTargetUser');
             select.innerHTML = '';
@@ -2444,13 +2588,15 @@
             let globalUsers = JSON.parse(localStorage.getItem('auraGlobalUsers')) || [];
             let msgsMap = JSON.parse(localStorage.getItem('auraChats_' + USER)) || {};
             
+            // Собираем всех пользователей
             let allUsers = new Set([...globalUsers, ...Object.keys(msgsMap)]);
             
             allUsers.forEach(u => {
                 let p = getProfileData(u);
                 if (p.type === 'user' && u !== USER) {
                     let opt = document.createElement('option');
-                    opt.value = u; opt.innerText = `@${u} (${p.name})`;
+                    opt.value = u; 
+                    opt.innerText = `@${u} (${p.name})`;
                     select.appendChild(opt);
                 }
             });
@@ -2458,23 +2604,32 @@
             openModal('adminModal');
         }
 
-        // Пасхалка: 3 клика по логотипу открывают Админ-панель
+        // Три клика по логотипу Aura открывают Админ-панель
         let auraClicks = 0;
         document.querySelector('.sidebar-footer-left h3').addEventListener('click', () => {
             auraClicks++;
-            if (auraClicks >= 3) { auraClicks = 0; openAdminPanel(); }
-            setTimeout(() => auraClicks = 0, 1000);
+            if (auraClicks >= 3) { 
+                auraClicks = 0; 
+                openAdminPanel(); 
+            }
+            setTimeout(() => { auraClicks = 0; }, 1000);
         });
 
+        // Выдача бесплатных НФТ через админку
         function adminSendFreeGift() {
             const target = document.getElementById('adminTargetUser').value;
             const giftData = document.getElementById('adminGiftType').value.split('|');
             const giftId = giftData[1];
             
-            if (!target) { alert("Выберите пользователя!"); return; }
+            if (!target) { 
+                alert("Выберите пользователя!"); 
+                return; 
+            }
 
             let msgs = JSON.parse(localStorage.getItem('auraChats_' + target)) || {};
-            if (!msgs[USER]) msgs[USER] = [];
+            if (!msgs[USER]) {
+                msgs[USER] = [];
+            }
             
             let nftInfo = nftCatalog.find(n => n.id === giftId) || { name: 'Admin NFT', icon: '🎁' };
             
@@ -2490,9 +2645,12 @@
             closeModal('adminModal');
         }
 
-        // --- ФИНАЛЬНЫЙ ЗАПУСК ПРИЛОЖЕНИЯ ---
+        // =========================================================
+        // ФИНАЛЬНЫЙ ЗАПУСК ПРИЛОЖЕНИЯ
+        // =========================================================
         window.onload = () => {
             if (!localStorage.getItem('auraUser')) {
+                // Если не авторизован - показываем сплеш и окно входа
                 setTimeout(() => {
                     const splash = document.getElementById('splash');
                     splash.style.opacity = '0';
@@ -2503,9 +2661,11 @@
                     }, 800);
                 }, 1500);
             } else {
+                // Если авторизован - сразу запускаем приложение
                 startNormalApp();
             }
         };
     </script>
 </body>
 </html>
+
