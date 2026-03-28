@@ -124,7 +124,7 @@
             pointer-events: none; 
         }
 
-        /* ==========================================================================
+      /* ==========================================================================
            АНИМАЦИЯ ПРИ ЗАГРУЗКЕ ПРИЛОЖЕНИЯ (Splash Screen)
            ========================================================================== */
         #splash {
@@ -138,7 +138,9 @@
             justify-content: center; 
             align-items: center;
             z-index: 100000; 
-            transition: opacity 0.8s ease, visibility 0.8s;
+            /* ЖЕЛЕЗОБЕТОННОЕ УБИЙСТВО ЭКРАНА ЧЕРЕЗ 2.5 СЕКУНДЫ */
+            animation: killSplash 2.5s forwards;
+            pointer-events: none; /* Чтобы он пропускал клики после исчезновения */
         }
         
         [data-theme="light"] #splash { 
@@ -155,36 +157,25 @@
             display: flex; 
             justify-content: center; 
             align-items: center;
-            font-size: 2.5rem; 
-            font-weight: 800; 
-            color: var(--accent);
-            text-shadow: 0 0 20px var(--accent-glow);
             box-shadow: 0 0 0 transparent;
-            animation: drawLogo 1s ease-out forwards, pulseLogo 1.5s ease-in-out 1s 2 alternate;
+            /* Пульсация сработает ровно 2 раза и остановится */
+            animation: drawLogo 1s ease-out forwards, pulseLogo 1s ease-in-out 1s 2 alternate;
         }
         
+        /* Скрипт, который 100% скроет блок */
+        @keyframes killSplash {
+            0%, 80% { opacity: 1; visibility: visible; }
+            100% { opacity: 0; visibility: hidden; display: none; z-index: -1; }
+        }
+
         @keyframes drawLogo {
-            0% { 
-                opacity: 0; 
-                transform: scale(0.3); 
-                box-shadow: 0 0 0 transparent; 
-            }
-            100% { 
-                opacity: 1; 
-                transform: scale(1); 
-                box-shadow: 0 0 30px var(--accent-glow); 
-            }
+            0% { opacity: 0; transform: scale(0.3); box-shadow: 0 0 0 transparent; }
+            100% { opacity: 1; transform: scale(1); box-shadow: 0 0 30px var(--accent-glow); }
         }
 
         @keyframes pulseLogo {
-            0% { 
-                transform: scale(1); 
-                box-shadow: 0 0 30px var(--accent-glow); 
-            }
-            100% { 
-                transform: scale(1.08); 
-                box-shadow: 0 0 60px var(--accent-glow); 
-            }
+            0% { transform: scale(1); box-shadow: 0 0 30px var(--accent-glow); }
+            100% { transform: scale(1.08); box-shadow: 0 0 60px var(--accent-glow); }
         }
         /* ==========================================================================
            БОКОВОЕ МЕНЮ (САЙДБАР)
