@@ -1689,4 +1689,823 @@
                 chatList.innerHTML = '<p style="text-align:center; color:var(--text-muted); padding: 20px;">Ничего не найдено</p>';
             }
         }
+        // --- ОТРИСОВКА СПИСКА ЧАТОВ (С поддержкой свайпов и правильными аватарками - Пункт 5) ---
+        function appendChatItemToDOM(chatId, profile, displayName, msgs, container, isGlobal = false) {
+            let lastMsgText = "";
+            let msgTime = "";
+            let dict = translations[localSettings.lang || 'ru'];
+
+            if (msgs && msgs.length > 0) {
+                let lastMsg = msgs[msgs.length - 1];
+                let text = lastMsg.text || lastMsg;
+                let type = lastMsg.type || 'text';
+                msgTime = lastMsg.time || "";
+                
+                if (type === 'gift') lastMsgText = "💎 Премиум НФТ";
+                else if (type === 'image') lastMsgText = "📷 Фотография";
+                else if (type === 'audio') lastMsgText = "🎤 Голосовое сообщение";
+                else lastMsgText = escapeHTML(text).substring(0, 30) + (text.length > 30 ? "..." : "");
+            } else {
+                lastMsgText = profile.type === 'group' ? "Группа" : (profile.type === 'channel' ? "Канал" : "Нет сообщений");
+            }
+
+            let div = document.createElement('div');
+            div.className = 'swipe-container';
+            
+            // Если это глобальный поиск, добавляем плашку
+            let globalBadge = isGlobal ? `<span style="font-size:0.7rem; background:var(--accent); color:#fff; padding:2px 6px; border-radius:8px; margin-left:5px; font-weight:bold;">Global</span>` : '';
+
+            // Железобетонная вставка аватарки из getProfileData
+            let avatarHtml = profile.avatar 
+                ? `<div class="avatar-mini" style="background-image: url(${profile.avatar}); font-size: 0;"></div>`
+                : `<div class="avatar-mini">${displayName.charAt(0).toUpperCase()}</div>`;
+
+            div.innerHTML = `
+                <div class="swipe-actions">
+                    <button class="swipe-btn archive" onclick="toggleArchive('${chatId}')" title="В архив"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></button>
+                    <button class="swipe-btn delete" onclick="deleteChatRow('${chatId}')" title="Удалить"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+                </div>
+                <div class="chat-item" onclick="openChat('${chatId}', '${escapeHTML(displayName)}', '${profile.type}')" ontouchstart="handleSwipeStart(event, this.parentElement)" ontouchmove="handleSwipeMove(event, this.parentElement)" ontouchend="handleSwipeEnd(event, this.parentElement)">
+                    ${avatarHtml}
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
+                            <h4 style="font-size: 1.05rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-main);">${escapeHTML(displayName)} ${globalBadge}</h4>
+                            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold;">${msgTime}</span>
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${lastMsgText}</p>
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+        }
+
+        function renderChats() {
+            const chatList = document.getElementById('chatList');
+            const archiveList = document.getElementById('archivedChatsList');
+            chatList.innerHTML = '';
+            archiveList.innerHTML = '';
+            
+            let msgsMap = JSON.parse(localStorage.getItem('auraChats_' + USER)) || {};
+            let archived = JSON.parse(localStorage.getItem('auraArchive_' + USER)) || [];
+            let localContacts = JSON.parse(localStorage.getItem('auraContacts_' + USER)) || {};
+
+            let hasArchived = false;
+
+            // Сортировка чатов по времени (новые сверху)
+            let sortedChats = Object.keys(msgsMap).sort((a, b) => {
+                let msgsA = msgsMap[a] || []; let msgsB = msgsMap[b] || [];
+                if(msgsA.length === 0) return 1; if(msgsB.length === 0) return -1;
+                return -1; 
+            });
+
+            sortedChats.forEach(chat => {
+                let profile = getProfileData(chat);
+                let customName = localContacts[chat] || profile.name;
+
+                if (archived.includes(chat)) {
+                    hasArchived = true;
+                    appendChatItemToDOM(chat, profile, customName, msgsMap[chat], archiveList);
+                } else {
+                    appendChatItemToDOM(chat, profile, customName, msgsMap[chat], chatList);
+                }
+            });
+
+            const archiveBtn = document.getElementById('archiveToggleBtn');
+            if (hasArchived) {
+                archiveBtn.style.display = 'flex';
+            } else {
+                archiveBtn.style.display = 'none';
+                archiveList.style.display = 'none';
+                document.getElementById('archiveArrow').classList.remove('open');
+            }
+        }
+
+        // --- ИСПРАВЛЕНИЕ №7: ЛОГИКА ЗВОНКОВ (Работает даже без камеры и микрофона) ---
+        let localStream = null;
+
+        async function startCall(e) {
+            e.stopPropagation(); 
+            const callContainer = document.getElementById('callContainer');
+            const localVideo = document.getElementById('localVideo');
+            const avatarPlaceholder = document.getElementById('callAvatarPlaceholder');
+            const statusText = document.getElementById('callStatusText');
+            
+            callContainer.style.display = 'flex';
+            statusText.innerText = "Установка соединения...";
+            
+            try {
+                // Пытаемся получить доступ к камере и микрофону
+                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                localVideo.srcObject = localStream;
+                localVideo.style.display = 'block';
+                avatarPlaceholder.style.display = 'none';
+                statusText.innerText = "Звонок (00:00)";
+            } catch (err) {
+                console.warn("Камера/микрофон недоступны или заблокированы. Включаем режим аудио/заглушки:", err);
+                // Главное исправление: если устройства нет, мы не крашим приложение!
+                localVideo.style.display = 'none';
+                avatarPlaceholder.style.display = 'flex'; // Показываем крутую аватарку-заглушку
+                statusText.innerText = "Аудиозвонок (00:00)";
+            }
+            
+            // Имитация таймера звонка
+            let seconds = 0;
+            window.callTimer = setInterval(() => {
+                seconds++;
+                let m = Math.floor(seconds / 60).toString().padStart(2, '0');
+                let s = (seconds % 60).toString().padStart(2, '0');
+                if (statusText.innerText.includes("Звонок") || statusText.innerText.includes("Аудио")) {
+                    statusText.innerText = statusText.innerText.split(" ")[0] + ` (${m}:${s})`;
+                }
+            }, 1000);
+        }
+
+        function endCall() {
+            document.getElementById('callContainer').style.display = 'none';
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+                localStream = null;
+            }
+            if (window.callTimer) {
+                clearInterval(window.callTimer);
+            }
+        }
+
+        // --- ИСПРАВЛЕНИЕ №9: МАГАЗИН КРУТЫХ НФТ ---
+        const nftCatalog = [
+            { id: 'star', name: 'Aura Star', price: 25, icon: '⭐', glow: false },
+            { id: 'heart', name: 'Пылающее Сердце', price: 50, icon: '❤️‍🔥', glow: false },
+            { id: 'diamond', name: 'Редкий Бриллиант', price: 100, icon: '💎', glow: false },
+            { id: 'crown', name: 'Корона Императора', price: 150, icon: '👑', glow: false },
+            { id: 'rose', name: 'Золотая Роза', price: 200, icon: '🌹', glow: false },
+            { id: 'sphere', name: 'Космическая Сфера', price: 350, icon: '🔮', glow: false },
+            { id: 'crystal', name: 'Магический Кристалл', price: 500, icon: '💠', glow: false },
+            { id: 'dragon', name: 'Плазменный Дракон', price: 750, icon: '🐉', glow: false },
+            { id: 'universe', name: 'Aura Universe', price: 1000, icon: '🌌', glow: false },
+            { id: 'cyber_heart', name: 'Кибер-Сердце', price: 4999, icon: '🫀', glow: false },
+            { id: 'neon_bear', name: 'Neon Bear', price: 100000, icon: '🧸', glow: true },
+            { id: 'toxic_obj', name: 'Toxic Object', price: 250000, icon: '☣️', glow: true },
+            { id: 'nft_founder', name: 'AURA Founder', price: 1250000, icon: '🏛️', glow: true },
+            { id: 'nft_matrix', name: 'Soul Matrix', price: 2000000, icon: '👁️‍🗨️', glow: true }
+        ];
+
+        function openStoreModal() {
+            updateBalanceUI();
+            const container = document.getElementById('giftsGridContainer');
+            container.innerHTML = '';
+            
+            nftCatalog.forEach(nft => {
+                let div = document.createElement('div');
+                div.className = 'gift-card';
+                if (nft.glow) div.classList.add('nft-glow-card'); // Особое свечение премиум НФТ
+                
+                div.innerHTML = `
+                    <div class="icon-wrapper">${nft.icon}</div>
+                    <div class="name">${nft.name}</div>
+                    <div class="price">${formatBalance(nft.price)} AUR</div>
+                    <button class="btn-exchange" onclick="buyAndSendGift('${nft.id}', ${nft.price}, '${nft.icon}', '${nft.name}')">Отправить</button>
+                `;
+                container.appendChild(div);
+            });
+            openModal('giftModal');
+        }
+
+        function buyAndSendGift(nftId, price, icon, name) {
+            let localProfile = JSON.parse(localStorage.getItem('auraProfile_' + USER)) || {};
+            
+            localProfile.balance = parseInt(localProfile.balance);
+            if (isNaN(localProfile.balance)) localProfile.balance = 0;
+
+            if (localProfile.balance >= price) {
+                localProfile.balance -= price;
+                localStorage.setItem('auraProfile_' + USER, JSON.stringify(localProfile));
+                updateBalanceUI();
+                
+                // Формируем специальный текст для красивого отображения в истории
+                let msgContent = `[nft]${nftId}|${icon}|${name}`;
+                sendMessage('gift', msgContent);
+                
+                closeModal('giftModal'); 
+                
+                const dict = translations[localSettings.lang || 'ru'];
+                alert(dict.giftSent || "НФТ успешно отправлена!");
+            } else {
+                const dict = translations[localSettings.lang || 'ru'];
+                alert(dict.notEnoughAur || "Недостаточно AUR для покупки этой НФТ!");
+            }
+        }
+        // --- ЯДРО ЧАТА (ОТКРЫТИЕ И РЕНДЕРИНГ) ---
+        let currentChatId = null;
+        let currentChatType = 'user';
+
+        function openChat(target, displayName, type = 'user') {
+            currentChatId = target;
+            currentChatType = type;
+            
+            let profile = getProfileData(target);
+            let dict = translations[localSettings.lang || 'ru'];
+
+            document.getElementById('currentChatName').innerText = escapeHTML(displayName);
+            document.getElementById('currentChatUsername').innerText = (target === dict.fav || type !== 'user') ? "" : "@" + target;
+            document.getElementById('currentChatUsername').style.display = (target === dict.fav || type !== 'user') ? "none" : "block";
+            
+            let typeInfo = document.getElementById('chatTypeInfo');
+            if (type === 'group') {
+                typeInfo.innerText = "Группа"; typeInfo.style.display = "block";
+            } else if (type === 'channel') {
+                typeInfo.innerText = "Канал"; typeInfo.style.display = "block";
+            } else {
+                typeInfo.style.display = "none"; // Пункт 8: Убран статус "В сети"
+            }
+
+            const avatarDiv = document.getElementById('currentChatAvatar');
+            if (profile.avatar) {
+                avatarDiv.style.backgroundImage = `url(${profile.avatar})`;
+                avatarDiv.innerText = '';
+            } else {
+                avatarDiv.style.backgroundImage = 'none';
+                avatarDiv.innerText = displayName.charAt(0).toUpperCase();
+            }
+
+            // Настройка меню ввода для каналов
+            document.getElementById('chatInputArea').style.display = (type === 'channel' && profile.creator !== USER) ? 'none' : 'flex';
+            document.getElementById('menuArchiveBtn').style.display = 'flex';
+            
+            let archived = JSON.parse(localStorage.getItem('auraArchive_' + USER)) || [];
+            if (archived.includes(target)) {
+                document.getElementById('menuArchiveBtn').style.display = 'none';
+                document.getElementById('menuUnarchiveBtn').style.display = 'flex';
+            } else {
+                document.getElementById('menuArchiveBtn').style.display = 'flex';
+                document.getElementById('menuUnarchiveBtn').style.display = 'none';
+            }
+
+            document.querySelectorAll('.chat-item').forEach(el => el.classList.remove('active'));
+            if(event && event.currentTarget) event.currentTarget.classList.add('active');
+
+            if (window.innerWidth <= 768) {
+                document.body.classList.add('chat-active');
+            }
+
+            renderMessages();
+        }
+
+        function closeChatMobile(e) {
+            e.stopPropagation();
+            document.body.classList.remove('chat-active');
+            currentChatId = null;
+        }
+
+        // Рендеринг сообщений (Защита XSS и отрисовка НФТ - Пункт 9)
+        function renderMessages() {
+            if (!currentChatId) return;
+            const chatDiv = document.getElementById('chat');
+            let msgsMap = JSON.parse(localStorage.getItem('auraChats_' + USER)) || {};
+            let msgs = msgsMap[currentChatId] || [];
+            
+            chatDiv.innerHTML = ''; 
+
+            msgs.forEach((msg, index) => {
+                let msgType = msg.type || 'text';
+                let text = msg.text || msg; 
+                let sender = msg.sender || USER;
+
+                let msgDiv = document.createElement('div');
+                msgDiv.className = `msg ${sender === USER ? 'sent' : 'received'}`;
+                
+                // Добавляем долгий тап/правый клик для контекстного меню удаления
+                msgDiv.oncontextmenu = (e) => { e.preventDefault(); showMsgContextMenu(e, index); };
+                msgDiv.addEventListener('touchstart', (e) => handleLongPressStart(e, index), {passive: true});
+                msgDiv.addEventListener('touchend', handleLongPressEnd);
+                msgDiv.addEventListener('touchmove', handleLongPressEnd);
+
+                let contentHtml = '';
+                
+                if (msgType === 'gift') {
+                    // Парсим НФТ: [nft]id|icon|name
+                    let giftData = text.replace('[nft]', '').split('|');
+                    let gId = giftData[0]; let gIcon = giftData[1] || '💎'; let gName = giftData[2] || 'НФТ';
+                    
+                    let isPremium = ['neon_bear', 'toxic_obj', 'nft_founder', 'nft_matrix'].includes(gId);
+                    let glowClass = isPremium ? 'nft-glow' : ''; // Добавляем свечение крутым НФТ
+                    
+                    contentHtml = `
+                        <div class="msg-gift ${glowClass}">
+                            <div class="msg-gift-icon" style="font-size: 3.5rem;">${gIcon}</div>
+                            <div class="msg-gift-title">${gName}</div>
+                            <div class="msg-gift-desc">Premium НФТ</div>
+                        </div>`;
+                } else if (msgType === 'image') {
+                    contentHtml = `<img src="${text}" class="msg-media" onclick="window.open('${text}')">`;
+                } else if (msgType === 'audio') {
+                    contentHtml = `<audio src="${text}" controls class="msg-audio"></audio>`;
+                } else if (msgType === 'sticker') {
+                    contentHtml = `<img src="assets/stickers/${text}.png" class="msg-sticker" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'100\\' height=\\'100\\' viewBox=\\'0 0 24 24\\' fill=\\'%2300d2ff\\'><circle cx=\\'12\\' cy=\\'12\\' r=\\'10\\'/></svg>'">`;
+                } else {
+                    // Строгая защита от XSS для текста
+                    contentHtml = escapeHTML(text).replace(/\n/g, '<br>');
+                }
+
+                const dict = translations[localSettings.lang || 'ru'];
+                
+                // Отображаем имя отправителя в группах
+                let showSenderName = (sender !== USER && currentChatId !== dict.fav && msgType !== 'gift' && currentChatType !== 'user') 
+                    ? `<b style="opacity: 0.8; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; display:block; color: var(--accent);">${escapeHTML(sender)}</b>` 
+                    : '';
+                    
+                msgDiv.innerHTML = showSenderName + contentHtml;
+                chatDiv.appendChild(msgDiv);
+            });
+            
+            chatDiv.scrollTop = chatDiv.scrollHeight;
+        }
+
+        // --- ЛОГИКА ОТПРАВКИ СООБЩЕНИЙ ---
+        function send() {
+            sendMessage('text');
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') send();
+        }
+
+        function sendMessage(type = 'text', content = null) {
+            if (!currentChatId) return;
+            
+            let text = content !== null ? content : document.getElementById('msgText').value;
+            if (type === 'text' && text.trim() === '') return;
+
+            const dict = translations[localSettings.lang || 'ru'];
+            if (currentChatId === USER && currentChatId !== dict.fav) return;
+
+            let msgs = JSON.parse(localStorage.getItem('auraChats_' + USER)) || {};
+            if (!msgs[currentChatId]) msgs[currentChatId] = [];
+
+            let newMessage = {
+                sender: USER,
+                text: text,
+                type: type,
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            };
+
+            msgs[currentChatId].push(newMessage);
+            localStorage.setItem('auraChats_' + USER, JSON.stringify(msgs));
+
+            // Симуляция отправки собеседнику
+            if (currentChatType === 'user' && currentChatId !== dict.fav && currentChatId !== USER) {
+                let targetMsgs = JSON.parse(localStorage.getItem('auraChats_' + currentChatId)) || {};
+                if (!targetMsgs[USER]) targetMsgs[USER] = [];
+                targetMsgs[USER].push(newMessage);
+                localStorage.setItem('auraChats_' + currentChatId, JSON.stringify(targetMsgs));
+            } else if (currentChatType === 'group') {
+                // Рассылка участникам группы
+                let groupData = JSON.parse(localStorage.getItem('auraGroup_' + currentChatId));
+                if (groupData && groupData.members) {
+                    groupData.members.forEach(member => {
+                        if (member !== USER) {
+                            let memberMsgs = JSON.parse(localStorage.getItem('auraChats_' + member)) || {};
+                            if (!memberMsgs[currentChatId]) memberMsgs[currentChatId] = [];
+                            memberMsgs[currentChatId].push(newMessage);
+                            localStorage.setItem('auraChats_' + member, JSON.stringify(memberMsgs));
+                        }
+                    });
+                }
+            }
+
+            if (type === 'text') document.getElementById('msgText').value = '';
+            
+            renderMessages();
+            renderChats(); 
+        }
+
+        // --- РЕШЕНИЕ ПРОБЛЕМЫ ПЕРЕПОЛНЕНИЯ ПАМЯТИ (Сжатие картинок - Пункт 10) ---
+        function compressImage(file, callback) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = event => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 800; const MAX_HEIGHT = 800;
+                    let width = img.width; let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                    } else {
+                        if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+                    }
+                    canvas.width = width; canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    // Сжимаем в JPEG с качеством 0.6 (решает вылеты из-за лимита LocalStorage)
+                    callback(canvas.toDataURL('image/jpeg', 0.6));
+                }
+            }
+        }
+
+        function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            if (file.type.startsWith('image/')) {
+                compressImage(file, (compressedBase64) => {
+                    try {
+                        sendMessage('image', compressedBase64);
+                    } catch (err) {
+                        alert("Память браузера переполнена! Очистите кэш в настройках.");
+                    }
+                });
+            } else if (file.type.startsWith('audio/')) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    try { sendMessage('audio', event.target.result); }
+                    catch (err) { alert("Память браузера переполнена!"); }
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert("Поддерживаются только фото и аудио.");
+            }
+            e.target.value = ''; // Сброс инпута
+        }
+
+        // --- ГОЛОСОВЫЕ СООБЩЕНИЯ И СТИКЕРЫ ---
+        let mediaRecorder;
+        let audioChunks = [];
+
+        function startVoiceRecord(e) {
+            e.preventDefault();
+            if (!currentChatId) return;
+            navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.start();
+                document.getElementById('micBtn').classList.add('recording');
+                audioChunks = [];
+                mediaRecorder.addEventListener("dataavailable", event => { audioChunks.push(event.data); });
+            }).catch(err => {
+                alert("Нет доступа к микрофону!");
+            });
+        }
+
+        function stopVoiceRecord(e) {
+            e.preventDefault();
+            if (mediaRecorder && mediaRecorder.state === "recording") {
+                mediaRecorder.stop();
+                document.getElementById('micBtn').classList.remove('recording');
+                mediaRecorder.addEventListener("stop", () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        try { sendMessage('audio', event.target.result); }
+                        catch(err) { alert("Память браузера переполнена!"); }
+                    };
+                    reader.readAsDataURL(audioBlob);
+                });
+                mediaRecorder.stream.getTracks().forEach(t => t.stop());
+            }
+        }
+
+        function toggleStickers(e) {
+            e.stopPropagation();
+            const panel = document.getElementById('stickersPanel');
+            panel.style.display = panel.style.display === 'grid' ? 'none' : 'grid';
+        }
+
+        function sendSticker(id) {
+            sendMessage('sticker', id);
+            document.getElementById('stickersPanel').style.display = 'none';
+        }
         
+        // Закрытие выпадающих меню при клике в пустую область
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#stickersPanel') && !e.target.closest('button[title="Стикеры"]')) {
+                document.getElementById('stickersPanel').style.display = 'none';
+            }
+            if (!e.target.closest('.dropdown-menu') && !e.target.closest('.chat-options-btn')) {
+                document.getElementById('chatDropdown').style.display = 'none';
+            }
+            document.getElementById('msgContextMenu').style.display = 'none';
+        });
+        // --- СВАЙПЫ ЧАТОВ (Touch-события для мобильных) ---
+        function handleSwipeStart(e, el) {
+            touchStartX = e.touches[0].clientX;
+            el.classList.add('is-swiping');
+            // Если другой элемент открыт, закрываем его
+            if (swipedItem && swipedItem !== el) {
+                swipedItem.querySelector('.chat-item').style.transform = 'translateX(0)';
+                swipedItem.classList.remove('swiped-open');
+            }
+        }
+
+        function handleSwipeMove(e, el) {
+            let touchX = e.touches[0].clientX;
+            let diffX = touchStartX - touchX;
+            let chatItem = el.querySelector('.chat-item');
+            
+            // Свайпаем только влево и максимум на 110px
+            if (diffX > 0 && diffX <= 110) {
+                chatItem.style.transform = `translateX(-${diffX}px)`;
+            }
+        }
+
+        function handleSwipeEnd(e, el) {
+            let touchX = e.changedTouches[0].clientX;
+            let diffX = touchStartX - touchX;
+            let chatItem = el.querySelector('.chat-item');
+            el.classList.remove('is-swiping');
+
+            // Если свайпнули больше чем на половину кнопок - открываем
+            if (diffX > 55) {
+                chatItem.style.transform = 'translateX(-110px)';
+                el.classList.add('swiped-open');
+                swipedItem = el;
+            } else {
+                chatItem.style.transform = 'translateX(0)';
+                el.classList.remove('swiped-open');
+                if (swipedItem === el) swipedItem = null;
+            }
+        }
+
+        // --- УПРАВЛЕНИЕ ЧАТАМИ (Архив и Удаление) ---
+        function deleteChatRow(chatId) {
+            if (confirm("Удалить этот чат?")) {
+                let msgs = JSON.parse(localStorage.getItem('auraChats_' + USER)) || {};
+                delete msgs[chatId];
+                localStorage.setItem('auraChats_' + USER, JSON.stringify(msgs));
+                
+                let archived = JSON.parse(localStorage.getItem('auraArchive_' + USER)) || [];
+                archived = archived.filter(id => id !== chatId);
+                localStorage.setItem('auraArchive_' + USER, JSON.stringify(archived));
+                
+                if (currentChatId === chatId) {
+                    currentChatId = null;
+                    document.getElementById('chat').innerHTML = '';
+                    const dict = translations[localSettings.lang || 'ru'];
+                    document.getElementById('currentChatName').innerText = dict.fav;
+                    document.getElementById('currentChatUsername').innerText = "";
+                    document.getElementById('currentChatAvatar').style.backgroundImage = 'none';
+                    document.getElementById('currentChatAvatar').innerText = 'И';
+                    document.body.classList.remove('chat-active');
+                }
+                renderChats();
+            }
+        }
+
+        function toggleArchive(chatId) {
+            let archived = JSON.parse(localStorage.getItem('auraArchive_' + USER)) || [];
+            if (archived.includes(chatId)) {
+                archived = archived.filter(id => id !== chatId); // Достать
+            } else {
+                archived.push(chatId); // В архив
+            }
+            localStorage.setItem('auraArchive_' + USER, JSON.stringify(archived));
+            renderChats();
+        }
+
+        function toggleArchiveFolder() {
+            const list = document.getElementById('archivedChatsList');
+            const arrow = document.getElementById('archiveArrow');
+            if (list.style.display === 'none') {
+                list.style.display = 'block';
+                arrow.classList.add('open');
+            } else {
+                list.style.display = 'none';
+                arrow.classList.remove('open');
+            }
+        }
+
+        // Меню внутри открытого чата (три точки)
+        function toggleChatMenu(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('chatDropdown');
+            menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function archiveCurrentChat() { toggleArchive(currentChatId); document.getElementById('chatDropdown').style.display = 'none'; }
+        function unarchiveCurrentChat() { toggleArchive(currentChatId); document.getElementById('chatDropdown').style.display = 'none'; }
+        
+        function deleteCurrentChat(type) {
+            const dict = translations[localSettings.lang || 'ru'];
+            if (currentChatId === dict.fav || currentChatId === USER) {
+                alert("Избранное нельзя удалить!"); return;
+            }
+            if (confirm(type === 'all' ? "Удалить переписку у обоих?" : "Удалить чат у себя?")) {
+                let msgs = JSON.parse(localStorage.getItem('auraChats_' + USER)) || {};
+                delete msgs[currentChatId];
+                localStorage.setItem('auraChats_' + USER, JSON.stringify(msgs));
+
+                // Удаление у собеседника (симуляция)
+                if (type === 'all' && currentChatType === 'user') {
+                    let targetMsgs = JSON.parse(localStorage.getItem('auraChats_' + currentChatId)) || {};
+                    delete targetMsgs[USER];
+                    localStorage.setItem('auraChats_' + currentChatId, JSON.stringify(targetMsgs));
+                }
+
+                document.getElementById('chatDropdown').style.display = 'none';
+                deleteChatRow(currentChatId); 
+            }
+        }
+
+        // --- УДАЛЕНИЕ ОТДЕЛЬНЫХ СООБЩЕНИЙ ---
+        let selectedMsgIndex = null;
+
+        function handleLongPressStart(e, index) {
+            longPressTimer = setTimeout(() => {
+                showMsgContextMenu(e.touches[0], index);
+            }, 500); // 500мс для вызова меню
+        }
+        function handleLongPressEnd() { clearTimeout(longPressTimer); }
+
+        function showMsgContextMenu(e, index) {
+            e.preventDefault();
+            selectedMsgIndex = index;
+            const menu = document.getElementById('msgContextMenu');
+            menu.style.display = 'flex';
+            
+            // Позиционируем меню (с защитой от выхода за края экрана)
+            let x = e.clientX || e.pageX;
+            let y = e.clientY || e.pageY;
+            
+            if (x + 160 > window.innerWidth) x = window.innerWidth - 170;
+            if (y + 110 > window.innerHeight) y = window.innerHeight - 120;
+
+            menu.style.left = x + 'px';
+            menu.style.top = y + 'px';
+        }
+
+        function deleteSelectedMsg(type) {
+            if (selectedMsgIndex === null || !currentChatId) return;
+            
+            let msgs = JSON.parse(localStorage.getItem('auraChats_' + USER)) || {};
+            let chatMsgs = msgs[currentChatId] || [];
+            
+            let msgToDelete = chatMsgs[selectedMsgIndex];
+            if (!msgToDelete) return;
+
+            // Локальное удаление
+            chatMsgs.splice(selectedMsgIndex, 1);
+            localStorage.setItem('auraChats_' + USER, JSON.stringify(msgs));
+
+            // Удаление у всех
+            if (type === 'all' && currentChatType === 'user' && msgToDelete.sender === USER) {
+                let targetMsgs = JSON.parse(localStorage.getItem('auraChats_' + currentChatId)) || {};
+                let tMsgs = targetMsgs[USER] || [];
+                // Ищем точное совпадение
+                let targetIndex = tMsgs.findIndex(m => m.text === msgToDelete.text && m.time === msgToDelete.time);
+                if (targetIndex !== -1) {
+                    tMsgs.splice(targetIndex, 1);
+                    localStorage.setItem('auraChats_' + currentChatId, JSON.stringify(targetMsgs));
+                }
+            }
+
+            document.getElementById('msgContextMenu').style.display = 'none';
+            selectedMsgIndex = null;
+            renderMessages();
+            renderChats(); // Обновить превью последнего сообщения
+        }
+
+        // --- ПРОСМОТР ЧУЖИХ ПРОФИЛЕЙ И ГРУПП ---
+        function openViewProfile(e) {
+            e.stopPropagation();
+            if (!currentChatId || currentChatId === translations[localSettings.lang || 'ru'].fav) return;
+            
+            // Используем нашу мощную функцию для получения всех данных
+            let profile = getProfileData(currentChatId);
+            
+            const av = document.getElementById('viewProfileAvatar');
+            if (profile.avatar) {
+                av.style.backgroundImage = `url(${profile.avatar})`;
+                av.innerText = '';
+            } else {
+                av.style.backgroundImage = 'none';
+                av.innerText = profile.name.charAt(0).toUpperCase();
+            }
+            
+            document.getElementById('viewProfileName').innerText = profile.name;
+            document.getElementById('viewProfileBio').innerText = profile.bio || "Нет описания";
+            
+            let typeLabel = document.getElementById('viewProfileType');
+            let membersDiv = document.getElementById('viewProfileMembers');
+            
+            if (profile.type === 'group' || profile.type === 'channel') {
+                typeLabel.innerText = profile.type === 'group' ? 'Группа' : 'Канал';
+                membersDiv.style.display = 'flex';
+                let container = document.getElementById('membersListContainer');
+                container.innerHTML = '';
+                if (profile.members && profile.members.length > 0) {
+                    profile.members.forEach(m => {
+                        let p = getProfileData(m);
+                        let role = m === profile.creator ? '<span style="color:var(--gold); font-size:0.75rem; border:1px solid var(--gold); padding:2px 6px; border-radius:8px; font-weight:bold;">Создатель</span>' : '';
+                        container.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--glass-border);"><span style="color:var(--text-main); font-weight:600;">@${m} (${p.name})</span> ${role}</div>`;
+                    });
+                } else {
+                    container.innerHTML = '<span style="color:var(--text-muted); font-size:0.9rem;">Нет участников</span>';
+                }
+            } else {
+                typeLabel.innerText = '@' + currentChatId;
+                membersDiv.style.display = 'none';
+            }
+
+            // Закрепленный НФТ
+            let pinned = document.getElementById('viewProfilePinnedGift');
+            if (profile.pinnedGift && profile.type === 'user') {
+                let giftId = profile.pinnedGift.replace('[nft]', '');
+                pinned.style.display = 'flex';
+                pinned.innerHTML = `<img src="assets/gifts/${giftId}.png" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'45\\' height=\\'45\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'%2300d2ff\\' stroke-width=\\'2\\'><circle cx=\\'12\\' cy=\\'12\\' r=\\'10\\'/><path d=\\'M12 8L16 14H8L12 8Z\\'/></svg>'" style="width:45px;height:45px;filter:drop-shadow(0 0 12px var(--accent-glow));"> <span style="font-weight:bold; font-size:0.95rem;">Закрепленный НФТ</span>`;
+            } else {
+                pinned.style.display = 'none';
+            }
+
+            openModal('viewProfileModal');
+        }
+
+        // --- ПОПОЛНЕНИЕ БАЛАНСА И АДМИН ПАНЕЛЬ ---
+        function processTopUp() {
+            let amount = parseInt(document.getElementById('topupAmount').value);
+            if (!amount || amount < 10) { alert("Минимальная сумма 10 грн!"); return; }
+            
+            let aurAmount = amount * 2; // 1 AUR = 0.5 грн
+            
+            let p = JSON.parse(localStorage.getItem('auraProfile_' + USER));
+            p.balance = parseInt(p.balance || 0) + aurAmount;
+            localStorage.setItem('auraProfile_' + USER, JSON.stringify(p));
+            
+            updateBalanceUI();
+            closeModal('topupModal');
+            alert(`Успешно пополнено на ${aurAmount} AUR!`);
+            document.getElementById('topupAmount').value = '';
+        }
+
+        // Админ-панель (Выдает НФТ бесплатно)
+        function openAdminPanel() {
+            const select = document.getElementById('adminTargetUser');
+            select.innerHTML = '';
+            
+            let globalUsers = JSON.parse(localStorage.getItem('auraGlobalUsers')) || [];
+            let msgsMap = JSON.parse(localStorage.getItem('auraChats_' + USER)) || {};
+            
+            let allUsers = new Set([...globalUsers, ...Object.keys(msgsMap)]);
+            
+            allUsers.forEach(u => {
+                let p = getProfileData(u);
+                if (p.type === 'user' && u !== USER) {
+                    let opt = document.createElement('option');
+                    opt.value = u; opt.innerText = `@${u} (${p.name})`;
+                    select.appendChild(opt);
+                }
+            });
+            
+            openModal('adminModal');
+        }
+
+        // Пасхалка: 3 клика по логотипу открывают Админ-панель
+        let auraClicks = 0;
+        document.querySelector('.sidebar-footer-left h3').addEventListener('click', () => {
+            auraClicks++;
+            if (auraClicks >= 3) { auraClicks = 0; openAdminPanel(); }
+            setTimeout(() => auraClicks = 0, 1000);
+        });
+
+        function adminSendFreeGift() {
+            const target = document.getElementById('adminTargetUser').value;
+            const giftData = document.getElementById('adminGiftType').value.split('|');
+            const giftId = giftData[1];
+            
+            if (!target) { alert("Выберите пользователя!"); return; }
+
+            let msgs = JSON.parse(localStorage.getItem('auraChats_' + target)) || {};
+            if (!msgs[USER]) msgs[USER] = [];
+            
+            let nftInfo = nftCatalog.find(n => n.id === giftId) || { name: 'Admin NFT', icon: '🎁' };
+            
+            msgs[USER].push({
+                sender: USER,
+                text: `[nft]${giftId}|${nftInfo.icon}|${nftInfo.name}`,
+                type: 'gift',
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            });
+            
+            localStorage.setItem('auraChats_' + target, JSON.stringify(msgs));
+            alert("НФТ успешно отправлен системно!");
+            closeModal('adminModal');
+        }
+
+        // --- ФИНАЛЬНЫЙ ЗАПУСК ПРИЛОЖЕНИЯ ---
+        window.onload = () => {
+            if (!localStorage.getItem('auraUser')) {
+                setTimeout(() => {
+                    const splash = document.getElementById('splash');
+                    splash.style.opacity = '0';
+                    setTimeout(() => {
+                        splash.style.display = 'none';
+                        document.getElementById('authModal').style.display = 'flex';
+                        setTimeout(() => document.getElementById('authModal').classList.add('active'), 50);
+                    }, 800);
+                }, 1500);
+            } else {
+                startNormalApp();
+            }
+        };
+    </script>
+</body>
+</html>
