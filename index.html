@@ -1607,6 +1607,67 @@
             z-index: 99999; 
             background: var(--bg-main); 
         }
+        /* ==========================================================================
+           ФИКС: ВЫПАДАЮЩЕЕ МЕНЮ ЧАТА (Три точки)
+           ========================================================================== */
+        .dropdown-menu {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            background: var(--bg-element);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 8px;
+            display: none; /* Скрыто по умолчанию */
+            flex-direction: column;
+            gap: 5px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 100;
+            min-width: 220px;
+            animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .dropdown-item:hover {
+            background: var(--bg-hover);
+            transform: translateX(5px); /* Легкий сдвиг при наведении */
+        }
+
+        .dropdown-item.danger {
+            color: var(--danger);
+        }
+
+        .dropdown-item.danger:hover {
+            background: rgba(255, 74, 74, 0.15);
+        }
+
+        /* УБИЙЦА ГИГАНТСКИХ ИКОНОК */
+        .dropdown-item svg {
+            width: 20px !important;
+            height: 20px !important;
+            flex-shrink: 0;
+        }
+
+        /* ==========================================================================
+           ФИКС: НАЕЗЖАЮЩИЙ ТЕКСТ В ПОИСКЕ
+           ========================================================================== */
+        .sidebar-search input {
+            padding-left: 45px !important; /* Жестко отодвигаем текст от лупы */
+        }
     </style>
     </head>
 <body>
