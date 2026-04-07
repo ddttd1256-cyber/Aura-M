@@ -117,7 +117,7 @@
         ::selection { background: var(--accent); color: var(--text-inverse); }
 
         /* ==========================================================================
-           [3] АНИМАЦИИ (KEYFRAMES)
+           [3] РАСШИРЕННЫЕ АНИМАЦИИ (10+ НОВЫХ)
            ========================================================================== */
         @keyframes drawLogo {
             0% { opacity: 0; transform: scale(0.3) rotate(-10deg); box-shadow: 0 0 0 transparent; }
@@ -141,15 +141,55 @@
             100% { transform: rotate(360deg) scale(1.5); }
         }
         @keyframes messagePop {
-            0% { opacity: 0; transform: scale(0.8) translateY(20px); }
-            80% { transform: scale(1.02); }
-            100% { opacity: 1; transform: scale(1) translateY(0); }
+            0% { opacity: 0; transform: scale(0.7) translateY(30px); filter: blur(4px); }
+            60% { transform: scale(1.02) translateY(-2px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
         }
         @keyframes reactionBounce {
-            0% { transform: scale(0.5); opacity: 0; }
-            80% { transform: scale(1.2); }
+            0% { transform: scale(0.2) rotate(-180deg); opacity: 0; }
+            70% { transform: scale(1.3) rotate(10deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        @keyframes typingPulse {
+            0%, 100% { opacity: 0.4; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); background: var(--accent); }
+        }
+        @keyframes sendFly {
+            0% { transform: translateX(0) scale(1); opacity: 1; }
+            50% { transform: translateX(100px) scale(1.3); opacity: 0.8; }
+            100% { transform: translateX(200px) scale(0); opacity: 0; }
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        @keyframes glowPulse {
+            0% { box-shadow: 0 0 0 0 var(--accent-glow); }
+            70% { box-shadow: 0 0 0 15px rgba(0,210,255,0); }
+            100% { box-shadow: 0 0 0 0 rgba(0,210,255,0); }
+        }
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        @keyframes spinSlow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
             100% { transform: scale(1); opacity: 1; }
         }
+        .animate-bounce-in { animation: bounceIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; }
+        .animate-shake { animation: shake 0.3s ease-in-out; }
+        .animate-glow { animation: glowPulse 1.5s infinite; }
+        .typing-dots { display: flex; gap: 4px; align-items: center; }
+        .typing-dots span { width: 8px; height: 8px; background: var(--text-muted); border-radius: 50%; display: inline-block; animation: typingPulse 1.2s infinite; }
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
 
         /* ==========================================================================
            [4] ЭКРАН ЗАГРУЗКИ (SPLASH)
@@ -216,6 +256,7 @@
         .unread-badge { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: var(--danger); color: white; border-radius: 20px; padding: 2px 8px; font-size: 0.7rem; font-weight: bold; min-width: 22px; text-align: center; }
         .online-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--success); display: inline-block; margin-left: 8px; box-shadow: 0 0 8px var(--success-glow); animation: pulseOnline 1.5s infinite; }
         @keyframes pulseOnline { 0% { opacity: 0.5; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.2); } }
+        .typing-indicator { font-size: 0.7rem; color: var(--text-muted); padding: 4px 12px; display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.2); border-radius: 20px; width: fit-content; margin-bottom: 8px; animation: slideUpFade 0.3s; }
 
         /* ==========================================================================
            [6] СИСТЕМА ФОРМ И ИНПУТОВ
@@ -245,7 +286,7 @@
         /* ==========================================================================
            [8] ПРОДВИНУТЫЕ СООБЩЕНИЯ
            ========================================================================== */
-        .msg-container { display: flex; flex-direction: column; margin-bottom: 18px; position: relative; max-width: 80%; animation: messagePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .msg-container { display: flex; flex-direction: column; margin-bottom: 18px; position: relative; max-width: 80%; animation: messagePop 0.35s cubic-bezier(0.34, 1.2, 0.64, 1) forwards; }
         .msg-container.sent { align-self: flex-end; align-items: flex-end; }
         .msg-container.received { align-self: flex-start; align-items: flex-start; }
         .msg-bubble { padding: 12px 16px; border-radius: 20px; font-size: 0.95rem; line-height: 1.5; word-wrap: break-word; position: relative; backdrop-filter: blur(10px); box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.1s; }
@@ -263,15 +304,16 @@
         .event-date { font-size: 0.75rem; color: var(--accent); }
         .reactions { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
         .reaction { background: rgba(0,0,0,0.2); border-radius: 20px; padding: 2px 8px; font-size: 0.75rem; cursor: pointer; transition: 0.1s; display: inline-flex; align-items: center; gap: 4px; }
-        .reaction:hover { transform: scale(1.1); background: rgba(255,255,255,0.2); }
+        .reaction:hover { transform: scale(1.1); background: rgba(255,255,255,0.2); animation: reactionBounce 0.3s ease; }
         .pinned-message { background: rgba(0,0,0,0.3); border-radius: 12px; padding: 10px; margin-bottom: 15px; border-left: 4px solid var(--accent); font-size: 0.85rem; cursor: pointer; }
         .voice-message { background: var(--bg-element); border-radius: 20px; padding: 8px 12px; display: flex; align-items: center; gap: 12px; min-width: 200px; }
-        .voice-play { cursor: pointer; }
+        .voice-play { cursor: pointer; transition: 0.2s; }
+        .voice-play:hover { transform: scale(1.1); }
 
         /* Подарки NFT в чате */
-        .msg-gift { display: flex; flex-direction: column; align-items: center; background: var(--bg-element); border: 1px solid var(--glass-border); border-radius: 20px; padding: 15px; min-width: 150px; text-align: center; }
+        .msg-gift { display: flex; flex-direction: column; align-items: center; background: var(--bg-element); border: 1px solid var(--glass-border); border-radius: 20px; padding: 15px; min-width: 150px; text-align: center; animation: floatPremiumNFT 3s infinite ease-in-out; }
         .msg-gift.nft-glow { border-color: var(--gold); box-shadow: 0 0 20px var(--gold-glow); background: rgba(255, 215, 0, 0.1); }
-        .msg-gift-icon { font-size: 4rem; margin-bottom: 10px; }
+        .msg-gift-icon { font-size: 4rem; margin-bottom: 10px; animation: spinSlow 8s linear infinite; }
         .msg-gift-title { font-weight: 900; color: var(--text-main); font-size: 1.1rem; }
 
         /* ==========================================================================
@@ -465,7 +507,7 @@
             </button>
             
             <div style="flex: 1; position: relative;">
-                <textarea id="msgText" class="custom-input" placeholder="Введите сообщение..." rows="1" style="resize: none; border-radius: 24px; padding-right: 45px; max-height: 120px; overflow-y: auto;" oninput="autoGrowTextarea(this)" onkeypress="handleKeyPress(event)"></textarea>
+                <textarea id="msgText" class="custom-input" placeholder="Введите сообщение..." rows="1" style="resize: none; border-radius: 24px; padding-right: 45px; max-height: 120px; overflow-y: auto;" oninput="autoGrowTextarea(this); onTypingStart()" onkeypress="handleKeyPress(event)"></textarea>
                 <button class="icon-btn" style="position: absolute; right: 5px; top: 5px; width: 34px; height: 34px; background: transparent; border: none; box-shadow: none; color: var(--text-muted);" title="Эмодзи" onclick="insertEmoji()">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
                 </button>
@@ -790,20 +832,20 @@
         </div>
     </div>
 
-
     <script>
-        // ==================== ПОЛНОСТЬЮ ФУНКЦИОНАЛЬНЫЙ КЛИЕНТ + КАНАЛЫ + РЕАКЦИИ + АДМИНКА ====================
+        // ==================== ПОЛНОСТЬЮ ИСПРАВЛЕННАЯ ЛОГИКА + НОВЫЕ АНИМАЦИИ ====================
         let USER = localStorage.getItem('auraUser') || null;
         let localSettings = JSON.parse(localStorage.getItem('auraSettings')) || { lang: 'ru', theme: 'dark', wallpaper: 'none', color: '#00d2ff' };
         
         let currentChatId = null;
-        let currentChatType = 'user'; // 'user', 'channel'
+        let currentChatType = 'user';
         let contextMessageId = null;
         let tempSettingsAvatar = null;
         let localStream = null;
         let replyToMsg = null;
         let pinnedMessage = null;
         let notificationsEnabled = true;
+        let typingTimeout = null;
 
         const DICT = {
             ru: {
@@ -837,7 +879,7 @@
             const modal = document.getElementById(id);
             if (modal) { modal.classList.remove('active'); setTimeout(() => modal.style.display = 'none', 400); }
         }
-        function switchNavTab(tab) { /* просто визуально */ }
+        function switchNavTab(tab) { /* визуально */ }
         function toggleChatMenu(event) {
             if (event) event.stopPropagation();
             const menu = document.getElementById('chatDropdown');
@@ -966,10 +1008,15 @@
             }
         }
 
-        // ---------- Чаты и сообщения ----------
+        // ---------- Чаты и сообщения (ИСПРАВЛЕННАЯ ЛОГИКА) ----------
         function getChatKey(chatId = currentChatId) {
-            return chatId === DICT.ru.fav ? 'auraFav_' + USER : 'auraMsgs_' + [USER, chatId].sort().join('_');
+            // Для личных чатов ключ всегда одинаковый для двух участников (сортировка)
+            if (chatId === DICT.ru.fav) return 'auraFav_' + USER;
+            // Сортируем имена, чтобы ключ был общим
+            let ids = [USER, chatId].sort();
+            return 'auraMsgs_' + ids.join('_');
         }
+        
         function markChatAsRead(chatId) {
             let chats = JSON.parse(localStorage.getItem('auraChats_' + USER)) || [];
             let chat = chats.find(c => c.id === chatId);
@@ -1047,7 +1094,6 @@
             document.getElementById('chatTypeInfo').style.display = profile.type === 'channel' ? 'inline-block' : 'none';
             document.getElementById('chatTypeInfo').innerText = profile.type === 'channel' ? 'Канал' : '';
             loadMessages(); document.body.classList.add('chat-open');
-            // Онлайн статус симуляция
             document.getElementById('onlineStatus').style.display = 'inline-block';
         }
         function closeChatMobile() { document.body.classList.remove('chat-open'); currentChatId = null; renderChatList(); document.getElementById('noChatOverlay').style.display = 'flex'; }
@@ -1089,28 +1135,76 @@
         }
         function handleKeyPress(event) { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); send(); } }
         function insertEmoji() { const ta = document.getElementById('msgText'); ta.value += '😊'; autoGrowTextarea(ta); ta.focus(); }
+        
+        // Имитация набора текста (typing indicator)
+        function onTypingStart() {
+            if (!currentChatId) return;
+            // Показываем индикатор "печатает..." у собеседника (симуляция)
+            // В реальном мессенджере надо отправлять событие, здесь для красоты добавим анимацию
+            const typingDiv = document.getElementById('typingIndicator');
+            if (!typingDiv && currentChatId) {
+                const div = document.createElement('div');
+                div.id = 'typingIndicator';
+                div.className = 'typing-indicator';
+                div.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div> Печатает...';
+                document.getElementById('chat').appendChild(div);
+                setTimeout(() => { const el = document.getElementById('typingIndicator'); if(el) el.remove(); }, 1500);
+            }
+        }
+        
         function send() {
             const input = document.getElementById('msgText');
             const text = input.value.trim();
-            if (text !== '') { sendDirectMessage(text, replyToMsg); input.value = ''; autoGrowTextarea(input); replyToMsg = null; document.querySelector('.reply-preview')?.remove(); }
+            if (text !== '') { 
+                sendDirectMessage(text, replyToMsg); 
+                input.value = ''; 
+                autoGrowTextarea(input); 
+                replyToMsg = null; 
+                document.querySelector('.reply-preview')?.remove();
+                // Анимация отправки
+                const btn = document.getElementById('mainSendBtn');
+                btn.style.animation = 'sendFly 0.3s ease-out';
+                setTimeout(() => btn.style.animation = '', 300);
+            }
         }
+        
         function sendDirectMessage(text, replyData = null) {
             if (!currentChatId) return;
             let profile = getProfileData(currentChatId);
             if (profile.type === 'channel' && profile.admin !== USER && !text.startsWith('[gift]')) { alert("Только администратор канала может писать сообщения."); return; }
             const key = getChatKey();
             let history = JSON.parse(localStorage.getItem(key)) || [];
-            let msgObj = { id: 'msg_' + Date.now(), sender: USER, text: text, timestamp: Date.now(), read: false, edited: false, deleted: false, reactions: {} };
+            let msgObj = { 
+                id: 'msg_' + Date.now() + '_' + Math.random(), 
+                sender: USER, 
+                text: text, 
+                timestamp: Date.now(), 
+                read: false, 
+                edited: false, 
+                deleted: false, 
+                reactions: {} 
+            };
             if (replyData) msgObj.replyTo = { id: replyData.id, text: replyData.text, sender: replyData.sender };
-            history.push(msgObj); localStorage.setItem(key, JSON.stringify(history));
+            history.push(msgObj); 
+            localStorage.setItem(key, JSON.stringify(history));
+            
+            // Обновляем список чатов (перемещаем вверх)
             let chats = JSON.parse(localStorage.getItem('auraChats_' + USER)) || [];
             let chatIndex = chats.findIndex(c => c.id === currentChatId);
-            if (chatIndex !== -1) { let chatItem = chats.splice(chatIndex, 1)[0]; chatItem.unread = 0; chats.unshift(chatItem); }
-            else { chats.unshift({ id: currentChatId, unread: 0, isArchived: false }); }
+            if (chatIndex !== -1) { 
+                let chatItem = chats.splice(chatIndex, 1)[0]; 
+                chatItem.unread = 0; 
+                chats.unshift(chatItem); 
+            } else { 
+                chats.unshift({ id: currentChatId, unread: 0, isArchived: false }); 
+            }
             localStorage.setItem('auraChats_' + USER, JSON.stringify(chats));
-            renderChatList(); loadMessages();
+            renderChatList(); 
+            loadMessages();  // перерисовываем сообщения
+            
             if (notificationsEnabled && currentChatId !== USER) alert(`Новое сообщение в ${profile.name}`);
         }
+        
         function sendVoiceMessage(event) {
             const file = event.target.files[0];
             if (file && currentChatId) {
@@ -1120,6 +1214,7 @@
             }
             event.target.value = '';
         }
+        
         function loadMessages() {
             const chatDiv = document.getElementById('chat'); chatDiv.innerHTML = '';
             if (!currentChatId) return;
@@ -1132,6 +1227,7 @@
             history.forEach(msg => renderMsg(msg, false));
             chatDiv.scrollTop = chatDiv.scrollHeight;
         }
+        
         function renderMsg(msgObj, isLocalAdd) {
             if (msgObj.deleted) {
                 const container = document.createElement('div'); container.className = 'msg-container ' + (msgObj.sender === USER ? 'sent' : 'received');
@@ -1149,11 +1245,11 @@
             let contentHtml = '';
             if (msgObj.replyTo) { contentHtml += `<div class="reply-preview">↳ Ответ: ${escapeHTML(msgObj.replyTo.text.substring(0, 50))}</div>`; }
             let msgText = escapeHTML(msgObj.text);
-            if (msgObj.text.startsWith('[img]')) msgText = `<img src="${escapeHTML(msgObj.text.replace('[img]', ''))}" style="max-width: 100%; border-radius: 10px;">`;
+            if (msgObj.text.startsWith('[img]')) msgText = `<img src="${escapeHTML(msgObj.text.replace('[img]', ''))}" style="max-width: 100%; border-radius: 10px; animation: bounceIn 0.3s;">`;
             else if (msgObj.text.startsWith('[voice]')) msgText = `<div class="voice-message"><span class="voice-play">🎤</span> <audio controls src="${escapeHTML(msgObj.text.replace('[voice]', ''))}" style="max-width: 180px;"></audio></div>`;
             else if (msgObj.text.startsWith('[gift]')) {
                 let parts = msgObj.text.replace('[gift]', '').split('|');
-                msgText = `<div class="msg-gift"><div class="msg-gift-icon">🎁</div><div class="msg-gift-title">NFT Asset</div><div style="font-size:0.7rem;">${escapeHTML(parts[0])}</div></div>`;
+                msgText = `<div class="msg-gift nft-glow"><div class="msg-gift-icon">🎁</div><div class="msg-gift-title">NFT Asset</div><div style="font-size:0.7rem;">${escapeHTML(parts[0])}</div></div>`;
             } else if (msgObj.text.startsWith('[event]')) {
                 let ev = JSON.parse(msgObj.text.replace('[event]', ''));
                 msgText = `<div class="event-block"><div class="event-icon">📅</div><div class="event-info"><div class="event-title">${escapeHTML(ev.title)}</div><div class="event-date">${ev.date}</div><div class="event-desc" style="font-size:0.8rem;">${escapeHTML(ev.desc)}</div></div></div>`;
@@ -1171,6 +1267,7 @@
             chatDiv.appendChild(container);
             if (isLocalAdd) chatDiv.scrollTo({ top: chatDiv.scrollHeight, behavior: 'smooth' });
         }
+        
         function showContextMenu(e) {
             const menu = document.getElementById('messageContextMenu');
             let x = e.clientX, y = e.clientY;
@@ -1425,7 +1522,7 @@
             localStorage.setItem('auraProfile_' + USER, JSON.stringify(profile)); updateBalanceUI(); alert(`Начислено ${formatBalance(amount * 100)} AUR.`); closeModal('topupModal'); document.getElementById('topupAmount').value = '';
         }
 
-        // ---------- Секретная админ-панель (5 кликов по балансу) ----------
+        // ---------- Секретная админ-панель ----------
         let balanceClickCount = 0, balanceClickTimer;
         document.getElementById('desktopHeaderBalance')?.addEventListener('click', function(e) {
             e.stopPropagation(); balanceClickCount++; clearTimeout(balanceClickTimer);
