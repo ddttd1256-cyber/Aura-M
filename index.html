@@ -140,6 +140,16 @@
             0% { transform: rotate(0deg) scale(1.5); }
             100% { transform: rotate(360deg) scale(1.5); }
         }
+        @keyframes messagePop {
+            0% { opacity: 0; transform: scale(0.8) translateY(20px); }
+            80% { transform: scale(1.02); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes reactionBounce {
+            0% { transform: scale(0.5); opacity: 0; }
+            80% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 1; }
+        }
 
         /* ==========================================================================
            [4] ЭКРАН ЗАГРУЗКИ (SPLASH)
@@ -204,6 +214,8 @@
         .aur-balance { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; background: rgba(255, 215, 0, 0.1); border: 1px solid var(--gold); color: var(--gold); font-weight: 800; cursor: pointer; transition: var(--transition-fast); }
         .aur-balance:hover { background: rgba(255, 215, 0, 0.2); box-shadow: 0 0 15px var(--gold-glow); }
         .unread-badge { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: var(--danger); color: white; border-radius: 20px; padding: 2px 8px; font-size: 0.7rem; font-weight: bold; min-width: 22px; text-align: center; }
+        .online-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--success); display: inline-block; margin-left: 8px; box-shadow: 0 0 8px var(--success-glow); animation: pulseOnline 1.5s infinite; }
+        @keyframes pulseOnline { 0% { opacity: 0.5; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.2); } }
 
         /* ==========================================================================
            [6] СИСТЕМА ФОРМ И ИНПУТОВ
@@ -233,22 +245,28 @@
         /* ==========================================================================
            [8] ПРОДВИНУТЫЕ СООБЩЕНИЯ
            ========================================================================== */
-        .msg-container { display: flex; flex-direction: column; margin-bottom: 18px; position: relative; max-width: 80%; animation: slideUpFade 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .msg-container { display: flex; flex-direction: column; margin-bottom: 18px; position: relative; max-width: 80%; animation: messagePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         .msg-container.sent { align-self: flex-end; align-items: flex-end; }
         .msg-container.received { align-self: flex-start; align-items: flex-start; }
-        .msg-bubble { padding: 12px 16px; border-radius: 20px; font-size: 0.95rem; line-height: 1.5; word-wrap: break-word; position: relative; backdrop-filter: blur(10px); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .msg-bubble { padding: 12px 16px; border-radius: 20px; font-size: 0.95rem; line-height: 1.5; word-wrap: break-word; position: relative; backdrop-filter: blur(10px); box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.1s; }
+        .msg-bubble:active { transform: scale(0.98); }
         .sent .msg-bubble { background: var(--accent-gradient); color: #fff; border-bottom-right-radius: 4px; box-shadow: 0 4px 15px var(--accent-glow); }
         .received .msg-bubble { background: var(--bg-element); color: var(--text-main); border: 1px solid var(--glass-border); border-bottom-left-radius: 4px; }
         .msg-meta { display: flex; align-items: center; gap: 5px; font-size: 0.7rem; margin-top: 4px; opacity: 0.7; padding: 0 5px; }
         .sent .msg-meta { color: var(--text-muted); justify-content: flex-end; }
         .received .msg-meta { color: var(--text-muted); justify-content: flex-start; }
-        .sent .msg-bubble .msg-meta { color: rgba(255,255,255,0.8); }
         .reply-preview { background: rgba(0,0,0,0.2); border-left: 3px solid var(--accent); padding: 6px 10px; margin-bottom: 8px; border-radius: 12px; font-size: 0.8rem; color: var(--text-muted); }
         .event-block { background: rgba(0,210,255,0.1); border: 1px solid var(--accent); border-radius: 16px; padding: 12px; display: flex; align-items: center; gap: 12px; }
         .event-icon { font-size: 2rem; }
         .event-info { flex: 1; }
         .event-title { font-weight: 900; margin-bottom: 4px; }
         .event-date { font-size: 0.75rem; color: var(--accent); }
+        .reactions { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+        .reaction { background: rgba(0,0,0,0.2); border-radius: 20px; padding: 2px 8px; font-size: 0.75rem; cursor: pointer; transition: 0.1s; display: inline-flex; align-items: center; gap: 4px; }
+        .reaction:hover { transform: scale(1.1); background: rgba(255,255,255,0.2); }
+        .pinned-message { background: rgba(0,0,0,0.3); border-radius: 12px; padding: 10px; margin-bottom: 15px; border-left: 4px solid var(--accent); font-size: 0.85rem; cursor: pointer; }
+        .voice-message { background: var(--bg-element); border-radius: 20px; padding: 8px 12px; display: flex; align-items: center; gap: 12px; min-width: 200px; }
+        .voice-play { cursor: pointer; }
 
         /* Подарки NFT в чате */
         .msg-gift { display: flex; flex-direction: column; align-items: center; background: var(--bg-element); border: 1px solid var(--glass-border); border-radius: 20px; padding: 15px; min-width: 150px; text-align: center; }
@@ -401,6 +419,7 @@
                     <div style="font-weight: 800; font-size: 1.15rem; color: var(--text-main); line-height: 1.2;" id="currentChatName">Name</div>
                     <div style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600; display: flex; gap: 8px; align-items: center; margin-top: 2px;">
                         <span id="chatTypeInfo" style="display:none; background: rgba(0, 210, 255, 0.15); color: var(--accent); padding: 2px 6px; border-radius: 6px; font-size: 0.7rem; text-transform: uppercase; border: 1px solid rgba(0,210,255,0.3);"></span>
+                        <span id="onlineStatus" class="online-dot" style="display: none;"></span>
                     </div>
                 </div>
             </div>
@@ -426,6 +445,8 @@
                     <div class="dropdown-item" onclick="clearChatHistory()">Очистить историю</div>
                     <div class="dropdown-item" onclick="exportChat()">Экспорт чата</div>
                     <div class="dropdown-item" onclick="openEventCreator()">Создать ивент</div>
+                    <div class="dropdown-item" onclick="toggleNotifications()">🔔 Уведомления</div>
+                    <div class="dropdown-item" onclick="openCreateChannel()">📢 Создать канал</div>
                 </div>
             </div>
         </header>
@@ -434,9 +455,13 @@
 
         <div class="chat-input-area" id="chatInputArea">
             <input type="file" id="fileInput" style="display: none;" onchange="handleFileUpload(event)" accept="image/*,video/*,audio/*,.pdf,.doc,.zip">
+            <input type="file" id="voiceInput" style="display: none;" accept="audio/*" onchange="sendVoiceMessage(event)">
             
             <button class="icon-btn" onclick="document.getElementById('fileInput').click()" title="Прикрепить файл">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+            </button>
+            <button class="icon-btn" onclick="document.getElementById('voiceInput').click()" title="Голосовое сообщение">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
             </button>
             
             <div style="flex: 1; position: relative;">
@@ -454,22 +479,15 @@
     </main>
 
     <div class="context-menu" id="messageContextMenu">
-        <div class="context-item" onclick="replyToMessage()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 10 20 15 15 20"></polyline><path d="M4 4v7a4 4 0 0 0 4 4h12"></path></svg> Ответить
-        </div>
-        <div class="context-item" onclick="copyMessageText()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Скопировать текст
-        </div>
-        <div class="context-item" onclick="forwardMessage()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 10 4 15 9 20"></polyline><path d="M20 4v7a4 4 0 0 1-4 4H4"></path></svg> Переслать
-        </div>
-        <div class="context-item" onclick="editMessage()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg> Редактировать
-        </div>
+        <div class="context-item" onclick="replyToMessage()">↩️ Ответить</div>
+        <div class="context-item" onclick="copyMessageText()">📋 Скопировать</div>
+        <div class="context-item" onclick="forwardMessage()">➡️ Переслать</div>
+        <div class="context-item" onclick="editMessage()">✏️ Редактировать</div>
+        <div class="context-item" onclick="pinMessage()">📌 Закрепить</div>
+        <div class="context-item" onclick="addReaction('👍')">👍 Добавить реакцию</div>
         <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 5px 0;"></div>
-        <div class="context-item danger" onclick="deleteMessage()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> Удалить сообщение
-        </div>
+        <div class="context-item danger" onclick="deleteMessage()">🗑️ Удалить</div>
+        <div class="context-item danger" onclick="deleteForEveryone()">💀 Удалить у всех</div>
     </div>
 
     <div class="modal-overlay" id="forwardModal">
@@ -489,6 +507,19 @@
             <div style="display: flex; gap: 10px;">
                 <button class="btn btn-outline" onclick="closeModal('eventModal')">Отмена</button>
                 <button class="btn btn-primary" onclick="createEvent()">Создать</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="channelModal">
+        <div class="modal">
+            <h3 style="margin-bottom: 20px;">Создать канал</h3>
+            <div class="form-group"><label>ID канала</label><input type="text" id="channelId" class="custom-input" placeholder="channel_id"></div>
+            <div class="form-group"><label>Название</label><input type="text" id="channelName" class="custom-input" placeholder="Название канала"></div>
+            <div class="form-group"><label>Описание</label><textarea id="channelDesc" class="custom-input" rows="2" placeholder="Описание..."></textarea></div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-outline" onclick="closeModal('channelModal')">Отмена</button>
+                <button class="btn btn-primary" onclick="createChannel()">Создать</button>
             </div>
         </div>
     </div>
@@ -648,6 +679,7 @@
                     <button class="btn btn-outline" style="border-radius: 20px; padding: 8px 16px; border-color: var(--accent); color: var(--accent);" id="tabBtnProfile" onclick="openSettingsTab('settingsProfile', this)">Профиль</button>
                     <button class="btn btn-outline" style="border-radius: 20px; padding: 8px 16px; border-color: transparent;" id="tabBtnDesign" onclick="openSettingsTab('settingsDesign', this)">Дизайн</button>
                     <button class="btn btn-outline" style="border-radius: 20px; padding: 8px 16px; border-color: transparent;" id="tabBtnData" onclick="openSettingsTab('settingsData', this)">Данные</button>
+                    <button class="btn btn-outline" style="border-radius: 20px; padding: 8px 16px; border-color: transparent;" id="tabBtnAdmin" onclick="openSettingsTab('settingsAdmin', this)">Админка</button>
                 </div>
             </div>
             
@@ -710,6 +742,18 @@
                         </button>
                     </div>
                 </div>
+
+                <div id="settingsAdmin" style="display: none;">
+                    <div style="background: rgba(255,0,0,0.1); border: 1px solid var(--danger); border-radius: 16px; padding: 20px; margin-bottom: 20px;">
+                        <h4 style="color: var(--danger);">👑 Панель администратора</h4>
+                        <div class="form-group"><label>Выдать AUR пользователю</label><input type="text" id="adminUserId" placeholder="ID пользователя" class="custom-input"><input type="number" id="adminAmount" placeholder="Сумма" class="custom-input" style="margin-top:10px;"></div>
+                        <button class="btn btn-danger" onclick="adminAddBalance()">Выдать AUR</button>
+                        <div class="form-group" style="margin-top:20px;"><label>Массовая рассылка</label><textarea id="adminBroadcastMsg" class="custom-input" rows="2" placeholder="Текст рассылки..."></textarea></div>
+                        <button class="btn btn-danger" onclick="adminBroadcast()">Отправить всем</button>
+                        <div class="form-group" style="margin-top:20px;"><label>Забанить пользователя</label><input type="text" id="adminBanUser" class="custom-input" placeholder="ID"></div>
+                        <button class="btn btn-danger" onclick="adminBan()">Забанить</button>
+                    </div>
+                </div>
             </div>
             
             <div style="padding: 20px 30px; border-top: 1px solid var(--glass-border); display: flex; justify-content: flex-end; gap: 15px; background: rgba(0,0,0,0.1);">
@@ -748,16 +792,18 @@
 
 
     <script>
-        // ==================== ПОЛНОСТЬЮ ФУНКЦИОНАЛЬНЫЙ КЛИЕНТ ====================
+        // ==================== ПОЛНОСТЬЮ ФУНКЦИОНАЛЬНЫЙ КЛИЕНТ + КАНАЛЫ + РЕАКЦИИ + АДМИНКА ====================
         let USER = localStorage.getItem('auraUser') || null;
         let localSettings = JSON.parse(localStorage.getItem('auraSettings')) || { lang: 'ru', theme: 'dark', wallpaper: 'none', color: '#00d2ff' };
         
         let currentChatId = null;
-        let currentChatType = 'user';
+        let currentChatType = 'user'; // 'user', 'channel'
         let contextMessageId = null;
         let tempSettingsAvatar = null;
         let localStream = null;
-        let replyToMsg = null; // для ответа
+        let replyToMsg = null;
+        let pinnedMessage = null;
+        let notificationsEnabled = true;
 
         const DICT = {
             ru: {
@@ -768,6 +814,8 @@
 
         const auraGlobalUsers = [{ id: "durov", name: "Pavel Durov", bio: "Founder of Aura", avatar: "https://i.pravatar.cc/150?u=durov", type: "user" }];
         const auraGlobalGroups = [{ id: "crypto_hub", name: "Crypto Trading Hub", bio: "Обсуждение NFT и крипты.", avatar: null, type: "group" }];
+        let channels = JSON.parse(localStorage.getItem('auraChannels')) || [];
+        let bannedUsers = JSON.parse(localStorage.getItem('auraBanned')) || [];
 
         function escapeHTML(str) {
             if (typeof str !== 'string') return str;
@@ -861,6 +909,8 @@
             if (targetId === DICT.ru.fav) return { name: "Избранное", avatar: null, bio: "Ваши сохраненные сообщения", type: "user" };
             let userProfile = JSON.parse(localStorage.getItem('auraProfile_' + targetId));
             if (userProfile) return userProfile;
+            let channel = channels.find(c => c.id === targetId);
+            if (channel) return { name: channel.name, avatar: null, bio: channel.desc, type: "channel", admin: channel.admin };
             let globalU = auraGlobalUsers.find(u => u.id === targetId);
             if(globalU) return globalU;
             let globalG = auraGlobalGroups.find(g => g.id === targetId);
@@ -886,6 +936,34 @@
             if (profile.avatar) { avatarEl.style.backgroundImage = `url('${escapeHTML(profile.avatar)}')`; avatarEl.innerText = ''; }
             else { avatarEl.style.backgroundImage = 'none'; avatarEl.innerText = profile.name ? profile.name.charAt(0).toUpperCase() : '?'; }
             openModal('viewProfileModal');
+        }
+
+        // ---------- Каналы ----------
+        function openCreateChannel() { openModal('channelModal'); }
+        function createChannel() {
+            let id = document.getElementById('channelId').value.trim().toLowerCase();
+            let name = document.getElementById('channelName').value.trim();
+            let desc = document.getElementById('channelDesc').value.trim();
+            if (!id || !name) { alert("Заполните ID и название"); return; }
+            if (channels.find(c => c.id === id)) { alert("Канал с таким ID уже существует"); return; }
+            channels.push({ id, name, desc, admin: USER, subscribers: [USER], type: 'channel' });
+            localStorage.setItem('auraChannels', JSON.stringify(channels));
+            let chats = JSON.parse(localStorage.getItem('auraChats_' + USER)) || [];
+            if (!chats.find(c => c.id === id)) chats.unshift({ id, unread: 0, isArchived: false });
+            localStorage.setItem('auraChats_' + USER, JSON.stringify(chats));
+            closeModal('channelModal');
+            openChat(id, 'channel');
+        }
+        function subscribeToChannel(channelId) {
+            let channel = channels.find(c => c.id === channelId);
+            if (channel && !channel.subscribers.includes(USER)) {
+                channel.subscribers.push(USER);
+                localStorage.setItem('auraChannels', JSON.stringify(channels));
+                let chats = JSON.parse(localStorage.getItem('auraChats_' + USER)) || [];
+                if (!chats.find(c => c.id === channelId)) chats.unshift({ id: channelId, unread: 0, isArchived: false });
+                localStorage.setItem('auraChats_' + USER, JSON.stringify(chats));
+                renderChatList();
+            }
         }
 
         // ---------- Чаты и сообщения ----------
@@ -919,7 +997,8 @@
                 if (chat.id === currentChatId) item.classList.add('active');
                 item.onclick = function() { openChat(chat.id, profile.type); };
                 let avatarHtml = profile.avatar ? `<div class="avatar-mini" style="background-image: url('${escapeHTML(profile.avatar)}')"></div>` : `<div class="avatar-mini">${profile.name ? profile.name.charAt(0).toUpperCase() : '?'}</div>`;
-                item.innerHTML = `${avatarHtml}<div style="flex: 1; min-width: 0;"><div style="font-weight: 800; font-size: 1rem; color: var(--text-main);">${escapeHTML(profile.name)}</div></div>`;
+                let typeIcon = profile.type === 'channel' ? '📢 ' : '';
+                item.innerHTML = `${avatarHtml}<div style="flex: 1; min-width: 0;"><div style="font-weight: 800; font-size: 1rem; color: var(--text-main);">${typeIcon}${escapeHTML(profile.name)}</div></div>`;
                 if (chat.unread > 0) { let badge = document.createElement('span'); badge.className = 'unread-badge'; badge.innerText = chat.unread > 99 ? '99+' : chat.unread; item.appendChild(badge); }
                 if (chat.isArchived && archivedChatsList) { archivedCount++; archivedChatsList.appendChild(item); } 
                 else chatList.appendChild(item);
@@ -929,8 +1008,7 @@
         function globalSearch() {
             const term = document.getElementById('searchInput').value.toLowerCase();
             if (term.length < 2) { renderChatList(); return; }
-            document.querySelectorAll('.chat-item').forEach(item => { item.style.display = 'flex'; }); // показываем все
-            // поиск по сообщениям
+            document.querySelectorAll('.chat-item').forEach(item => { item.style.display = 'flex'; });
             if (currentChatId) {
                 const history = JSON.parse(localStorage.getItem(getChatKey())) || [];
                 const chatDiv = document.getElementById('chat');
@@ -951,6 +1029,12 @@
             openChat(newId, 'user');
         }
         function openChat(targetId, type) {
+            if (bannedUsers.includes(USER)) { alert("Вы забанены администратором."); return; }
+            let channel = channels.find(c => c.id === targetId);
+            if (channel && !channel.subscribers.includes(USER) && channel.admin !== USER) {
+                if (confirm("Вы не подписаны на этот канал. Подписаться?")) subscribeToChannel(targetId);
+                else return;
+            }
             currentChatId = targetId; currentChatType = type || 'user';
             markChatAsRead(targetId);
             renderChatList();
@@ -960,7 +1044,11 @@
             if (profile.avatar) { headerAvatar.style.backgroundImage = `url('${escapeHTML(profile.avatar)}')`; headerAvatar.innerText = ''; } 
             else { headerAvatar.style.backgroundImage = 'none'; headerAvatar.innerText = profile.name ? profile.name.charAt(0).toUpperCase() : '?'; }
             document.getElementById('noChatOverlay').style.display = 'none';
+            document.getElementById('chatTypeInfo').style.display = profile.type === 'channel' ? 'inline-block' : 'none';
+            document.getElementById('chatTypeInfo').innerText = profile.type === 'channel' ? 'Канал' : '';
             loadMessages(); document.body.classList.add('chat-open');
+            // Онлайн статус симуляция
+            document.getElementById('onlineStatus').style.display = 'inline-block';
         }
         function closeChatMobile() { document.body.classList.remove('chat-open'); currentChatId = null; renderChatList(); document.getElementById('noChatOverlay').style.display = 'flex'; }
         function deleteCurrentChat() {
@@ -992,6 +1080,7 @@
             if (list.style.display === 'none') list.style.display = 'block';
             else list.style.display = 'none';
         }
+        function toggleNotifications() { notificationsEnabled = !notificationsEnabled; alert(`Уведомления ${notificationsEnabled ? 'включены' : 'выключены'}`); }
         function autoGrowTextarea(element) {
             element.style.height = '5px'; element.style.height = (element.scrollHeight) + 'px';
             const sendIcon = document.getElementById('sendIcon'); const micIcon = document.getElementById('micIcon');
@@ -1007,23 +1096,39 @@
         }
         function sendDirectMessage(text, replyData = null) {
             if (!currentChatId) return;
+            let profile = getProfileData(currentChatId);
+            if (profile.type === 'channel' && profile.admin !== USER && !text.startsWith('[gift]')) { alert("Только администратор канала может писать сообщения."); return; }
             const key = getChatKey();
             let history = JSON.parse(localStorage.getItem(key)) || [];
-            let msgObj = { id: 'msg_' + Date.now(), sender: USER, text: text, timestamp: Date.now(), read: false, edited: false, deleted: false };
+            let msgObj = { id: 'msg_' + Date.now(), sender: USER, text: text, timestamp: Date.now(), read: false, edited: false, deleted: false, reactions: {} };
             if (replyData) msgObj.replyTo = { id: replyData.id, text: replyData.text, sender: replyData.sender };
             history.push(msgObj); localStorage.setItem(key, JSON.stringify(history));
-            // увеличиваем unread для собеседника (симуляция)
             let chats = JSON.parse(localStorage.getItem('auraChats_' + USER)) || [];
             let chatIndex = chats.findIndex(c => c.id === currentChatId);
             if (chatIndex !== -1) { let chatItem = chats.splice(chatIndex, 1)[0]; chatItem.unread = 0; chats.unshift(chatItem); }
             else { chats.unshift({ id: currentChatId, unread: 0, isArchived: false }); }
             localStorage.setItem('auraChats_' + USER, JSON.stringify(chats));
             renderChatList(); loadMessages();
+            if (notificationsEnabled && currentChatId !== USER) alert(`Новое сообщение в ${profile.name}`);
+        }
+        function sendVoiceMessage(event) {
+            const file = event.target.files[0];
+            if (file && currentChatId) {
+                const reader = new FileReader();
+                reader.onload = e => sendDirectMessage(`[voice]${e.target.result}`);
+                reader.readAsDataURL(file);
+            }
+            event.target.value = '';
         }
         function loadMessages() {
             const chatDiv = document.getElementById('chat'); chatDiv.innerHTML = '';
             if (!currentChatId) return;
             const history = JSON.parse(localStorage.getItem(getChatKey())) || [];
+            if (pinnedMessage) {
+                let pinDiv = document.createElement('div'); pinDiv.className = 'pinned-message';
+                pinDiv.innerHTML = `📌 Закреплено: ${escapeHTML(pinnedMessage.text.substring(0, 100))} <span style="float:right;" onclick="scrollToMessage('${pinnedMessage.id}')">↗️</span>`;
+                chatDiv.appendChild(pinDiv);
+            }
             history.forEach(msg => renderMsg(msg, false));
             chatDiv.scrollTop = chatDiv.scrollHeight;
         }
@@ -1045,6 +1150,7 @@
             if (msgObj.replyTo) { contentHtml += `<div class="reply-preview">↳ Ответ: ${escapeHTML(msgObj.replyTo.text.substring(0, 50))}</div>`; }
             let msgText = escapeHTML(msgObj.text);
             if (msgObj.text.startsWith('[img]')) msgText = `<img src="${escapeHTML(msgObj.text.replace('[img]', ''))}" style="max-width: 100%; border-radius: 10px;">`;
+            else if (msgObj.text.startsWith('[voice]')) msgText = `<div class="voice-message"><span class="voice-play">🎤</span> <audio controls src="${escapeHTML(msgObj.text.replace('[voice]', ''))}" style="max-width: 180px;"></audio></div>`;
             else if (msgObj.text.startsWith('[gift]')) {
                 let parts = msgObj.text.replace('[gift]', '').split('|');
                 msgText = `<div class="msg-gift"><div class="msg-gift-icon">🎁</div><div class="msg-gift-title">NFT Asset</div><div style="font-size:0.7rem;">${escapeHTML(parts[0])}</div></div>`;
@@ -1053,7 +1159,15 @@
                 msgText = `<div class="event-block"><div class="event-icon">📅</div><div class="event-info"><div class="event-title">${escapeHTML(ev.title)}</div><div class="event-date">${ev.date}</div><div class="event-desc" style="font-size:0.8rem;">${escapeHTML(ev.desc)}</div></div></div>`;
             }
             if (msgObj.edited) msgText += ` <span style="font-size:0.7rem; opacity:0.6;">(изменено)</span>`;
-            container.innerHTML = `<div class="msg-bubble">${contentHtml}${msgText}<div class="msg-meta"><span>${timeStr}</span></div></div>`;
+            let reactionsHtml = '';
+            if (msgObj.reactions) {
+                reactionsHtml = `<div class="reactions">`;
+                for (let [emoji, users] of Object.entries(msgObj.reactions)) {
+                    reactionsHtml += `<span class="reaction" onclick="addReaction('${emoji}', '${msgObj.id}')">${emoji} ${users.length}</span>`;
+                }
+                reactionsHtml += `</div>`;
+            }
+            container.innerHTML = `<div class="msg-bubble">${contentHtml}${msgText}${reactionsHtml}<div class="msg-meta"><span>${timeStr}</span></div></div>`;
             chatDiv.appendChild(container);
             if (isLocalAdd) chatDiv.scrollTo({ top: chatDiv.scrollHeight, behavior: 'smooth' });
         }
@@ -1122,6 +1236,36 @@
             }
             document.getElementById('messageContextMenu').classList.remove('active');
         }
+        function deleteForEveryone() {
+            if (!contextMessageId || !currentChatId) return;
+            const key = getChatKey(); let history = JSON.parse(localStorage.getItem(key)) || [];
+            let index = history.findIndex(m => m.id === contextMessageId);
+            if (index !== -1 && history[index].sender === USER) {
+                history[index].deleted = true;
+                localStorage.setItem(key, JSON.stringify(history));
+                loadMessages();
+                alert("Сообщение удалено у всех.");
+            } else alert("Нельзя удалить чужие сообщения для всех.");
+            document.getElementById('messageContextMenu').classList.remove('active');
+        }
+        function pinMessage() {
+            const key = getChatKey(); let history = JSON.parse(localStorage.getItem(key)) || [];
+            let msg = history.find(m => m.id === contextMessageId);
+            if (msg) { pinnedMessage = msg; loadMessages(); alert("Сообщение закреплено."); }
+            document.getElementById('messageContextMenu').classList.remove('active');
+        }
+        function addReaction(emoji, msgId = contextMessageId) {
+            const key = getChatKey(); let history = JSON.parse(localStorage.getItem(key)) || [];
+            let msg = history.find(m => m.id === msgId);
+            if (msg) {
+                if (!msg.reactions) msg.reactions = {};
+                if (!msg.reactions[emoji]) msg.reactions[emoji] = [];
+                if (!msg.reactions[emoji].includes(USER)) msg.reactions[emoji].push(USER);
+                localStorage.setItem(key, JSON.stringify(history));
+                loadMessages();
+            }
+            document.getElementById('messageContextMenu').classList.remove('active');
+        }
         function handleFileUpload(event) {
             const file = event.target.files[0];
             if (!file || !currentChatId) return;
@@ -1161,7 +1305,7 @@
             closeModal('eventModal'); document.getElementById('eventTitle').value = ''; document.getElementById('eventDatetime').value = ''; document.getElementById('eventDesc').value = '';
         }
 
-        // ---------- Очистка кэша (удаление base64 изображений) ----------
+        // ---------- Очистка кэша ----------
         function clearMediaCache() {
             if (!confirm("Очистить все изображения из сообщений? Текст сохранится.")) return;
             let chats = JSON.parse(localStorage.getItem('auraChats_' + USER)) || [];
@@ -1179,7 +1323,7 @@
             alert("Кэш медиа очищен.");
         }
 
-        // ---------- WebRTC вызов (демо) ----------
+        // ---------- WebRTC вызов ----------
         async function startCall(event) {
             if (event) event.stopPropagation();
             if (!currentChatId) return;
@@ -1197,8 +1341,8 @@
 
         // ---------- Настройки ----------
         function openSettingsTab(tabId, btn) {
-            document.getElementById('settingsProfile').style.display = 'none'; document.getElementById('settingsDesign').style.display = 'none'; document.getElementById('settingsData').style.display = 'none';
-            document.getElementById('tabBtnProfile').style.borderColor = 'transparent'; document.getElementById('tabBtnDesign').style.borderColor = 'transparent'; document.getElementById('tabBtnData').style.borderColor = 'transparent';
+            document.getElementById('settingsProfile').style.display = 'none'; document.getElementById('settingsDesign').style.display = 'none'; document.getElementById('settingsData').style.display = 'none'; document.getElementById('settingsAdmin').style.display = 'none';
+            document.getElementById('tabBtnProfile').style.borderColor = 'transparent'; document.getElementById('tabBtnDesign').style.borderColor = 'transparent'; document.getElementById('tabBtnData').style.borderColor = 'transparent'; document.getElementById('tabBtnAdmin').style.borderColor = 'transparent';
             document.getElementById(tabId).style.display = 'block'; btn.style.borderColor = 'var(--accent)'; btn.style.color = 'var(--accent)';
         }
         function loadProfileToSettings() {
@@ -1224,6 +1368,31 @@
         function changeThemeColor() { localSettings.color = document.getElementById('themeColor').value; document.documentElement.style.setProperty('--accent', localSettings.color); localStorage.setItem('auraSettings', JSON.stringify(localSettings)); }
         function setWallpaper(val, el) { localSettings.wallpaper = val; document.documentElement.style.setProperty('--chat-wallpaper', val); localStorage.setItem('auraSettings', JSON.stringify(localSettings)); document.querySelectorAll('.wp-option').forEach(w => w.classList.remove('active')); if (el) el.classList.add('active'); }
         function fullAppReset() { if (confirm(DICT.ru.resetApp)) { localStorage.removeItem('auraUser'); location.reload(); } }
+
+        // ---------- Админ-панель ----------
+        function adminAddBalance() {
+            let userId = document.getElementById('adminUserId').value.trim();
+            let amount = parseInt(document.getElementById('adminAmount').value);
+            if (!userId || isNaN(amount)) return;
+            let profile = getProfileData(userId);
+            if (profile) { profile.balance = (profile.balance || 0) + amount; localStorage.setItem('auraProfile_' + userId, JSON.stringify(profile)); alert(`Выдано ${amount} AUR пользователю ${userId}`); }
+        }
+        function adminBroadcast() {
+            let msg = document.getElementById('adminBroadcastMsg').value.trim();
+            if (!msg) return;
+            let chats = JSON.parse(localStorage.getItem('auraChats_' + USER)) || [];
+            for (let chat of chats) {
+                let key = getChatKey(chat.id);
+                let history = JSON.parse(localStorage.getItem(key)) || [];
+                history.push({ id: 'msg_' + Date.now() + Math.random(), sender: 'system', text: `[Рассылка] ${msg}`, timestamp: Date.now(), read: false });
+                localStorage.setItem(key, JSON.stringify(history));
+            }
+            alert("Рассылка отправлена всем чатам.");
+        }
+        function adminBan() {
+            let userId = document.getElementById('adminBanUser').value.trim();
+            if (userId && !bannedUsers.includes(userId)) { bannedUsers.push(userId); localStorage.setItem('auraBanned', JSON.stringify(bannedUsers)); alert(`Пользователь ${userId} забанен.`); }
+        }
 
         // ---------- Магазин и пополнение ----------
         function openStoreModal() {
@@ -1256,7 +1425,7 @@
             localStorage.setItem('auraProfile_' + USER, JSON.stringify(profile)); updateBalanceUI(); alert(`Начислено ${formatBalance(amount * 100)} AUR.`); closeModal('topupModal'); document.getElementById('topupAmount').value = '';
         }
 
-        // ---------- Админ-панель ----------
+        // ---------- Секретная админ-панель (5 кликов по балансу) ----------
         let balanceClickCount = 0, balanceClickTimer;
         document.getElementById('desktopHeaderBalance')?.addEventListener('click', function(e) {
             e.stopPropagation(); balanceClickCount++; clearTimeout(balanceClickTimer);
@@ -1276,7 +1445,6 @@
                 let profile = getProfileData(USER); profile.balance += parseInt(giftData[0]);
                 localStorage.setItem('auraProfile_' + USER, JSON.stringify(profile)); updateBalanceUI(); alert("Начислено.");
             } else {
-                // создать чат если нет
                 let chats = JSON.parse(localStorage.getItem('auraChats_' + USER)) || [];
                 if (!chats.find(c => c.id === targetUser)) chats.unshift({ id: targetUser, unread: 0, isArchived: false });
                 localStorage.setItem('auraChats_' + USER, JSON.stringify(chats));
