@@ -4,1273 +4,531 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0d0f12">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Aura Messenger | Enterprise Edition</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
+    <title>Aura Messenger | Enterprise</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* ==========================================================================
-           [1] ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ И ТЕМИЗАЦИЯ (4 ТЕМЫ)
+           ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ И ТЕМИЗАЦИЯ
            ========================================================================== */
         :root {
-            --bg-main: linear-gradient(135deg, #0d0f12 0%, #1a1b26 100%);
-            --glass-bg: rgba(25, 26, 35, 0.65);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            --bg-sidebar: rgba(20, 21, 30, 0.75);
-            --bg-element: rgba(40, 42, 54, 0.85);
-            --bg-hover: rgba(255, 255, 255, 0.08);
-            --bg-active: rgba(255, 255, 255, 0.12);
-            --accent: #00d2ff;
-            --accent-glow: rgba(0, 210, 255, 0.6);
-            --accent-gradient: linear-gradient(135deg, #00d2ff, #3a7bd5);
-            --accent-gradient-hover: linear-gradient(135deg, #3a7bd5, #00d2ff);
+            --bg-main: #0d0f12;
+            --glass-bg: rgba(25, 26, 35, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.05);
             --text-main: #ffffff;
-            --text-muted: #a0aabf;
-            --text-inverse: #111111;
-            --danger: #ff4a4a;
-            --danger-glow: rgba(255, 74, 74, 0.5);
+            --text-muted: #8b8d96;
+            --accent: #00d2ff;
+            --accent-glow: rgba(0, 210, 255, 0.3);
+            --danger: #ff3b3b;
             --success: #00e676;
-            --success-glow: rgba(0, 230, 118, 0.5);
-            --warning: #ffb74d;
-            --gold: #ffd700;
-            --gold-glow: rgba(255, 215, 0, 0.6);
-            --premium-gradient: linear-gradient(135deg, #ffd700, #ff8c00);
-            --transition-fast: 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
-            --transition-normal: 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
-            --transition-slow: 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
-            --chat-wallpaper: none;
-            --gift-bg: rgba(26, 26, 36, 0.9);
-            --gift-text: #ffffff;
-            --gift-border: rgba(255, 255, 255, 0.1);
-            --sidebar-width: 360px;
-            --header-height: 70px;
-            --input-area-height: 80px;
-            --border-radius-sm: 8px;
-            --border-radius-md: 16px;
-            --border-radius-lg: 24px;
-            --border-radius-xl: 32px;
-            --z-splash: 100000;
-            --z-modal: 10000;
-            --z-tooltip: 5000;
-            --z-header: 100;
-            --z-sidebar: 50;
+            --msg-out: rgba(0, 210, 255, 0.15);
+            --msg-in: rgba(255, 255, 255, 0.05);
+            --font-family: 'Inter', sans-serif;
         }
 
         [data-theme="light"] {
-            --bg-main: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
-            --glass-bg: rgba(255, 255, 255, 0.85);
-            --glass-border: rgba(0, 0, 0, 0.08);
-            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-            --bg-sidebar: rgba(255, 255, 255, 0.9);
-            --bg-element: rgba(240, 244, 248, 0.95);
-            --bg-hover: rgba(0, 0, 0, 0.05);
-            --bg-active: rgba(0, 0, 0, 0.08);
-            --text-main: #102a43; 
-            --text-muted: #627d98; 
-            --text-inverse: #ffffff;
-            --gift-bg: rgba(255, 255, 255, 0.95);
-            --gift-text: #102a43;
-            --gift-border: rgba(0, 0, 0, 0.1);
+            --bg-main: #f0f2f5;
+            --glass-bg: rgba(255, 255, 255, 0.8);
+            --glass-border: rgba(0, 0, 0, 0.05);
+            --text-main: #1a1b26;
+            --text-muted: #6b7280;
+            --msg-out: rgba(0, 210, 255, 0.2);
+            --msg-in: #ffffff;
         }
 
-        [data-theme="amoled"] {
-            --bg-main: #000000;
-            --glass-bg: rgba(10, 10, 10, 0.8);
-            --bg-sidebar: #000000;
-            --bg-element: #111111;
-            --glass-border: rgba(255, 255, 255, 0.05);
-        }
-
-        [data-theme="cyberpunk"] {
-            --bg-main: linear-gradient(135deg, #fcee0a 0%, #ff003c 100%);
-            --glass-bg: rgba(20, 20, 20, 0.9);
-            --bg-sidebar: rgba(10, 10, 10, 0.95);
-            --bg-element: rgba(30, 30, 30, 0.9);
-            --glass-border: #00ff00;
-            --accent: #00ff00;
-            --accent-glow: rgba(0, 255, 0, 0.8);
-            --accent-gradient: linear-gradient(135deg, #00ff00, #00ffff);
-            --text-main: #fcee0a;
-            --text-muted: #ff003c;
-        }
-
-        /* ==========================================================================
-           [2] БАЗОВЫЙ СБРОС И ТИПОГРАФИКА
-           ========================================================================== */
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        html { font-size: 16px; scroll-behavior: smooth; }
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: var(--bg-main); color: var(--text-main); height: 100vh; height: 100dvh; display: flex;
-            overflow: hidden; position: relative; transition: background var(--transition-slow), color var(--transition-slow);
-            line-height: 1.5; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
-        }
-        svg { display: inline-block; vertical-align: middle; transition: var(--transition-fast); }
-        button, input, textarea, select { font-family: inherit; color: inherit; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: var(--font-family); -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg-main); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; transition: background 0.3s ease; }
+        
+        /* Скроллбары */
+        ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(150, 150, 150, 0.2); border-radius: 10px; transition: var(--transition-fast); }
-        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
-        ::selection { background: var(--accent); color: var(--text-inverse); }
+        ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
 
         /* ==========================================================================
-           [3] АНИМАЦИИ (KEYFRAMES)
+           АВТОРИЗАЦИЯ И СПЛЭШ
            ========================================================================== */
-        @keyframes drawLogo {
-            0% { opacity: 0; transform: scale(0.3) rotate(-10deg); box-shadow: 0 0 0 transparent; }
-            70% { transform: scale(1.05) rotate(3deg); }
-            100% { opacity: 1; transform: scale(1) rotate(0deg); box-shadow: 0 0 40px var(--accent-glow); }
-        }
-        @keyframes pulseLogo {
-            0% { transform: scale(1); box-shadow: 0 0 40px var(--accent-glow); filter: hue-rotate(0deg); }
-            100% { transform: scale(1.05); box-shadow: 0 0 80px var(--accent-glow); filter: hue-rotate(15deg); }
-        }
-        @keyframes slideUpFade {
-            0% { opacity: 0; transform: translateY(20px) scale(0.95); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        @keyframes floatPremiumNFT {
-            0%, 100% { transform: translateY(0) scale(1.1); filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); }
-            50% { transform: translateY(-15px) scale(1.15); filter: drop-shadow(0 25px 30px rgba(0,0,0,0.6)); }
-        }
-        @keyframes rotateGlowBackground {
-            0% { transform: rotate(0deg) scale(1.5); }
-            100% { transform: rotate(360deg) scale(1.5); }
-        }
+        #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-main); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.5s ease; }
+        .logo-text { font-size: 3rem; font-weight: 800; background: linear-gradient(135deg, var(--text-main), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; margin-bottom: 20px; }
+        .progress-container { width: 200px; height: 4px; background: var(--glass-border); border-radius: 2px; overflow: hidden; }
+        .progress-bar { height: 100%; width: 0%; background: var(--accent); box-shadow: 0 0 10px var(--accent-glow); transition: width 1s ease; }
+
+        .auth-container { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-main); z-index: 9998; justify-content: center; align-items: center; }
+        .auth-box { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); padding: 40px; border-radius: 24px; width: 90%; max-width: 400px; text-align: center; }
+        .auth-input { width: 100%; padding: 15px; margin: 10px 0; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); border-radius: 12px; color: var(--text-main); font-size: 1rem; outline: none; transition: border-color 0.3s; }
+        .auth-input:focus { border-color: var(--accent); }
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+        .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 4px 15px var(--accent-glow); }
+        .btn-primary:active { transform: scale(0.98); }
 
         /* ==========================================================================
-           [4] ЭКРАН ЗАГРУЗКИ (SPLASH)
+           ОСНОВНОЙ ЛЕЙАУТ
            ========================================================================== */
-        #splash {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0b0c10;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: var(--z-splash); transition: opacity 0.8s cubic-bezier(0.8, 0, 0.2, 1), visibility 0.8s; backdrop-filter: blur(20px);
+        #app { display: none; width: 100%; height: 100%; }
+        
+        /* ЛЕВАЯ ПАНЕЛЬ: СПИСОК ЧАТОВ И КАНАЛОВ */
+        .sidebar { width: 350px; background: var(--glass-bg); backdrop-filter: blur(10px); border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; }
+        .sidebar-header h2 { font-size: 1.5rem; font-weight: 700; }
+        .add-btn { background: var(--glass-border); border: none; color: var(--text-main); width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: flex; justify-content: center; align-items: center; transition: 0.2s; }
+        .add-btn:hover { background: var(--accent); color: #fff; }
+        
+        .search-bar { padding: 15px 20px; }
+        .search-input { width: 100%; padding: 12px 15px; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); border-radius: 10px; color: var(--text-main); outline: none; }
+        
+        .chat-list { flex: 1; overflow-y: auto; }
+        .chat-item { display: flex; align-items: center; padding: 15px 20px; cursor: pointer; transition: background 0.2s; border-bottom: 1px solid transparent; }
+        .chat-item:hover, .chat-item.active { background: var(--glass-border); }
+        .avatar { width: 50px; height: 50px; border-radius: 50%; background: var(--accent); display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1.2rem; color: #fff; margin-right: 15px; flex-shrink: 0; background-size: cover; background-position: center;}
+        .chat-info { flex: 1; overflow: hidden; }
+        .chat-name { font-weight: 600; font-size: 1.05rem; margin-bottom: 5px; display: flex; align-items: center; gap: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        .channel-badge { background: var(--accent); color: #fff; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; font-weight: bold;}
+        .chat-last-msg { color: var(--text-muted); font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* ПРАВАЯ ПАНЕЛЬ: ЧАТ / КАНАЛ */
+        .chat-area { flex: 1; display: flex; flex-direction: column; background: var(--bg-main); position: relative;}
+        .chat-header { padding: 15px 20px; background: var(--glass-bg); backdrop-filter: blur(10px); border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; z-index: 10;}
+        .chat-header-info { display: flex; align-items: center; }
+        .chat-header-actions { display: flex; gap: 10px; }
+        .action-btn { background: transparent; border: 1px solid var(--glass-border); color: var(--text-main); width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: flex; justify-content: center; align-items: center; transition: 0.2s; }
+        .action-btn:hover { background: var(--glass-border); color: var(--accent); }
+        
+        .messages-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .message { max-width: 70%; padding: 12px 16px; border-radius: 16px; font-size: 0.95rem; line-height: 1.4; position: relative; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .msg-out { align-self: flex-end; background: var(--msg-out); border-bottom-right-radius: 4px; border: 1px solid var(--glass-border); }
+        .msg-in { align-self: flex-start; background: var(--msg-in); border-bottom-left-radius: 4px; border: 1px solid var(--glass-border); }
+        .msg-system { align-self: center; background: rgba(0,0,0,0.3); color: var(--text-muted); font-size: 0.8rem; padding: 5px 15px; border-radius: 10px; max-width: 90%; text-align: center; border: 1px solid var(--glass-border);}
+        
+        .msg-time { display: block; font-size: 0.7rem; color: var(--text-muted); margin-top: 5px; text-align: right; }
+
+        .input-area { padding: 15px 20px; background: var(--glass-bg); border-top: 1px solid var(--glass-border); display: flex; gap: 10px; align-items: center; }
+        .msg-input { flex: 1; padding: 15px 20px; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); border-radius: 20px; color: var(--text-main); font-size: 1rem; outline: none; }
+        .send-btn { background: var(--accent); color: #fff; border: none; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; box-shadow: 0 4px 15px var(--accent-glow); transition: 0.2s;}
+        .send-btn:active { transform: scale(0.9); }
+
+        .read-only-banner { width: 100%; padding: 20px; text-align: center; color: var(--text-muted); background: var(--glass-bg); border-top: 1px solid var(--glass-border); font-size: 0.95rem; display: none; }
+
+        /* ==========================================================================
+           МОДАЛЬНЫЕ ОКНА И ЗВОНКИ
+           ========================================================================== */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 10000; justify-content: center; align-items: center; }
+        .modal-content { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; padding: 30px; width: 90%; max-width: 400px; }
+        .modal-title { font-size: 1.5rem; margin-bottom: 20px; font-weight: 600; text-align: center;}
+        
+        /* ИНТЕРФЕЙС ЗВОНКА */
+        #callModal { background: #0d0f12; }
+        .call-wrapper { display: flex; flex-direction: column; align-items: center; height: 100%; width: 100%; position: absolute; top:0; left:0; padding: 50px 20px; background: radial-gradient(circle at center, #1a1b26 0%, #0d0f12 100%);}
+        .call-avatar { width: 150px; height: 150px; border-radius: 50%; background: var(--glass-border); margin: 40px 0 20px; display: flex; justify-content: center; align-items: center; font-size: 4rem; position: relative; z-index: 2; background-size: cover;}
+        
+        /* Пульсация при звонке */
+        .call-avatar.ringing::before, .call-avatar.ringing::after {
+            content: ''; position: absolute; width: 100%; height: 100%; border-radius: 50%; background: var(--accent); opacity: 0.3; z-index: -1; animation: pulse 2s infinite ease-out;
         }
-        [data-theme="light"] #splash { background: #f0f4f8; }
-        .splash-logo {
-            width: 160px; height: 160px; background: url('KFC.jpg') no-repeat center/cover; background-color: var(--glass-bg);
-            opacity: 0; border-radius: var(--border-radius-xl); display: flex; justify-content: center; align-items: center;
-            animation: drawLogo 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, pulseLogo 2s ease-in-out 1.2s infinite alternate; position: relative;
+        .call-avatar.ringing::after { animation-delay: 1s; }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(2); opacity: 0; } }
+
+        .call-name { font-size: 2rem; font-weight: 700; margin-bottom: 10px; }
+        .call-status { font-size: 1rem; color: var(--text-muted); margin-bottom: auto;}
+        
+        .call-controls { display: flex; gap: 20px; margin-bottom: 40px; background: rgba(0,0,0,0.4); padding: 15px 30px; border-radius: 40px; border: 1px solid var(--glass-border);}
+        .ctrl-btn { width: 60px; height: 60px; border-radius: 50%; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; transition: 0.3s; color: white; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);}
+        .ctrl-btn.active { background: rgba(255,255,255,0.9); color: black; }
+        .ctrl-btn.end-call { background: var(--danger); box-shadow: 0 0 20px rgba(255, 59, 59, 0.4); }
+        .ctrl-btn.end-call:hover { background: #ff1a1a; }
+        
+        /* Мобильная адаптация */
+        @media (max-width: 768px) {
+            .sidebar { width: 100%; position: absolute; z-index: 100; transition: transform 0.3s; }
+            .sidebar.hidden { transform: translateX(-100%); }
+            .chat-area { width: 100%; }
+            .back-btn { display: flex !important; }
         }
-        .splash-logo::after {
-            content: ''; position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px; border-radius: inherit; border: 2px solid transparent;
-            background: linear-gradient(135deg, var(--accent), transparent) border-box; -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: destination-out; mask-composite: exclude; animation: rotateGlowBackground 4s linear infinite;
-        }
-        .splash-text {
-            margin-top: 40px; font-size: 2rem; font-weight: 900; letter-spacing: 4px; text-transform: uppercase;
-            background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            opacity: 0; animation: slideUpFade 1s cubic-bezier(0.25, 0.8, 0.25, 1) 0.5s forwards;
-        }
-        .splash-loader { margin-top: 20px; width: 200px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; position: relative; opacity: 0; animation: slideUpFade 1s forwards 0.8s; }
-        .splash-loader-bar { position: absolute; top: 0; left: 0; height: 100%; background: var(--accent-gradient); width: 0%; transition: width 0.3s ease; }
+        .back-btn { display: none; background: transparent; border: none; color: var(--text-main); font-size: 1.5rem; margin-right: 15px; cursor: pointer; }
 
-        /* ==========================================================================
-           [4.5] КАРКАС И СТРУКТУРА
-           ========================================================================== */
-        .sidebar { width: var(--sidebar-width); background: var(--bg-sidebar); border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; height: 100%; flex-shrink: 0; z-index: var(--z-sidebar); position: relative; backdrop-filter: blur(20px); }
-        .main-area { flex: 1; display: flex; flex-direction: column; position: relative; background: transparent; height: 100%; }
-        .sidebar-search { display: flex; align-items: center; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--glass-border); border-radius: var(--border-radius-md); padding: 8px 12px; gap: 8px; }
-        .sidebar-search input { background: transparent; border: none; outline: none; color: var(--text-main); width: 100%; }
-        .chat-list { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 5px; }
-        .chat-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: var(--border-radius-md); cursor: pointer; transition: var(--transition-fast); border: 1px solid transparent; }
-        .chat-item:hover, .chat-item.active { background: var(--bg-active); border-color: var(--glass-border); }
-        .avatar-mini { width: 46px; height: 46px; border-radius: 50%; background-color: var(--bg-element); background-size: cover; background-position: center; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 1.2rem; color: #fff; flex-shrink: 0; }
-        .chat-header { height: var(--header-height); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; background: var(--bg-sidebar); border-bottom: 1px solid var(--glass-border); backdrop-filter: blur(10px); z-index: var(--z-header); }
-        .chat-header-info { display: flex; align-items: center; gap: 12px; cursor: pointer; }
-        .chat-history { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; background-image: var(--chat-wallpaper); background-size: cover; background-position: center; }
-        .chat-input-area { min-height: var(--input-area-height); background: var(--bg-sidebar); border-top: 1px solid var(--glass-border); display: flex; align-items: flex-end; padding: 15px 20px; gap: 12px; backdrop-filter: blur(10px); }
-        .no-chat-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; background: var(--bg-main); z-index: 50; }
-
-        /* ==========================================================================
-           [5] БАЗОВЫЕ УТИЛИТЫ И КНОПКИ
-           ========================================================================== */
-        .glass-panel { background: var(--glass-bg); backdrop-filter: blur(16px); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); }
-        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 24px; border-radius: var(--border-radius-md); font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: var(--transition-fast); border: none; outline: none; position: relative; overflow: hidden; }
-        .btn-primary { background: var(--accent-gradient); color: #ffffff; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--accent-glow); background: var(--accent-gradient-hover); }
-        .btn-primary:active { transform: translateY(1px); }
-        .btn-outline { background: transparent; border: 2px solid var(--glass-border); color: var(--text-main); }
-        .btn-outline:hover { border-color: var(--accent); background: rgba(0, 210, 255, 0.05); color: var(--accent); }
-        .btn-danger { background: rgba(255, 74, 74, 0.1); color: var(--danger); border: 1px solid rgba(255, 74, 74, 0.3); }
-        .btn-danger:hover { background: var(--danger); color: #fff; box-shadow: 0 5px 20px var(--danger-glow); }
-        .icon-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-main); cursor: pointer; transition: var(--transition-fast); flex-shrink: 0; }
-        .icon-btn:hover { background: var(--accent); color: #ffffff; box-shadow: 0 0 15px var(--accent-glow); transform: scale(1.05) rotate(5deg); }
-        .chat-options-btn { width: 40px; height: 40px; border-radius: 50%; background: transparent; border: none; color: var(--text-muted); display: flex; justify-content: center; align-items: center; cursor: pointer; transition: var(--transition-fast); }
-        .chat-options-btn:hover { background: var(--bg-hover); color: var(--text-main); }
-        .aur-balance { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; background: rgba(255, 215, 0, 0.1); border: 1px solid var(--gold); color: var(--gold); font-weight: 800; cursor: pointer; transition: var(--transition-fast); }
-        .aur-balance:hover { background: rgba(255, 215, 0, 0.2); box-shadow: 0 0 15px var(--gold-glow); }
-
-        /* ==========================================================================
-           [6] СИСТЕМА ФОРМ И ИНПУТОВ
-           ========================================================================== */
-        .form-group { margin-bottom: 24px; width: 100%; position: relative; }
-        .form-group label { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; }
-        .input-wrapper { position: relative; display: flex; align-items: center; }
-        .input-icon { position: absolute; left: 16px; color: var(--text-muted); pointer-events: none; transition: var(--transition-fast); }
-        .custom-input { width: 100%; padding: 14px 20px; border-radius: var(--border-radius-md); background: rgba(0, 0, 0, 0.2); border: 2px solid var(--glass-border); color: var(--text-main); outline: none; font-size: 1rem; transition: var(--transition-fast); }
-        .custom-input.has-icon { padding-left: 48px; }
-        .custom-input:focus { border-color: var(--accent); background: rgba(0, 0, 0, 0.3); box-shadow: 0 0 15px rgba(0, 210, 255, 0.15); }
-        .custom-input:focus + .input-icon, .input-wrapper:focus-within .input-icon { color: var(--accent); }
-        select.custom-input { appearance: none; cursor: pointer; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a0aabf' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 15px center; background-size: 16px; }
-
-        /* ==========================================================================
-           [7] СТОРИС И СТАТУСЫ
-           ========================================================================== */
-        .stories-wrapper { padding: 15px 20px 10px; display: flex; gap: 16px; overflow-x: auto; border-bottom: 1px solid var(--glass-border); scrollbar-width: none; scroll-behavior: smooth; }
-        .stories-wrapper::-webkit-scrollbar { display: none; }
-        .story-item { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; flex-shrink: 0; width: 72px; transition: var(--transition-fast); }
-        .story-item:hover { transform: translateY(-3px); }
-        .story-ring { width: 68px; height: 68px; border-radius: 50%; padding: 3px; background: var(--accent-gradient); position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .story-avatar { width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--bg-sidebar); background-size: cover; background-position: center; background-color: var(--bg-element); display: flex; justify-content: center; align-items: center; font-weight: 800; color: #fff; }
-        .story-add-btn { position: absolute; bottom: -2px; right: -2px; width: 24px; height: 24px; background: var(--accent); border: 3px solid var(--bg-sidebar); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #fff; font-size: 14px; font-weight: bold; }
-        .story-name { font-size: 0.75rem; color: var(--text-main); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-
-        /* ==========================================================================
-           [8] ПРОДВИНУТЫЕ СООБЩЕНИЯ
-           ========================================================================== */
-        .msg-container { display: flex; flex-direction: column; margin-bottom: 18px; position: relative; max-width: 80%; animation: slideUpFade 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        .msg-container.sent { align-self: flex-end; align-items: flex-end; }
-        .msg-container.received { align-self: flex-start; align-items: flex-start; }
-        .msg-bubble { padding: 12px 16px; border-radius: 20px; font-size: 0.95rem; line-height: 1.5; word-wrap: break-word; position: relative; backdrop-filter: blur(10px); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .sent .msg-bubble { background: var(--accent-gradient); color: #fff; border-bottom-right-radius: 4px; box-shadow: 0 4px 15px var(--accent-glow); }
-        .received .msg-bubble { background: var(--bg-element); color: var(--text-main); border: 1px solid var(--glass-border); border-bottom-left-radius: 4px; }
-        .msg-meta { display: flex; align-items: center; gap: 5px; font-size: 0.7rem; margin-top: 4px; opacity: 0.7; padding: 0 5px; }
-        .sent .msg-meta { color: var(--text-muted); justify-content: flex-end; }
-        .received .msg-meta { color: var(--text-muted); justify-content: flex-start; }
-        .sent .msg-bubble .msg-meta { color: rgba(255,255,255,0.8); }
-
-        /* Подарки NFT в чате */
-        .msg-gift { display: flex; flex-direction: column; align-items: center; background: var(--bg-element); border: 1px solid var(--glass-border); border-radius: 20px; padding: 15px; min-width: 150px; text-align: center; }
-        .msg-gift.nft-glow { border-color: var(--gold); box-shadow: 0 0 20px var(--gold-glow); background: rgba(255, 215, 0, 0.1); }
-        .msg-gift-icon { font-size: 4rem; margin-bottom: 10px; }
-        .msg-gift-title { font-weight: 900; color: var(--text-main); font-size: 1.1rem; }
-
-        /* ==========================================================================
-           [9] ВСПЛЫВАЮЩИЕ 3D-МЕНЮ И МОДАЛКИ
-           ========================================================================== */
-        .context-menu { position: fixed; background: rgba(30, 32, 44, 0.85); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 8px; min-width: 220px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); z-index: 99999; opacity: 0; transform: scale(0.9) translateY(10px); transform-origin: top left; transition: opacity 0.2s, transform 0.2s; pointer-events: none; }
-        .context-menu.active { opacity: 1; transform: scale(1) translateY(0); pointer-events: all; }
-        .context-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: var(--text-main); font-size: 0.95rem; font-weight: 600; cursor: pointer; border-radius: 10px; transition: var(--transition-fast); }
-        .context-item:hover { background: rgba(255,255,255,0.1); transform: translateX(5px); }
-        .context-item.danger { color: var(--danger); }
-
-        .dropdown-menu { position: absolute; right: 20px; top: 60px; background: var(--bg-element); border: 1px solid var(--glass-border); border-radius: 12px; padding: 5px; z-index: 1000; display: none; flex-direction: column; gap: 2px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .dropdown-item { padding: 10px 15px; cursor: pointer; border-radius: 8px; transition: 0.2s; font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 10px; }
-        .dropdown-item:hover { background: var(--bg-hover); color: var(--accent); }
-
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: var(--z-modal); opacity: 0; transition: opacity var(--transition-normal); }
-        .modal-overlay.active { opacity: 1; display: flex; }
-        .modal { background: var(--bg-sidebar); border: 1px solid var(--glass-border); border-radius: var(--border-radius-lg); padding: 30px; width: 400px; max-width: 90vw; box-shadow: 0 20px 50px rgba(0,0,0,0.5); transform: scale(0.95); transition: transform var(--transition-normal); }
-        .modal-overlay.active .modal { transform: scale(1); }
-        .auth-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px; }
-        .auth-tab { flex: 1; text-align: center; font-weight: 800; color: var(--text-muted); cursor: pointer; padding: 10px; transition: 0.2s; border-radius: 10px; }
-        .auth-tab.active { color: var(--accent); background: rgba(0, 210, 255, 0.1); }
-        .gifts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; max-height: 50vh; overflow-y: auto; padding-right: 5px; }
-        .gift-card { background: var(--bg-element); border: 1px solid var(--glass-border); border-radius: 16px; padding: 15px 10px; text-align: center; cursor: pointer; transition: var(--transition-fast); display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .gift-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
-        .gift-card .icon-wrapper { font-size: 2.5rem; }
-        .nft-glow-card { border-color: var(--gold); background: rgba(255, 215, 0, 0.05); }
-
-        /* ==========================================================================
-           [10] АДАПТИВНОСТЬ И BOTTOM NAVIGATION BAR
-           ========================================================================== */
-        .mobile-nav { display: none; }
-        @media (max-width: 850px) {
-            .sidebar { position: absolute; top: 0; left: 0; width: 100%; height: calc(100vh - 65px); z-index: var(--z-sidebar); transition: transform var(--transition-normal); box-shadow: none; border-right: none; }
-            body.chat-open .sidebar { transform: translateX(-100%); }
-            .main-area { position: absolute; top: 0; left: 0; width: 100%; height: 100vh; z-index: var(--z-header); transform: translateX(100%); transition: transform var(--transition-normal); }
-            body.chat-open .main-area { transform: translateX(0); }
-            .mobile-back-btn { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: rgba(0,0,0,0.2); border: none; color: var(--text-main); margin-right: 10px; cursor: pointer; }
-            .mobile-nav { display: flex; position: fixed; bottom: 0; left: 0; width: 100%; height: 65px; background: var(--bg-sidebar); backdrop-filter: blur(20px); border-top: 1px solid var(--glass-border); z-index: 45; justify-content: space-around; align-items: center; padding-bottom: env(safe-area-inset-bottom); }
-            .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-muted); cursor: pointer; width: 25%; }
-            .nav-item.active { color: var(--accent); }
-            .nav-item svg { width: 24px; height: 24px; }
-            .nav-label { font-size: 0.65rem; font-weight: 700; }
-            .nav-badge { position: absolute; top: -5px; right: calc(50% - 15px); background: var(--danger); color: #fff; font-size: 0.6rem; font-weight: bold; padding: 2px 6px; border-radius: 10px; border: 2px solid var(--bg-sidebar); }
-            .modal { width: 100%; height: 100%; max-width: 100%; border-radius: 0; transform: translateY(100%); }
-            .modal-overlay.active .modal { transform: translateY(0); }
-            .msg-container { max-width: 90%; }
-        }
     </style>
 </head>
-
 <body>
+
     <div id="splash">
-        <div class="splash-logo"></div>
-        <div class="splash-text">AURA</div>
-        <div class="splash-loader"><div class="splash-loader-bar" id="splashBar"></div></div>
+        <div class="logo-text">AURA</div>
+        <div class="progress-container"><div class="progress-bar" id="splashBar"></div></div>
     </div>
 
-    <input type="file" id="storyInput" style="display: none;" accept="image/*" onchange="processStoryUpload(event)">
-
-    <aside class="sidebar" id="sidebar">
-        <div style="padding: 15px 20px 5px; display: flex; gap: 10px; align-items: center;">
-            <button class="icon-btn" onclick="openModal('settingsModal')" title="Настройки">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-            </button>
-            <div class="sidebar-search" style="flex: 1; padding: 0;">
-                <svg width="18" height="18" style="margin-left: 10px; color: var(--text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                <input type="text" id="searchInput" placeholder="Поиск (Глобальный...)" oninput="filterChats()">
-            </div>
+    <div class="auth-container" id="authModal">
+        <div class="auth-box">
+            <h2 style="margin-bottom: 20px; font-weight: 700;">Вход в систему</h2>
+            <input type="text" id="authUsername" class="auth-input" placeholder="Введите ваш Username" autocomplete="off">
+            <button class="btn btn-primary" onclick="login()">Продолжить</button>
         </div>
+    </div>
 
-        <div class="stories-wrapper" id="storiesContainer">
-            <div class="story-item" onclick="openAddStory()">
-                <div class="story-ring" style="background: var(--glass-bg); border: 1px dashed var(--text-muted);">
-                    <div class="story-avatar" id="myStoryAvatar" style="background-image: url('default.jpg');">+</div>
-                    <div class="story-add-btn">+</div>
+    <div id="app">
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Aura</h2>
+                <div>
+                    <button class="add-btn" onclick="openModal('createChannelModal')" title="Создать канал">📢</button>
                 </div>
-                <div class="story-name">Моя история</div>
             </div>
-        </div>
-
-        <div id="archiveFolderContainer" style="padding: 0 15px;">
-            <div id="archiveToggleBtn" class="chat-item" style="display:none; background: rgba(0,0,0,0.15); margin: 10px 0; border: 1px solid var(--glass-border);" onclick="toggleArchiveFolder()">
-                <div class="avatar-mini" style="background: var(--bg-element); color: var(--text-muted); width: 44px; height: 44px;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="Поиск чатов и каналов..." onkeyup="filterChats(this.value)">
+            </div>
+            <div class="chat-list" id="chatList">
                 </div>
-                <div style="flex: 1; font-weight: 800; color: var(--text-muted);">Архив</div>
-                <div id="archiveCountBadge" style="background: var(--glass-bg); padding: 2px 8px; border-radius: 10px; font-size: 0.8rem; font-weight: bold; margin-right: 10px;">0</div>
-                <svg id="archiveArrow" style="transition:0.3s; width:20px; height:20px; color:var(--text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-            <div id="archivedChatsList" style="display:none; padding-left: 10px; border-left: 2px solid rgba(255,255,255,0.05);"></div>
         </div>
 
-        <div class="chat-list" id="chatList"></div>
-        
-        <button class="icon-btn" onclick="openModal('addModal')" style="position: absolute; bottom: 80px; right: 20px; width: 56px; height: 56px; background: var(--accent-gradient); color: #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index: 10;">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-        </button>
-    </aside>
-
-    <nav class="mobile-nav" id="mobileNav">
-        <div class="nav-item active" onclick="switchNavTab('chats')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-            <span class="nav-label">Чаты</span>
-            <div class="nav-badge" id="totalUnreadBadge" style="display:none;">0</div>
-        </div>
-        <div class="nav-item" onclick="openModal('giftModal')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line></svg>
-            <span class="nav-label">Магазин</span>
-        </div>
-        <div class="nav-item" onclick="openModal('topupModal')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
-            <span class="nav-label">Кошелек</span>
-        </div>
-        <div class="nav-item" onclick="openModal('settingsModal')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            <span class="nav-label">Профиль</span>
-        </div>
-    </nav>
-
-    <main class="main-area" id="mainArea">
-        <div class="no-chat-overlay" id="noChatOverlay">
-            <div style="width: 120px; height: 120px; border-radius: 40px; background: var(--glass-bg); display: flex; justify-content: center; align-items: center; margin-bottom: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); border: 1px solid var(--glass-border);">
-                <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="url(#gradientAura)" stroke-width="1.5">
-                    <defs><linearGradient id="gradientAura" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00d2ff" /><stop offset="100%" stop-color="#3a7bd5" /></linearGradient></defs>
-                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-                    <polyline points="2 17 12 22 22 17"></polyline>
-                    <polyline points="2 12 12 17 22 12"></polyline>
-                </svg>
-            </div>
-            <h2 style="font-weight: 900; letter-spacing: 1px; margin-bottom: 10px; font-size: 1.8rem;">Aura Messenger</h2>
-            <p style="color: var(--text-muted); text-align: center; max-width: 350px; line-height: 1.6;">Выберите чат из списка слева, чтобы начать общение, или создайте новый.</p>
-            <button class="btn btn-primary" style="margin-top: 30px; padding: 15px 30px; border-radius: 30px;" onclick="openModal('addModal')">Создать чат</button>
-        </div>
-
-        <header class="chat-header">
-            <div class="chat-header-info" onclick="openViewProfile(event)">
-                <button class="mobile-back-btn" onclick="closeChatMobile(event)">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-                </button>
-                <div class="avatar-mini" id="currentChatAvatar" style="width: 46px; height: 46px; border: 2px solid var(--accent); position: relative;">
-                    A
-                </div>
-                <div style="display: flex; flex-direction: column;">
-                    <div style="font-weight: 800; font-size: 1.15rem; color: var(--text-main); line-height: 1.2;" id="currentChatName">Name</div>
-                    <div style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600; display: flex; gap: 8px; align-items: center; margin-top: 2px;">
-                        <span id="chatTypeInfo" style="display:none; background: rgba(0, 210, 255, 0.15); color: var(--accent); padding: 2px 6px; border-radius: 6px; font-size: 0.7rem; text-transform: uppercase; border: 1px solid rgba(0,210,255,0.3);"></span>
+        <div class="chat-area" id="chatArea" style="display: none;">
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <button class="back-btn" onclick="closeChat()">←</button>
+                    <div class="avatar" id="currentChatAvatar"></div>
+                    <div>
+                        <div class="chat-name" id="currentChatName">Name</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);" id="currentChatSubtext"></div>
                     </div>
+                </div>
+                <div class="chat-header-actions" id="chatActions">
+                    <button class="action-btn" onclick="initiateCall('audio')" title="Аудиозвонок">📞</button>
+                    <button class="action-btn" onclick="initiateCall('video')" title="Видеозвонок">📹</button>
                 </div>
             </div>
             
-            <div style="display: flex; gap: 5px; position: relative; align-items: center;">
-                <div class="aur-balance" onclick="openModal('topupModal')" style="margin-right: 15px; background: rgba(0,0,0,0.4); border-color: rgba(255,215,0,0.5);" id="desktopHeaderBalance">
-                    <span id="headerBalanceLabel">0</span> 
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8"></path><path d="M8 12h8"></path></svg>
+            <div class="messages-container" id="messagesContainer">
                 </div>
 
-                <button class="chat-options-btn" onclick="startCall(event)" title="Аудио/Видео звонок">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                </button>
-                <button class="chat-options-btn" onclick="openStoreModal()" title="Подарить НФТ">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
-                </button>
-                <button class="chat-options-btn" onclick="toggleChatMenu(event)">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
-                </button>
-                
-                <div id="chatDropdown" class="dropdown-menu">
-                    <div class="dropdown-item" onclick="deleteCurrentChat()">Удалить чат</div>
-                </div>
+            <div class="input-area" id="inputArea">
+                <input type="text" class="msg-input" id="messageInput" placeholder="Введите сообщение..." onkeypress="handleEnter(event)">
+                <button class="send-btn" onclick="sendMessage()">➤</button>
             </div>
-        </header>
+            <div class="read-only-banner" id="readOnlyBanner">
+                Вы являетесь подписчиком этого канала. Публикация доступна только администратору.
+            </div>
+        </div>
+    </div>
 
-        <div class="chat-history" id="chat"></div>
+    <div class="modal-overlay" id="createChannelModal">
+        <div class="modal-content">
+            <h3 class="modal-title">Создать канал</h3>
+            <input type="text" id="newChannelName" class="auth-input" placeholder="Название канала">
+            <input type="text" id="newChannelDesc" class="auth-input" placeholder="Описание (необязательно)">
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn" style="background: var(--glass-border); color: var(--text-main);" onclick="closeModal('createChannelModal')">Отмена</button>
+                <button class="btn btn-primary" onclick="createChannel()">Создать</button>
+            </div>
+        </div>
+    </div>
 
-        <div class="chat-input-area" id="chatInputArea">
-            <input type="file" id="fileInput" style="display: none;" onchange="handleFileUpload(event)" accept="image/*,video/*,audio/*,.pdf,.doc,.zip">
+    <div class="modal-overlay" id="callScreenModal" style="z-index: 100000;">
+        <div class="call-wrapper">
+            <div class="call-avatar ringing" id="callAvatarElem">A</div>
+            <div class="call-name" id="callNameElem">User</div>
+            <div class="call-status" id="callStatusElem">Установка соединения...</div>
             
-            <button class="icon-btn" onclick="document.getElementById('fileInput').click()" title="Прикрепить файл">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
-            </button>
-            
-            <div style="flex: 1; position: relative;">
-                <textarea id="msgText" class="custom-input" placeholder="Введите сообщение..." rows="1" style="resize: none; border-radius: 24px; padding-right: 45px; max-height: 120px; overflow-y: auto;" oninput="autoGrowTextarea(this)" onkeypress="handleKeyPress(event)"></textarea>
-                <button class="icon-btn" style="position: absolute; right: 5px; top: 5px; width: 34px; height: 34px; background: transparent; border: none; box-shadow: none; color: var(--text-muted);" title="Эмодзи">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
-                </button>
-            </div>
-
-            <button class="btn" id="mainSendBtn" onclick="send()" style="border-radius: 50%; width: 50px; height: 50px; padding: 0;">
-                <svg id="sendIcon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                <svg id="micIcon" style="display:none;" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
-            </button>
-        </div>
-    </main>
-
-    <div class="context-menu" id="messageContextMenu">
-        <div class="context-item" onclick="replyToMessage()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 10 20 15 15 20"></polyline><path d="M4 4v7a4 4 0 0 0 4 4h12"></path></svg> Ответить
-        </div>
-        <div class="context-item" onclick="copyMessageText()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Скопировать текст
-        </div>
-        <div class="context-item" onclick="forwardMessage()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 10 4 15 9 20"></polyline><path d="M20 4v7a4 4 0 0 1-4 4H4"></path></svg> Переслать
-        </div>
-        <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 5px 0;"></div>
-        <div class="context-item danger" onclick="deleteMessage()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> Удалить сообщение
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="viewProfileModal">
-        <div class="modal" style="text-align: center; width: 350px;">
-            <div id="vpAvatar" style="width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 15px; background-size: cover; background-position: center; background-color: var(--bg-element); display: flex; justify-content: center; align-items: center; font-size: 2.5rem; color: #fff; border: 3px solid var(--accent); box-shadow: 0 5px 15px rgba(0,0,0,0.3);"></div>
-            <h3 id="vpName" style="font-size: 1.5rem; font-weight: 900; margin-bottom: 5px;">Name</h3>
-            <p id="vpId" style="color: var(--accent); font-weight: bold; margin-bottom: 15px;">@id</p>
-            <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; border: 1px solid var(--glass-border); text-align: left; margin-bottom: 20px;">
-                <p style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px;">О себе</p>
-                <p id="vpBio" style="font-size: 0.95rem; line-height: 1.4;">Bio text</p>
-            </div>
-            <button class="btn btn-outline" style="width: 100%;" onclick="closeModal('viewProfileModal')">Закрыть</button>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="callContainer" style="background: rgba(10,10,10,0.95); z-index: 999999;">
-        <div style="width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative;">
-            <h2 id="callStatusText" style="margin-bottom: 20px; font-weight: 800; color: #fff; z-index: 2;">Подключение...</h2>
-            <div style="position: relative; width: 80%; max-width: 600px; height: 50vh; background: var(--bg-element); border-radius: 20px; overflow: hidden; border: 1px solid var(--glass-border); box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
-                <video id="remoteVideo" autoplay playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
-                <video id="localVideo" autoplay playsinline muted style="position: absolute; bottom: 20px; right: 20px; width: 120px; height: 160px; border-radius: 12px; object-fit: cover; border: 2px solid var(--accent); box-shadow: 0 5px 15px rgba(0,0,0,0.3);"></video>
-            </div>
-            <div style="margin-top: 30px; display: flex; gap: 20px; z-index: 2;">
-                <button class="icon-btn" style="background: var(--danger); color: #fff; width: 60px; height: 60px; border: none; box-shadow: 0 5px 20px rgba(255,74,74,0.5);" onclick="endCall()" title="Завершить звонок">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-3.33-2.67m-2.67-3.34a19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"></path><line x1="23" y1="1" x2="1" y2="23"></line></svg>
-                </button>
+            <div class="call-controls">
+                <button class="ctrl-btn" id="btnMic" onclick="toggleMic()">🎤</button>
+                <button class="ctrl-btn" id="btnVid" onclick="toggleVideo()">📹</button>
+                <button class="ctrl-btn end-call" onclick="endCall()">📴</button>
             </div>
         </div>
     </div>
-
-    <div class="modal-overlay" id="addModal">
-        <div class="modal">
-            <h3 style="margin-bottom: 20px; font-weight: 900; font-size: 1.4rem;">Создать новый чат</h3>
-            <div class="form-group">
-                <label>ID пользователя (Например: durov)</label>
-                <input type="text" id="newChatUserId" class="custom-input" placeholder="Введите уникальный ID">
-            </div>
-            <div style="display: flex; gap: 10px;">
-                <button class="btn btn-outline" style="flex: 1;" onclick="closeModal('addModal')">Отмена</button>
-                <button class="btn btn-primary" style="flex: 2;" onclick="createNewChat()">Начать общение</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="authModal">
-        <div class="modal" style="border: 1px solid var(--accent); box-shadow: 0 0 50px rgba(0, 210, 255, 0.2);">
-            <div style="text-align: center; margin-bottom: 25px;">
-                <div style="width: 80px; height: 80px; background: var(--accent-gradient); border-radius: 25px; display: inline-flex; justify-content: center; align-items: center; box-shadow: 0 10px 25px var(--accent-glow); margin-bottom: 15px;">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-                </div>
-                <h2 style="font-weight: 900; font-size: 1.8rem;">AURA</h2>
-                <p style="color: var(--text-muted); font-size: 0.9rem;">ENTERPRISE MESSENGER</p>
-            </div>
-
-            <div class="auth-tabs">
-                <div class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Вход</div>
-                <div class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">Регистрация</div>
-            </div>
-            
-            <div id="formLogin">
-                <div class="form-group">
-                    <label>ID Пользователя</label>
-                    <div class="input-wrapper">
-                        <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                        <input type="text" id="loginUsername" class="custom-input has-icon" placeholder="Например: admin" oninput="validateUsername(this)">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Пароль</label>
-                    <div class="input-wrapper">
-                        <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                        <input type="password" id="loginPassword" class="custom-input has-icon" placeholder="Ваш пароль">
-                    </div>
-                </div>
-                <button class="btn btn-primary" style="width: 100%; margin-top: 10px; padding: 16px; font-size: 1.1rem; border-radius: 20px;" onclick="processLogin()">Войти в систему</button>
-            </div>
-            
-            <div id="formRegister" style="display: none;">
-                <div style="display: flex; justify-content: center; margin-bottom: 25px;">
-                    <div style="width: 90px; height: 90px; border-radius: 50%; background: var(--bg-element); border: 2px dashed var(--accent); display: flex; justify-content: center; align-items: center; cursor: pointer; background-size: cover; background-position: center; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.2);" id="regAvatarDisplay" onclick="document.getElementById('regAvatarInput').click()">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
-                    </div>
-                    <input type="file" id="regAvatarInput" style="display: none;" accept="image/*" onchange="handleRegAvatar(event)">
-                </div>
-                <div class="form-group"><label>Отображаемое Имя</label><input type="text" class="custom-input" id="regName" placeholder="Ваше Имя / Никнейм"></div>
-                <div class="form-group">
-                    <label>Уникальный ID (@username)</label>
-                    <input type="text" class="custom-input" id="regUsername" placeholder="Только a-z, 0-9 и _" oninput="validateUsername(this); checkRegUsername()">
-                    <div id="regUsernameStatus" style="font-size: 0.8rem; margin-top: 5px; color: var(--text-muted); font-weight: bold;">Проверка...</div>
-                </div>
-                <div class="form-group"><label>Безопасный пароль</label><input type="password" class="custom-input" id="regPassword" placeholder="Минимум 4 символа"></div>
-                <button class="btn btn-primary" style="width: 100%; margin-top: 10px; padding: 16px; border-radius: 20px;" onclick="completeRegistration()">Создать аккаунт</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="giftModal">
-        <div class="modal" style="width: 600px; max-width: 95vw; background: rgba(20, 22, 30, 0.95); border: 1px solid rgba(255,215,0,0.2);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <div style="width: 40px; height: 40px; background: var(--premium-gradient); border-radius: 12px; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 15px var(--gold-glow);">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                    </div>
-                    <h3 style="font-size: 1.5rem; font-weight: 900; background: var(--premium-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">NFT Маркетплейс</h3>
-                </div>
-                <div class="aur-balance" onclick="closeModal('giftModal'); openModal('topupModal')" style="background: rgba(255,215,0,0.1); border: 1px solid var(--gold);">
-                    <span id="storeBalanceLabel" style="font-size: 1.1rem;">0</span> 
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8"></path><path d="M8 12h8"></path></svg>
-                </div>
-            </div>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px; line-height: 1.5;">Отправляйте уникальные цифровые активы. Премиум-коллекция имеет 3D-анимацию, левитацию и неоновое свечение в чате!</p>
-            <div class="gifts-grid" id="giftsGridContainer"></div>
-            <div style="margin-top: 20px;">
-                <button class="btn btn-outline" style="width: 100%; border-radius: 20px;" onclick="closeModal('giftModal')">Закрыть маркет</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="topupModal">
-        <div class="modal" style="width: 400px; text-align: center;">
-            <div style="width: 80px; height: 80px; background: rgba(255,215,0,0.1); border-radius: 25px; display: inline-flex; justify-content: center; align-items: center; margin: 0 auto 20px; box-shadow: 0 15px 35px rgba(255, 215, 0, 0.15); border: 2px solid rgba(255,215,0,0.4); position: relative; overflow: hidden;">
-                <div style="position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent); transform: skewX(-25deg); animation: shine 3s infinite;"></div>
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
-            </div>
-            <h3 style="font-size: 1.6rem; font-weight: 900; color: var(--gold); margin-bottom: 5px;">Aura Bank</h3>
-            <p style="color: var(--text-muted); font-size: 0.95rem;">Пополнение крипто-счета</p>
-            
-            <div style="background: rgba(0, 0, 0, 0.3); border-radius: 16px; padding: 15px; margin: 20px 0; border: 1px solid rgba(255,255,255,0.05);">
-                <div style="font-weight: 900; color: var(--accent); font-size: 1.1rem; margin-bottom: 5px;">КУРС КОНВЕРТАЦИИ</div>
-                <div style="display: flex; justify-content: space-between; color: var(--text-main); font-weight: bold; font-size: 0.9rem;">
-                    <span>1 USD</span><span>=</span><span>~100 AUR</span>
-                </div>
-            </div>
-            
-            <div class="form-group" style="text-align: left;">
-                <label>Сумма пополнения (в вашей валюте)</label>
-                <div class="input-wrapper">
-                    <span style="position: absolute; left: 20px; color: var(--gold); font-weight: bold; font-size: 1.2rem;">$</span>
-                    <input type="number" id="topupAmount" class="custom-input" style="padding-left: 45px; font-size: 1.2rem; font-weight: bold;" placeholder="100">
-                </div>
-            </div>
-            <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 20px;">*Симулятор оплаты. Начисляет тестовую валюту AUR.</p>
-            <div style="display: flex; gap: 10px;">
-                <button class="btn btn-outline" style="flex: 1;" onclick="closeModal('topupModal')">Отмена</button>
-                <button class="btn" style="flex: 2; background: var(--premium-gradient); color: #000; font-weight: 900; box-shadow: 0 5px 20px var(--gold-glow);" onclick="processTopUp()">ОПЛАТИТЬ</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="settingsModal">
-        <div class="modal" style="width: 550px; padding: 0; overflow: hidden;">
-            <div style="background: var(--bg-sidebar); padding: 25px 30px 0; border-bottom: 1px solid var(--glass-border);">
-                <h2 style="font-weight: 900; margin-bottom: 20px; font-size: 1.5rem;">Настройки Aura</h2>
-                <div style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: none;">
-                    <button class="btn btn-outline" style="border-radius: 20px; padding: 8px 16px; border-color: var(--accent); color: var(--accent);" id="tabBtnProfile" onclick="openSettingsTab('settingsProfile', this)">Профиль</button>
-                    <button class="btn btn-outline" style="border-radius: 20px; padding: 8px 16px; border-color: transparent;" id="tabBtnDesign" onclick="openSettingsTab('settingsDesign', this)">Дизайн</button>
-                    <button class="btn btn-outline" style="border-radius: 20px; padding: 8px 16px; border-color: transparent;" id="tabBtnData" onclick="openSettingsTab('settingsData', this)">Данные</button>
-                </div>
-            </div>
-            
-            <div style="padding: 30px; max-height: 60vh; overflow-y: auto;">
-                <div id="settingsProfile">
-                    <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 30px;">
-                        <label for="avatarUpload" style="cursor: pointer; position: relative; display: block;">
-                            <div class="avatar-mini" id="myViewAvatar" style="width: 120px; height: 120px; font-size: 3rem; border: 3px solid var(--accent); box-shadow: 0 10px 25px rgba(0,0,0,0.3);"></div>
-                            <div style="position: absolute; bottom: 0; right: 0; background: var(--accent-gradient); width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 3px solid var(--bg-sidebar); box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
-                            </div>
-                        </label>
-                        <input type="file" id="avatarUpload" style="display:none;" accept="image/*" onchange="previewAvatar(this)">
-                        <div style="margin-top: 15px; font-weight: 800; font-size: 1.2rem; color: var(--accent);" id="settingsDisplayId">@username</div>
-                    </div>
-                    <div class="form-group"><label>Отображаемое Имя</label><input type="text" class="custom-input" id="profileName"></div>
-                    <div class="form-group"><label>О себе (Био)</label><textarea class="custom-input" id="profileBio" rows="3" style="resize: none;" placeholder="Расскажите немного о себе..."></textarea></div>
-                </div>
-
-                <div id="settingsDesign" style="display: none;">
-                    <div class="form-group">
-                        <label>Тема Оформления</label>
-                        <select id="themeMode" class="custom-input" onchange="changeThemeMode()">
-                            <option value="dark">🌑 Aura Dark (Тёмная)</option>
-                            <option value="light">☀️ Aura Light (Светлая)</option>
-                            <option value="amoled">🖤 Pitch Black (AMOLED)</option>
-                            <option value="cyberpunk">👾 Cyberpunk (Неон)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Цвет Акцента (Интерфейс)</label>
-                        <div style="display: flex; gap: 15px; align-items: center;">
-                            <input type="color" id="themeColor" value="#00d2ff" onchange="changeThemeColor()" style="width: 50px; height: 50px; border-radius: 12px; cursor: pointer; border: none; background: transparent; padding: 0;">
-                            <div style="flex: 1; font-size: 0.85rem; color: var(--text-muted);">Измените основной цвет кнопок, свечений и сообщений.</div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Обои чата</label>
-                        <div class="wp-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-                            <div class="wp-option active" style="background:var(--bg-main); height: 100px; border-radius: 12px; cursor: pointer; border: 3px solid transparent;" onclick="setWallpaper('none', this)"></div>
-                            <div class="wp-option" style="background-image:url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=400'); background-size: cover; height: 100px; border-radius: 12px; cursor: pointer; border: 3px solid transparent;" onclick="setWallpaper('url(https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=800)', this)"></div>
-                            <div class="wp-option" style="background-image:url('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=400'); background-size: cover; height: 100px; border-radius: 12px; cursor: pointer; border: 3px solid transparent;" onclick="setWallpaper('url(https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=800)', this)"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="settingsData" style="display: none;">
-                    <div style="background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; margin-bottom: 20px;">
-                        <h4 style="margin-bottom: 10px; color: var(--text-main); font-size: 1rem;">Управление памятью</h4>
-                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px; line-height: 1.5;">Очистка кэша удалит загруженные медиафайлы, но сохранит текстовую историю сообщений. Это ускорит работу приложения.</p>
-                        <button class="btn btn-outline" style="width: 100%; border-color: var(--accent); color: var(--accent);" onclick="alert('Кэш медиафайлов успешно очищен!');">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> Очистить кэш
-                        </button>
-                    </div>
-                    <div style="background: rgba(255,74,74,0.1); border: 1px solid rgba(255,74,74,0.3); border-radius: 16px; padding: 20px;">
-                        <h4 style="margin-bottom: 10px; color: var(--danger); font-size: 1rem;">Опасная зона</h4>
-                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Выход из аккаунта потребует повторной авторизации по вашему ID и паролю.</p>
-                        <button class="btn btn-danger" style="width: 100%; font-weight: 800;" onclick="fullAppReset()">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg> Выйти из аккаунта
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <div style="padding: 20px 30px; border-top: 1px solid var(--glass-border); display: flex; justify-content: flex-end; gap: 15px; background: rgba(0,0,0,0.1);">
-                <button class="btn btn-outline" onclick="closeModal('settingsModal')">Отмена</button>
-                <button class="btn btn-primary" onclick="saveProfile()">Сохранить изменения</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="adminModal">
-        <div class="modal" style="width: 450px; border: 1px solid var(--danger); box-shadow: 0 0 40px rgba(255, 74, 74, 0.2);">
-            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 25px; color: var(--danger);">
-                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                <h3 style="font-size: 1.4rem; font-weight: 900; letter-spacing: 1px;">DEVELOPER PANEL</h3>
-            </div>
-            <div class="form-group">
-                <label>Получатель бесплатной НФТ</label>
-                <select id="adminTargetUser" class="custom-input"></select>
-            </div>
-            <div class="form-group">
-                <label>Выбрать Премиум НФТ</label>
-                <select id="adminGiftType" class="custom-input">
-                    <option value="1000|universe">🌌 Aura Universe (1тыс AUR)</option>
-                    <option value="100000|neon_bear">🧸 Neon Bear (100тыс AUR)</option>
-                    <option value="1250000|nft_founder">🏆 Founder Token (1.25млн AUR)</option>
-                    <option value="2000000|nft_matrix">🧿 Soul Matrix (2млн AUR)</option>
-                </select>
-            </div>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px;">* Внимание: отправка себе зачисляет эквивалент на баланс, отправка юзеру — генерирует сообщение.</p>
-            <div style="display: flex; gap: 10px;">
-                <button class="btn btn-outline" style="flex: 1;" onclick="closeModal('adminModal')">Скрыть</button>
-                <button class="btn btn-danger" style="flex: 2;" onclick="adminSendFreeGift()">Выполнить команду</button>
-            </div>
-        </div>
-    </div>
-
 
     <script>
-        /**
-         * AURA ENTERPRISE MESSENGER - FULL CORE LOGIC
-         * Версия: 2.1.0 (Completely Fixed & Restored)
-         */
-
-        let USER = localStorage.getItem('auraUser') || null;
-        let localSettings = JSON.parse(localStorage.getItem('auraSettings')) || { lang: 'ru', theme: 'dark', wallpaper: 'none', color: '#00d2ff' };
+        /* ==========================================================================
+           ЯДРО СИСТЕМЫ И СОСТОЯНИЯ (AURA ENTERPRISE ENGINE)
+           ========================================================================== */
+        let currentUser = null;
+        let activeChatId = null;
+        let callEngine = { active: false, timerInterval: null, seconds: 0 };
         
-        let currentChatId = null;
-        let currentChatType = 'user';
-        let contextMessageId = null;
-        let tempSettingsAvatar = null;
-        let localStream = null;
+        // База данных по умолчанию (для демонстрации)
+        const defaultDB = [
+            { id: 'dm_1', type: 'dm', name: 'Алексей (Разработчик)', avatarText: 'А', messages: [
+                { text: 'Привет! Зацени новую систему звонков.', sender: 'dm_1', time: '10:00' }
+            ]},
+            { id: 'chan_1', type: 'channel', name: 'Aura Updates', admin: 'system', avatarText: 'AU', subscribers: 1420, messages: [
+                { text: 'Добро пожаловать в Aura Enterprise! В этой версии интегрированы каналы и VoIP модуль.', sender: 'system', time: '09:00' }
+            ]}
+        ];
 
-        const DICT = {
-            ru: {
-                fav: "Избранное", optUser: "Пользователь", optGroup: "Группа", optChannel: "Канал", priceK: "тыс", priceM: "млн",
-                notEnoughAur: "Недостаточно средств (AUR)!", resetApp: "Вы уверены, что хотите выйти? Данные входа будут сброшены."
-            }
-        };
+        let chatsDB = [];
 
-        const auraGlobalUsers = [{ id: "durov", name: "Pavel Durov", bio: "Founder of Aura", avatar: "https://i.pravatar.cc/150?u=durov", type: "user" }];
-        const auraGlobalGroups = [{ id: "crypto_hub", name: "Crypto Trading Hub", bio: "Обсуждение NFT и крипты.", avatar: null, type: "group" }];
-
-        function escapeHTML(str) {
-            if (typeof str !== 'string') return str;
-            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
-        }
-
-        function formatBalance(num) {
-            if (num >= 1000000) return (num / 1000000).toFixed(2).replace(/\.00$/, '') + DICT.ru.priceM;
-            if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + DICT.ru.priceK;
-            return num;
-        }
-
-        /* --- UI & MODALS --- */
-        function openModal(id) {
-            const modal = document.getElementById(id);
-            if (modal) { modal.style.display = 'flex'; setTimeout(() => modal.classList.add('active'), 10); }
-            if (id === 'settingsModal') loadProfileToSettings();
-        }
-
-        function closeModal(id) {
-            const modal = document.getElementById(id);
-            if (modal) { modal.classList.remove('active'); setTimeout(() => modal.style.display = 'none', 400); }
-        }
-
-        function switchNavTab(tab) {
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-        }
-
-        function toggleChatMenu(event) {
-            if (event) event.stopPropagation();
-            const menu = document.getElementById('chatDropdown');
-            if (menu) menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
-        }
-
-        document.addEventListener('click', function(e) {
-            const menu = document.getElementById('chatDropdown');
-            if (menu && menu.style.display === 'flex' && !e.target.closest('.chat-options-btn') && !e.target.closest('.dropdown-menu')) {
-                menu.style.display = 'none';
-            }
-            const contextMenu = document.getElementById('messageContextMenu');
-            if (contextMenu && contextMenu.classList.contains('active') && !e.target.closest('.context-menu')) {
-                contextMenu.classList.remove('active');
-            }
+        /* ==========================================================================
+           ИНИЦИАЛИЗАЦИЯ И АВТОРИЗАЦИЯ
+           ========================================================================== */
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => { document.getElementById('splashBar').style.width = '100%'; }, 200);
+            setTimeout(() => {
+                document.getElementById('splash').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('splash').style.display = 'none';
+                    checkAuth();
+                }, 500);
+            }, 1200);
         });
 
-        /* --- AUTHENTICATION --- */
-        function switchAuthTab(tab) {
-            if (tab === 'login') {
-                document.getElementById('tabLogin').classList.add('active'); document.getElementById('tabRegister').classList.remove('active');
-                document.getElementById('formLogin').style.display = 'block'; document.getElementById('formRegister').style.display = 'none';
+        function checkAuth() {
+            const savedUser = localStorage.getItem('aura_enterprise_user');
+            if (savedUser) {
+                currentUser = savedUser;
+                loadDatabase();
+                launchApp();
             } else {
-                document.getElementById('tabRegister').classList.add('active'); document.getElementById('tabLogin').classList.remove('active');
-                document.getElementById('formRegister').style.display = 'block'; document.getElementById('formLogin').style.display = 'none';
+                document.getElementById('authModal').style.display = 'flex';
             }
         }
 
-        function validateUsername(input) { input.value = input.value.replace(/[^a-zA-Z0-9_]/g, '').toLowerCase(); }
-        
-        let tempRegAvatar = null;
-        function handleRegAvatar(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    tempRegAvatar = e.target.result;
-                    const display = document.getElementById('regAvatarDisplay');
-                    display.style.backgroundImage = `url(${tempRegAvatar})`;
-                    display.innerHTML = ''; display.style.border = '2px solid var(--accent)';
-                };
-                reader.readAsDataURL(file);
-            }
+        function login() {
+            const input = document.getElementById('authUsername').value.trim();
+            if (input.length < 2) return alert('Имя слишком короткое');
+            currentUser = input;
+            localStorage.setItem('aura_enterprise_user', currentUser);
+            document.getElementById('authModal').style.display = 'none';
+            loadDatabase();
+            launchApp();
         }
 
-        function checkRegUsername() {
-            const un = document.getElementById('regUsername').value;
-            const st = document.getElementById('regUsernameStatus');
-            if (un.length < 3) { st.innerText = "Слишком короткий"; st.style.color = "var(--danger)"; return false; }
-            if (localStorage.getItem('auraAuth_' + un)) { st.innerText = "Уже занят"; st.style.color = "var(--danger)"; return false; }
-            st.innerText = "Свободен (✓)"; st.style.color = "var(--success)"; return true;
-        }
-
-        function processLogin() {
-            const u = document.getElementById('loginUsername').value.trim();
-            const p = document.getElementById('loginPassword').value;
-            if (localStorage.getItem('auraAuth_' + u) === p) {
-                USER = u; localStorage.setItem('auraUser', USER);
-                closeModal('authModal'); startNormalApp();
-            } else alert("Ошибка: Неверный логин или пароль");
-        }
-
-        function completeRegistration() {
-            const name = document.getElementById('regName').value.trim();
-            const u = document.getElementById('regUsername').value.trim();
-            const p = document.getElementById('regPassword').value;
-            if (!name || !u || !p) { alert("Заполните все поля"); return; }
-            if (!checkRegUsername()) { alert("Придумайте другой ID"); return; }
-            
-            localStorage.setItem('auraAuth_' + u, p);
-            const newProfile = { name: name, bio: "Привет! Я в Aura Enterprise.", avatar: tempRegAvatar, balance: 100, type: 'user' };
-            localStorage.setItem('auraProfile_' + u, JSON.stringify(newProfile));
-            USER = u; localStorage.setItem('auraUser', USER);
-            localStorage.setItem('auraChats_' + USER, JSON.stringify([{ id: DICT.ru.fav, unread: 0, isArchived: false }]));
-            closeModal('authModal'); startNormalApp();
-        }
-
-        /* --- PROFILE & DATA --- */
-        function getProfileData(targetId) {
-            if (targetId === DICT.ru.fav) return { name: "Избранное", avatar: null, bio: "Ваши сохраненные сообщения", type: "user" };
-            let userProfile = JSON.parse(localStorage.getItem('auraProfile_' + targetId));
-            if (userProfile) return userProfile;
-            let globalU = auraGlobalUsers.find(u => u.id === targetId);
-            if(globalU) return globalU;
-            let globalG = auraGlobalGroups.find(g => g.id === targetId);
-            if(globalG) return globalG;
-            return { name: targetId, avatar: null, bio: "Нет описания", type: "user" };
-        }
-
-        function updateBalanceUI() {
-            let localProfile = JSON.parse(localStorage.getItem('auraProfile_' + USER)) || {};
-            localProfile.balance = parseInt(localProfile.balance) || 0;
-            const headerBalanceEl = document.getElementById('headerBalanceLabel');
-            if (headerBalanceEl) headerBalanceEl.innerText = formatBalance(localProfile.balance);
-            const storeBalanceEl = document.getElementById('storeBalanceLabel');
-            if (storeBalanceEl) storeBalanceEl.innerText = formatBalance(localProfile.balance);
-        }
-
-        function openViewProfile(event) {
-            if (event) event.stopPropagation();
-            if (!currentChatId) return;
-            const profile = getProfileData(currentChatId);
-            document.getElementById('vpName').innerText = profile.name;
-            document.getElementById('vpId').innerText = currentChatId === DICT.ru.fav ? '' : '@' + currentChatId;
-            document.getElementById('vpBio').innerText = profile.bio || 'Нет описания';
-            
-            const avatarEl = document.getElementById('vpAvatar');
-            if (profile.avatar) {
-                avatarEl.style.backgroundImage = `url('${escapeHTML(profile.avatar)}')`;
-                avatarEl.innerText = '';
+        function loadDatabase() {
+            const savedDB = localStorage.getItem(`aura_db_${currentUser}`);
+            if (savedDB) {
+                chatsDB = JSON.parse(savedDB);
             } else {
-                avatarEl.style.backgroundImage = 'none';
-                avatarEl.innerText = profile.name ? profile.name.charAt(0).toUpperCase() : '?';
-            }
-            openModal('viewProfileModal');
-        }
-
-        /* --- CHATS --- */
-        function renderChatList() {
-            const chatList = document.getElementById('chatList');
-            const archivedChatsList = document.getElementById('archivedChatsList');
-            const archiveToggleBtn = document.getElementById('archiveToggleBtn');
-            if (!chatList) return;
-            chatList.innerHTML = '';
-            if (archivedChatsList) archivedChatsList.innerHTML = '';
-            
-            let chats = JSON.parse(localStorage.getItem('auraChats_' + USER)) || [];
-            let archivedCount = 0;
-
-            chats.forEach(chat => {
-                let profile = getProfileData(chat.id);
-                let item = document.createElement('div');
-                item.className = 'chat-item';
-                if (chat.id === currentChatId) item.classList.add('active');
-                item.onclick = function() { openChat(chat.id, profile.type); };
-                
-                let avatarHtml = profile.avatar ? `<div class="avatar-mini" style="background-image: url('${escapeHTML(profile.avatar)}')"></div>` : `<div class="avatar-mini">${profile.name ? profile.name.charAt(0).toUpperCase() : '?'}</div>`;
-                item.innerHTML = `${avatarHtml}<div style="flex: 1; min-width: 0;"><div style="font-weight: 800; font-size: 1rem; color: var(--text-main);">${escapeHTML(profile.name)}</div></div>`;
-                
-                if (chat.isArchived && archivedChatsList) {
-                    archivedCount++;
-                    archivedChatsList.appendChild(item);
-                } else {
-                    chatList.appendChild(item);
-                }
-            });
-
-            if (archiveToggleBtn) {
-                archiveToggleBtn.style.display = archivedCount > 0 ? 'flex' : 'none';
-                document.getElementById('archiveCountBadge').innerText = archivedCount;
+                chatsDB = JSON.parse(JSON.stringify(defaultDB)); // глубокая копия
+                saveDatabase();
             }
         }
 
-        function filterChats() {
-            const term = document.getElementById('searchInput').value.toLowerCase();
-            document.querySelectorAll('.chat-item').forEach(item => {
-                const name = item.innerText.toLowerCase();
-                item.style.display = name.includes(term) ? 'flex' : 'none';
-            });
+        function saveDatabase() {
+            localStorage.setItem(`aura_db_${currentUser}`, JSON.stringify(chatsDB));
         }
 
-        function createNewChat() {
-            const newId = document.getElementById('newChatUserId').value.trim().toLowerCase();
-            if (!newId) return;
-            let chats = JSON.parse(localStorage.getItem('auraChats_' + USER)) || [];
-            if (!chats.find(c => c.id === newId)) {
-                chats.unshift({ id: newId, unread: 0, isArchived: false });
-                localStorage.setItem('auraChats_' + USER, JSON.stringify(chats));
-            }
-            closeModal('addModal');
-            document.getElementById('newChatUserId').value = '';
-            openChat(newId, 'user');
-        }
-
-        function openChat(targetId, type) {
-            currentChatId = targetId; currentChatType = type || 'user';
+        function launchApp() {
+            document.getElementById('app').style.display = 'flex';
             renderChatList();
-            let profile = getProfileData(targetId);
-            document.getElementById('currentChatName').innerText = profile.name;
-            const headerAvatar = document.getElementById('currentChatAvatar');
-            if (profile.avatar) { headerAvatar.style.backgroundImage = `url('${escapeHTML(profile.avatar)}')`; headerAvatar.innerText = ''; } 
-            else { headerAvatar.style.backgroundImage = 'none'; headerAvatar.innerText = profile.name ? profile.name.charAt(0).toUpperCase() : '?'; }
-            document.getElementById('noChatOverlay').style.display = 'none';
-            loadMessages(); document.body.classList.add('chat-open');
         }
 
-        function closeChatMobile() { document.body.classList.remove('chat-open'); currentChatId = null; renderChatList(); }
-        function getChatKey() { return currentChatId === DICT.ru.fav ? 'auraFav_' + USER : 'auraMsgs_' + [USER, currentChatId].sort().join('_'); }
-        function deleteCurrentChat() {
-            if (!currentChatId || !confirm("Удалить этот чат?")) return;
-            let chats = JSON.parse(localStorage.getItem('auraChats_' + USER)) || [];
-            chats = chats.filter(c => c.id !== currentChatId);
-            localStorage.setItem('auraChats_' + USER, JSON.stringify(chats));
-            localStorage.removeItem(getChatKey());
-            document.getElementById('chatDropdown').style.display = 'none';
-            closeChatMobile(); document.getElementById('chat').innerHTML = ''; document.getElementById('noChatOverlay').style.display = 'flex';
-        }
-        function toggleArchiveFolder() {
-            const list = document.getElementById('archivedChatsList');
-            if (list.style.display === 'none') { list.style.display = 'block'; } else { list.style.display = 'none'; }
-        }
-
-        /* --- MESSAGING --- */
-        function autoGrowTextarea(element) {
-            element.style.height = '5px'; element.style.height = (element.scrollHeight) + 'px';
-            const sendIcon = document.getElementById('sendIcon'); const micIcon = document.getElementById('micIcon');
-            if (element.value.trim().length > 0) {
-                sendIcon.style.display = 'block'; micIcon.style.display = 'none';
-                document.getElementById('mainSendBtn').style.background = 'var(--accent-gradient)'; document.getElementById('mainSendBtn').style.color = '#fff';
-            } else {
-                sendIcon.style.display = 'none'; micIcon.style.display = 'block';
-                document.getElementById('mainSendBtn').style.background = 'transparent'; document.getElementById('mainSendBtn').style.color = 'var(--text-muted)';
-            }
-        }
-
-        function handleKeyPress(event) { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); send(); } }
-
-        function send() {
-            const input = document.getElementById('msgText');
-            const text = input.value.trim();
-            if (text !== '') { sendDirectMessage(text); input.value = ''; autoGrowTextarea(input); }
-        }
-
-        function sendDirectMessage(text) {
-            if (!currentChatId) return;
-            const key = getChatKey();
-            let history = JSON.parse(localStorage.getItem(key)) || [];
-            const msgObj = { id: 'msg_' + Date.now(), sender: USER, text: text, timestamp: Date.now(), read: false };
-            history.push(msgObj); localStorage.setItem(key, JSON.stringify(history));
+        /* ==========================================================================
+           УПРАВЛЕНИЕ ЧАТАМИ И КАНАЛАМИ
+           ========================================================================== */
+        function renderChatList(filter = '') {
+            const list = document.getElementById('chatList');
+            list.innerHTML = '';
             
-            // Move chat to top
-            let chats = JSON.parse(localStorage.getItem('auraChats_' + USER)) || [];
-            let chatIndex = chats.findIndex(c => c.id === currentChatId);
-            if (chatIndex !== -1) { let chatItem = chats.splice(chatIndex, 1)[0]; chats.unshift(chatItem); } 
-            else { chats.unshift({ id: currentChatId, unread: 0, isArchived: false }); }
-            localStorage.setItem('auraChats_' + USER, JSON.stringify(chats));
-            
-            renderChatList(); renderMsg(msgObj, true);
-        }
-
-        function loadMessages() {
-            const chatDiv = document.getElementById('chat'); chatDiv.innerHTML = '';
-            if (!currentChatId) return;
-            const history = JSON.parse(localStorage.getItem(getChatKey())) || [];
-            history.forEach(msg => renderMsg(msg, false));
-            chatDiv.scrollTop = chatDiv.scrollHeight;
-        }
-
-        function renderMsg(msgObj, isLocalAdd) {
-            const chatDiv = document.getElementById('chat');
-            const container = document.createElement('div');
-            const isSent = msgObj.sender === USER;
-            container.className = 'msg-container ' + (isSent ? 'sent' : 'received');
-            container.addEventListener('contextmenu', function(e) {
-                e.preventDefault(); contextMessageId = msgObj.id;
-                const menu = document.getElementById('messageContextMenu');
-                let x = e.clientX, y = e.clientY;
-                if (x + 220 > window.innerWidth) x = window.innerWidth - 230;
-                if (y + 200 > window.innerHeight) y = window.innerHeight - 210;
-                menu.style.left = x + 'px'; menu.style.top = y + 'px';
-                menu.style.display = 'block'; menu.classList.add('active');
-            });
-
-            const date = new Date(msgObj.timestamp);
-            const timeStr = date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0');
-
-            let contentHtml = escapeHTML(msgObj.text);
-            if (msgObj.text.startsWith('[img]')) { contentHtml = `<img src="${escapeHTML(msgObj.text.replace('[img]', ''))}" style="max-width: 100%; border-radius: 10px;">`; }
-            else if (msgObj.text.startsWith('[gift]')) {
-                let parts = msgObj.text.replace('[gift]', '').split('|');
-                contentHtml = `<div class="msg-gift"><div class="msg-gift-icon">🎁</div><div class="msg-gift-title">NFT Asset</div><div style="font-size:0.7rem; opacity:0.8; margin-top:5px;">ID: ${escapeHTML(parts[0])}</div></div>`;
-            }
-
-            container.innerHTML = `<div class="msg-bubble">${contentHtml}<div class="msg-meta"><span>${timeStr}</span></div></div>`;
-            chatDiv.appendChild(container);
-            if (isLocalAdd) chatDiv.scrollTo({ top: chatDiv.scrollHeight, behavior: 'smooth' });
-        }
-
-        function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (!file || !currentChatId) return;
-            if (file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function(e) { sendDirectMessage(`[img]${e.target.result}`); };
-                reader.readAsDataURL(file);
-            } else { alert("В данный момент поддерживаются только изображения."); }
-            event.target.value = '';
-        }
-
-        /* --- STORIES --- */
-        function openAddStory() {
-            document.getElementById('storyInput').click();
-        }
-
-        function processStoryUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const storiesWrapper = document.getElementById('storiesContainer');
-                    const newStory = document.createElement('div');
-                    newStory.className = 'story-item';
-                    newStory.innerHTML = `
-                        <div class="story-ring" style="border: 2px solid var(--accent);">
-                            <div class="story-avatar" style="background-image: url('${e.target.result}')"></div>
+            chatsDB.filter(c => c.name.toLowerCase().includes(filter.toLowerCase())).forEach(chat => {
+                const lastMsg = chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].text : 'Нет сообщений';
+                const isChannel = chat.type === 'channel';
+                
+                const div = document.createElement('div');
+                div.className = `chat-item ${chat.id === activeChatId ? 'active' : ''}`;
+                div.onclick = () => openChat(chat.id);
+                
+                div.innerHTML = `
+                    <div class="avatar">${chat.avatarText || chat.name.charAt(0).toUpperCase()}</div>
+                    <div class="chat-info">
+                        <div class="chat-name">
+                            ${chat.name} 
+                            ${isChannel ? '<span class="channel-badge">Канал</span>' : ''}
                         </div>
-                        <div class="story-name">Story</div>
-                    `;
-                    storiesWrapper.appendChild(newStory);
-                };
-                reader.readAsDataURL(file);
-            }
-            event.target.value = '';
+                        <div class="chat-last-msg">${lastMsg}</div>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
         }
 
-        /* --- WEBRTC CALLS --- */
-        async function startCall(event) {
-            if (event) event.stopPropagation();
-            if (!currentChatId) return;
+        function filterChats(val) { renderChatList(val); }
 
-            const callContainer = document.getElementById('callContainer');
-            const localVideo = document.getElementById('localVideo');
-            const remoteVideo = document.getElementById('remoteVideo');
-            const statusText = document.getElementById('callStatusText');
+        function openChat(id) {
+            activeChatId = id;
+            const chat = chatsDB.find(c => c.id === id);
+            if (!chat) return;
+
+            document.getElementById('chatArea').style.display = 'flex';
+            document.getElementById('currentChatName').innerText = chat.name;
+            document.getElementById('currentChatAvatar').innerText = chat.avatarText || chat.name.charAt(0).toUpperCase();
             
-            callContainer.style.display = 'flex';
-            setTimeout(() => callContainer.classList.add('active'), 10);
-            statusText.innerText = "Подключение к " + getProfileData(currentChatId).name + "...";
-            
-            try {
-                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                localVideo.srcObject = localStream;
-                localVideo.style.display = 'block'; 
-                remoteVideo.style.display = 'block';
-                setTimeout(() => statusText.innerText = "Соединение установлено (Тест)", 1500);
-            } catch (error) {
-                console.warn("Камера/микрофон недоступны.", error);
-                localVideo.style.display = 'none';
-                remoteVideo.style.display = 'none';
-                setTimeout(() => statusText.innerText = "Защищенный Аудиозвонок (Камера недоступна)", 1000);
+            const subtext = document.getElementById('currentChatSubtext');
+            const inputArea = document.getElementById('inputArea');
+            const readOnlyBanner = document.getElementById('readOnlyBanner');
+            const chatActions = document.getElementById('chatActions');
+
+            if (chat.type === 'channel') {
+                subtext.innerText = `${chat.subscribers || 1} подписчиков`;
+                chatActions.style.display = 'none'; // В каналах нет звонков
+                
+                if (chat.admin === currentUser) {
+                    inputArea.style.display = 'flex';
+                    readOnlyBanner.style.display = 'none';
+                } else {
+                    inputArea.style.display = 'none';
+                    readOnlyBanner.style.display = 'block';
+                }
+            } else {
+                subtext.innerText = 'Личный чат';
+                chatActions.style.display = 'flex'; // Показываем кнопки звонка
+                inputArea.style.display = 'flex';
+                readOnlyBanner.style.display = 'none';
             }
+
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.add('hidden');
+            }
+
+            renderChatList(); // Обновляем выделение
+            renderMessages();
+        }
+
+        function closeChat() {
+            document.getElementById('chatArea').style.display = 'none';
+            document.getElementById('sidebar').classList.remove('hidden');
+            activeChatId = null;
+            renderChatList();
+        }
+
+        function renderMessages() {
+            const container = document.getElementById('messagesContainer');
+            container.innerHTML = '';
+            const chat = chatsDB.find(c => c.id === activeChatId);
+            if (!chat) return;
+
+            chat.messages.forEach(msg => {
+                const div = document.createElement('div');
+                
+                if (msg.type === 'system') {
+                    div.className = 'message msg-system';
+                    div.innerHTML = msg.text;
+                } else {
+                    const isOut = msg.sender === currentUser || (chat.type === 'channel' && chat.admin === currentUser);
+                    div.className = `message ${isOut ? 'msg-out' : 'msg-in'}`;
+                    div.innerHTML = `${msg.text} <span class="msg-time">${msg.time}</span>`;
+                }
+                container.appendChild(div);
+            });
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const text = input.value.trim();
+            if (!text || !activeChatId) return;
+
+            const chat = chatsDB.find(c => c.id === activeChatId);
+            const now = new Date();
+            const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+            chat.messages.push({ text: text, sender: currentUser, time: timeStr });
+            saveDatabase();
+            
+            input.value = '';
+            renderMessages();
+            renderChatList(); // Обновляем последнее сообщение в списке
+        }
+
+        function handleEnter(e) { if (e.key === 'Enter') sendMessage(); }
+
+        /* ==========================================================================
+           СОЗДАНИЕ КАНАЛОВ
+           ========================================================================== */
+        function createChannel() {
+            const name = document.getElementById('newChannelName').value.trim();
+            if (name.length < 2) return alert('Введите название канала');
+
+            const newChannel = {
+                id: 'chan_' + Date.now(),
+                type: 'channel',
+                name: name,
+                admin: currentUser,
+                avatarText: name.substring(0, 2).toUpperCase(),
+                subscribers: 1,
+                messages: [{ type: 'system', text: `Канал «${name}» создан.` }]
+            };
+
+            chatsDB.unshift(newChannel);
+            saveDatabase();
+            closeModal('createChannelModal');
+            document.getElementById('newChannelName').value = '';
+            renderChatList();
+            openChat(newChannel.id);
+        }
+
+        /* ==========================================================================
+           СИСТЕМА ЗВОНКОВ (VOIP ENGINE)
+           ========================================================================== */
+        function initiateCall(type) {
+            const chat = chatsDB.find(c => c.id === activeChatId);
+            if (!chat || chat.type === 'channel') return;
+
+            // Настройка UI модалки
+            document.getElementById('callNameElem').innerText = chat.name;
+            document.getElementById('callAvatarElem').innerText = chat.avatarText || chat.name.charAt(0).toUpperCase();
+            document.getElementById('callStatusElem').innerText = type === 'video' ? 'Видеовызов. Ожидание...' : 'Аудиовызов. Установка соединения...';
+            document.getElementById('callAvatarElem').classList.add('ringing');
+            
+            document.getElementById('callScreenModal').style.display = 'flex';
+            
+            // Имитация установки P2P соединения
+            callEngine.active = true;
+            callEngine.seconds = 0;
+            
+            setTimeout(() => {
+                if(!callEngine.active) return; // Если сбросили до ответа
+                document.getElementById('callStatusElem').innerText = '00:00';
+                document.getElementById('callAvatarElem').classList.remove('ringing');
+                
+                callEngine.timerInterval = setInterval(() => {
+                    callEngine.seconds++;
+                    const m = Math.floor(callEngine.seconds / 60).toString().padStart(2, '0');
+                    const s = (callEngine.seconds % 60).toString().padStart(2, '0');
+                    document.getElementById('callStatusElem').innerText = `${m}:${s}`;
+                }, 1000);
+            }, 3000); // 3 секунды "гудков"
         }
 
         function endCall() {
-            if (localStream) { 
-                localStream.getTracks().forEach(track => track.stop());
-                localStream = null; 
-            }
-            const callContainer = document.getElementById('callContainer');
-            callContainer.classList.remove('active');
-            setTimeout(() => callContainer.style.display = 'none', 300);
-        }
-
-        /* --- CONTEXT MENU ACTIONS --- */
-        function deleteMessage() {
-            if (!contextMessageId || !currentChatId) return;
-            const key = getChatKey(); let history = JSON.parse(localStorage.getItem(key)) || [];
-            history = history.filter(m => m.id !== contextMessageId);
-            localStorage.setItem(key, JSON.stringify(history));
-            document.getElementById('messageContextMenu').classList.remove('active'); loadMessages();
-        }
-        function copyMessageText() {
-            const key = getChatKey(); let history = JSON.parse(localStorage.getItem(key)) || [];
-            let msg = history.find(m => m.id === contextMessageId);
-            if (msg && !msg.text.startsWith('[')) navigator.clipboard.writeText(msg.text).then(() => alert("Скопировано!"));
-            document.getElementById('messageContextMenu').classList.remove('active');
-        }
-        function replyToMessage() { alert("Функция ответа в разработке."); document.getElementById('messageContextMenu').classList.remove('active'); }
-        function forwardMessage() { alert("Функция пересылки в разработке."); document.getElementById('messageContextMenu').classList.remove('active'); }
-
-        /* --- SETTINGS & PROFILE --- */
-        function openSettingsTab(tabId, btn) {
-            document.getElementById('settingsProfile').style.display = 'none'; document.getElementById('settingsDesign').style.display = 'none'; document.getElementById('settingsData').style.display = 'none';
-            document.getElementById('tabBtnProfile').style.borderColor = 'transparent'; document.getElementById('tabBtnDesign').style.borderColor = 'transparent'; document.getElementById('tabBtnData').style.borderColor = 'transparent';
-            document.getElementById(tabId).style.display = 'block'; btn.style.borderColor = 'var(--accent)'; btn.style.color = 'var(--accent)';
-        }
-
-        function loadProfileToSettings() {
-            let profile = getProfileData(USER);
-            document.getElementById('profileName').value = profile.name || '';
-            document.getElementById('profileBio').value = profile.bio || '';
-            document.getElementById('settingsDisplayId').innerText = '@' + USER;
-            document.getElementById('themeMode').value = localSettings.theme || 'dark';
-            document.getElementById('themeColor').value = localSettings.color || '#00d2ff';
-            const avatarDiv = document.getElementById('myViewAvatar');
-            if (profile.avatar) { avatarDiv.style.backgroundImage = `url('${escapeHTML(profile.avatar)}')`; avatarDiv.innerText = ''; tempSettingsAvatar = profile.avatar; }
-            else { avatarDiv.style.backgroundImage = 'none'; avatarDiv.innerText = profile.name ? profile.name.charAt(0).toUpperCase() : '?'; }
-        }
-
-        function previewAvatar(input) {
-            const file = input.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    tempSettingsAvatar = e.target.result;
-                    const avatarDiv = document.getElementById('myViewAvatar');
-                    avatarDiv.style.backgroundImage = `url('${tempSettingsAvatar}')`; avatarDiv.innerText = '';
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function saveProfile() {
-            let profile = getProfileData(USER);
-            profile.name = document.getElementById('profileName').value.trim();
-            profile.bio = document.getElementById('profileBio').value.trim();
-            if (tempSettingsAvatar) profile.avatar = tempSettingsAvatar;
-            localStorage.setItem('auraProfile_' + USER, JSON.stringify(profile));
-            renderChatList(); closeModal('settingsModal');
-        }
-
-        function changeThemeMode() {
-            localSettings.theme = document.getElementById('themeMode').value;
-            document.body.setAttribute('data-theme', localSettings.theme); localStorage.setItem('auraSettings', JSON.stringify(localSettings));
-        }
-        function changeThemeColor() {
-            localSettings.color = document.getElementById('themeColor').value;
-            document.documentElement.style.setProperty('--accent', localSettings.color); localStorage.setItem('auraSettings', JSON.stringify(localSettings));
-        }
-        function setWallpaper(val, el) {
-            localSettings.wallpaper = val; document.documentElement.style.setProperty('--chat-wallpaper', val);
-            localStorage.setItem('auraSettings', JSON.stringify(localSettings));
-            document.querySelectorAll('.wp-option').forEach(w => w.classList.remove('active')); if (el) el.classList.add('active');
-        }
-        function fullAppReset() { if (confirm(DICT.ru.resetApp)) { localStorage.removeItem('auraUser'); location.reload(); } }
-
-        /* --- STORE & TOPUP --- */
-        function openStoreModal() {
-            if (!currentChatId) { alert("Сначала выберите чат, куда хотите отправить НФТ!"); return; }
-            updateBalanceUI();
-            const grid = document.getElementById('giftsGridContainer'); grid.innerHTML = '';
-            const allGifts = [
-                { id: 'star', name: 'Aura Star', price: 25, icon: '⭐' }, { id: 'diamond', name: 'Бриллиант', price: 100, icon: '💎' },
-                { id: 'crown', name: 'Корона', price: 150, icon: '👑' }, { id: 'neon_bear', name: 'Neon Bear', price: 100000, icon: '🧸', isPremium: true },
-                { id: 'nft_founder', name: 'Founder Token', price: 1250000, icon: '🏆', isPremium: true }
-            ];
-            allGifts.forEach(gift => {
-                let card = document.createElement('div'); card.className = 'gift-card' + (gift.isPremium ? ' nft-glow-card' : '');
-                card.innerHTML = `<div class="icon-wrapper">${gift.icon}</div><div class="name" style="${gift.isPremium ? 'color: var(--gold);' : ''}">${gift.name}</div><div class="price">${formatBalance(gift.price)} AUR</div>`;
-                card.onclick = function() {
-                    let profile = getProfileData(USER);
-                    if (profile.balance >= gift.price && confirm(`Приобрести "${gift.name}" за ${formatBalance(gift.price)} AUR?`)) {
-                        profile.balance -= gift.price; localStorage.setItem('auraProfile_' + USER, JSON.stringify(profile));
-                        updateBalanceUI(); sendDirectMessage(`[gift]${gift.id}|${profile.name}`); closeModal('giftModal');
-                    } else if (profile.balance < gift.price) { alert(DICT.ru.notEnoughAur); }
-                };
-                grid.appendChild(card);
-            });
-            openModal('giftModal');
-        }
-
-        function processTopUp() {
-            const amount = parseInt(document.getElementById('topupAmount').value);
-            if (isNaN(amount) || amount <= 0) { alert("Введите корректную сумму"); return; }
-            let profile = getProfileData(USER); profile.balance = (parseInt(profile.balance) || 0) + (amount * 100);
-            localStorage.setItem('auraProfile_' + USER, JSON.stringify(profile));
-            updateBalanceUI(); alert(`Начислено ${formatBalance(amount * 100)} AUR.`); closeModal('topupModal'); document.getElementById('topupAmount').value = '';
-        }
-
-        /* --- ADMIN PANEL --- */
-        let balanceClickCount = 0, balanceClickTimer;
-        document.getElementById('desktopHeaderBalance')?.addEventListener('click', function(e) {
-            e.stopPropagation(); balanceClickCount++; clearTimeout(balanceClickTimer);
-            if (balanceClickCount >= 5) { balanceClickCount = 0; openAdminPanel(); }
-            else { balanceClickTimer = setTimeout(() => { if (balanceClickCount > 0 && balanceClickCount < 5) openModal('topupModal'); balanceClickCount = 0; }, 500); }
-        });
-
-        function openAdminPanel() {
-            const select = document.getElementById('adminTargetUser'); select.innerHTML = `<option value="${USER}">Мне (Баланс)</option>`;
-            let chats = JSON.parse(localStorage.getItem('auraChats_' + USER)) || [];
-            chats.forEach(chat => { if(chat.id !== DICT.ru.fav) select.innerHTML += `<option value="${chat.id}">@${chat.id}</option>`; });
-            openModal('adminModal');
-        }
-
-        function adminSendFreeGift() {
-            const targetUser = document.getElementById('adminTargetUser').value;
-            const giftData = document.getElementById('adminGiftType').value.split('|');
-            if (targetUser === USER) {
-                let profile = getProfileData(USER); profile.balance += parseInt(giftData[0]);
-                localStorage.setItem('auraProfile_' + USER, JSON.stringify(profile)); updateBalanceUI(); alert("Начислено.");
-            } else {
-                currentChatId = targetUser; sendDirectMessage(`[gift]${giftData[1]}|Aura SYSTEM`); alert(`Отправлено @${targetUser}.`);
-            }
-            closeModal('adminModal');
-        }
-
-        /* --- APP START --- */
-        function startNormalApp() {
-            document.body.setAttribute('data-theme', localSettings.theme || 'dark');
-            document.documentElement.style.setProperty('--accent', localSettings.color || '#00d2ff');
-            document.documentElement.style.setProperty('--chat-wallpaper', localSettings.wallpaper || 'none');
-            updateBalanceUI(); renderChatList();
+            document.getElementById('callScreenModal').style.display = 'none';
+            clearInterval(callEngine.timerInterval);
+            document.getElementById('callAvatarElem').classList.remove('ringing');
             
-            let chats = JSON.parse(localStorage.getItem('auraChats_' + USER)) || [];
-            if (chats.length > 0) openChat(chats[0].id, getProfileData(chats[0].id).type);
+            let durationStr = "отклонен";
+            if (callEngine.seconds > 0) {
+                const m = Math.floor(callEngine.seconds / 60).toString().padStart(2, '0');
+                const s = (callEngine.seconds % 60).toString().padStart(2, '0');
+                durationStr = `${m}:${s}`;
+            }
+
+            callEngine.active = false;
+            callEngine.seconds = 0;
+
+            // Запись в лог чата
+            const chat = chatsDB.find(c => c.id === activeChatId);
+            if (chat) {
+                chat.messages.push({ 
+                    type: 'system', 
+                    text: `📞 Звонок завершен (${durationStr})` 
+                });
+                saveDatabase();
+                renderMessages();
+                renderChatList();
+            }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            if (!localStorage.getItem('auraUser')) {
-                setTimeout(() => { document.getElementById('splashBar').style.width = '100%'; }, 500);
-                setTimeout(() => { document.getElementById('splash').style.display = 'none'; openModal('authModal'); }, 1500);
-            } else {
-                document.getElementById('splash').style.display = 'none'; startNormalApp();
-            }
-        });
+        function toggleMic() {
+            const btn = document.getElementById('btnMic');
+            btn.classList.toggle('active');
+            btn.innerText = btn.classList.contains('active') ? '🔇' : '🎤';
+        }
+
+        function toggleVideo() {
+            const btn = document.getElementById('btnVid');
+            btn.classList.toggle('active');
+            btn.innerText = btn.classList.contains('active') ? '🚫' : '📹';
+        }
+
+        /* ==========================================================================
+           УТИЛИТЫ
+           ========================================================================== */
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
     </script>
 </body>
 </html>
