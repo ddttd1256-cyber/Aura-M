@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#0d0f12">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Aura Messenger | Enterprise Edition</title>
+    <title>Aura Messenger | Ultimate Edition</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
@@ -117,7 +117,7 @@
         ::selection { background: var(--accent); color: var(--text-inverse); }
 
         /* ==========================================================================
-           [3] РАСШИРЕННЫЕ АНИМАЦИИ
+           [3] РАСШИРЕННЫЕ АНИМАЦИИ (20+)
            ========================================================================== */
         @keyframes drawLogo {
             0% { opacity: 0; transform: scale(0.3) rotate(-10deg); box-shadow: 0 0 0 transparent; }
@@ -141,9 +141,9 @@
             100% { transform: rotate(360deg) scale(1.5); }
         }
         @keyframes messagePop {
-            0% { opacity: 0; transform: scale(0.7) translateY(30px); filter: blur(4px); }
-            60% { transform: scale(1.02) translateY(-2px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+            0% { opacity: 0; transform: scale(0.7) translateY(30px) rotate(-5deg); filter: blur(4px); }
+            60% { transform: scale(1.02) translateY(-2px) rotate(1deg); }
+            100% { opacity: 1; transform: scale(1) translateY(0) rotate(0); filter: blur(0); }
         }
         @keyframes reactionBounce {
             0% { transform: scale(0.2) rotate(-180deg); opacity: 0; }
@@ -151,13 +151,13 @@
             100% { transform: scale(1) rotate(0deg); opacity: 1; }
         }
         @keyframes typingPulse {
-            0%, 100% { opacity: 0.4; transform: scale(0.8); }
+            0%, 100% { opacity: 0.4; transform: scale(0.8); background: var(--text-muted); }
             50% { opacity: 1; transform: scale(1.2); background: var(--accent); }
         }
         @keyframes sendFly {
             0% { transform: translateX(0) scale(1); opacity: 1; }
-            50% { transform: translateX(100px) scale(1.3); opacity: 0.8; }
-            100% { transform: translateX(200px) scale(0); opacity: 0; }
+            50% { transform: translateX(100px) scale(1.3) rotate(10deg); opacity: 0.8; }
+            100% { transform: translateX(200px) scale(0) rotate(20deg); opacity: 0; }
         }
         @keyframes glowPulse {
             0% { box-shadow: 0 0 0 0 var(--accent-glow); }
@@ -183,9 +183,28 @@
             0% { transform: scale(0); opacity: 0.5; }
             100% { transform: scale(4); opacity: 0; }
         }
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes neonPulse {
+            0%, 100% { text-shadow: 0 0 5px var(--accent), 0 0 10px var(--accent); }
+            50% { text-shadow: 0 0 20px var(--accent), 0 0 30px var(--accent); }
+        }
         .animate-bounce-in { animation: bounceIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; }
         .animate-shake { animation: shake 0.3s ease-in-out; }
         .animate-glow { animation: glowPulse 1.5s infinite; }
+        .animate-fade-scale { animation: fadeInScale 0.3s ease-out; }
+        .animate-slide-left { animation: slideInLeft 0.3s ease-out; }
+        .animate-slide-right { animation: slideInRight 0.3s ease-out; }
         .typing-dots { display: flex; gap: 4px; align-items: center; }
         .typing-dots span { width: 8px; height: 8px; background: var(--text-muted); border-radius: 50%; display: inline-block; animation: typingPulse 1.2s infinite; }
         .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
@@ -227,8 +246,9 @@
         .sidebar-search input { background: transparent; border: none; outline: none; color: var(--text-main); width: 100%; }
         .chat-list { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 5px; }
         .chat-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: var(--border-radius-md); cursor: pointer; transition: var(--transition-fast); border: 1px solid transparent; position: relative; }
-        .chat-item:hover, .chat-item.active { background: var(--bg-active); border-color: var(--glass-border); }
-        .avatar-mini { width: 46px; height: 46px; border-radius: 50%; background-color: var(--bg-element); background-size: cover; background-position: center; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 1.2rem; color: #fff; flex-shrink: 0; }
+        .chat-item:hover, .chat-item.active { background: var(--bg-active); border-color: var(--glass-border); transform: scale(1.01); }
+        .avatar-mini { width: 46px; height: 46px; border-radius: 50%; background-color: var(--bg-element); background-size: cover; background-position: center; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 1.2rem; color: #fff; flex-shrink: 0; transition: transform 0.2s; }
+        .avatar-mini:hover { transform: scale(1.05); }
         .chat-header { height: var(--header-height); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; background: var(--bg-sidebar); border-bottom: 1px solid var(--glass-border); backdrop-filter: blur(10px); z-index: var(--z-header); }
         .chat-header-info { display: flex; align-items: center; gap: 12px; cursor: pointer; }
         .chat-history { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; background-image: var(--chat-wallpaper); background-size: cover; background-position: center; }
@@ -250,10 +270,10 @@
         .icon-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-main); cursor: pointer; transition: var(--transition-fast); flex-shrink: 0; }
         .icon-btn:hover { background: var(--accent); color: #ffffff; box-shadow: 0 0 15px var(--accent-glow); transform: scale(1.05) rotate(5deg); }
         .chat-options-btn { width: 40px; height: 40px; border-radius: 50%; background: transparent; border: none; color: var(--text-muted); display: flex; justify-content: center; align-items: center; cursor: pointer; transition: var(--transition-fast); }
-        .chat-options-btn:hover { background: var(--bg-hover); color: var(--text-main); }
+        .chat-options-btn:hover { background: var(--bg-hover); color: var(--text-main); transform: scale(1.1); }
         .aur-balance { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; background: rgba(255, 215, 0, 0.1); border: 1px solid var(--gold); color: var(--gold); font-weight: 800; cursor: pointer; transition: var(--transition-fast); }
-        .aur-balance:hover { background: rgba(255, 215, 0, 0.2); box-shadow: 0 0 15px var(--gold-glow); }
-        .unread-badge { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: var(--danger); color: white; border-radius: 20px; padding: 2px 8px; font-size: 0.7rem; font-weight: bold; min-width: 22px; text-align: center; }
+        .aur-balance:hover { background: rgba(255, 215, 0, 0.2); box-shadow: 0 0 15px var(--gold-glow); transform: scale(1.02); }
+        .unread-badge { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: var(--danger); color: white; border-radius: 20px; padding: 2px 8px; font-size: 0.7rem; font-weight: bold; min-width: 22px; text-align: center; animation: bounceIn 0.3s; }
         .online-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--success); display: inline-block; margin-left: 8px; box-shadow: 0 0 8px var(--success-glow); animation: pulseOnline 1.5s infinite; }
         @keyframes pulseOnline { 0% { opacity: 0.5; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.2); } }
         .typing-indicator { font-size: 0.7rem; color: var(--text-muted); padding: 4px 12px; display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.2); border-radius: 20px; width: fit-content; margin-bottom: 8px; animation: slideUpFade 0.3s; }
@@ -267,7 +287,7 @@
         .input-icon { position: absolute; left: 16px; color: var(--text-muted); pointer-events: none; transition: var(--transition-fast); }
         .custom-input { width: 100%; padding: 14px 20px; border-radius: var(--border-radius-md); background: rgba(0, 0, 0, 0.2); border: 2px solid var(--glass-border); color: var(--text-main); outline: none; font-size: 1rem; transition: var(--transition-fast); }
         .custom-input.has-icon { padding-left: 48px; }
-        .custom-input:focus { border-color: var(--accent); background: rgba(0, 0, 0, 0.3); box-shadow: 0 0 15px rgba(0, 210, 255, 0.15); }
+        .custom-input:focus { border-color: var(--accent); background: rgba(0, 0, 0, 0.3); box-shadow: 0 0 15px rgba(0, 210, 255, 0.15); transform: scale(1.01); }
         .custom-input:focus + .input-icon, .input-wrapper:focus-within .input-icon { color: var(--accent); }
         select.custom-input { appearance: none; cursor: pointer; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a0aabf' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 15px center; background-size: 16px; }
 
@@ -278,7 +298,7 @@
         .stories-wrapper::-webkit-scrollbar { display: none; }
         .story-item { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; flex-shrink: 0; width: 72px; transition: var(--transition-fast); }
         .story-item:hover { transform: translateY(-3px); }
-        .story-ring { width: 68px; height: 68px; border-radius: 50%; padding: 3px; background: var(--accent-gradient); position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .story-ring { width: 68px; height: 68px; border-radius: 50%; padding: 3px; background: var(--accent-gradient); position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.1); animation: glowPulse 2s infinite; }
         .story-avatar { width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--bg-sidebar); background-size: cover; background-position: center; background-color: var(--bg-element); display: flex; justify-content: center; align-items: center; font-weight: 800; color: #fff; }
         .story-add-btn { position: absolute; bottom: -2px; right: -2px; width: 24px; height: 24px; background: var(--accent); border: 3px solid var(--bg-sidebar); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #fff; font-size: 14px; font-weight: bold; }
         .story-name { font-size: 0.75rem; color: var(--text-main); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
@@ -297,7 +317,8 @@
         .sent .msg-meta { color: var(--text-muted); justify-content: flex-end; }
         .received .msg-meta { color: var(--text-muted); justify-content: flex-start; }
         .reply-preview { background: rgba(0,0,0,0.2); border-left: 3px solid var(--accent); padding: 6px 10px; margin-bottom: 8px; border-radius: 12px; font-size: 0.8rem; color: var(--text-muted); }
-        .event-block { background: rgba(0,210,255,0.1); border: 1px solid var(--accent); border-radius: 16px; padding: 12px; display: flex; align-items: center; gap: 12px; }
+        .event-block { background: rgba(0,210,255,0.1); border: 1px solid var(--accent); border-radius: 16px; padding: 12px; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
+        .event-block:hover { transform: scale(1.01); border-color: var(--accent); }
         .event-icon { font-size: 2rem; }
         .event-info { flex: 1; }
         .event-title { font-weight: 900; margin-bottom: 4px; }
@@ -305,18 +326,21 @@
         .reactions { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
         .reaction { background: rgba(0,0,0,0.2); border-radius: 20px; padding: 2px 8px; font-size: 0.75rem; cursor: pointer; transition: 0.1s; display: inline-flex; align-items: center; gap: 4px; }
         .reaction:hover { transform: scale(1.1); background: rgba(255,255,255,0.2); animation: reactionBounce 0.3s ease; }
-        .pinned-message { background: rgba(0,0,0,0.3); border-radius: 12px; padding: 10px; margin-bottom: 15px; border-left: 4px solid var(--accent); font-size: 0.85rem; cursor: pointer; }
+        .pinned-message { background: rgba(0,0,0,0.3); border-radius: 12px; padding: 10px; margin-bottom: 15px; border-left: 4px solid var(--accent); font-size: 0.85rem; cursor: pointer; transition: 0.2s; }
+        .pinned-message:hover { background: rgba(0,0,0,0.5); }
         .voice-message { background: var(--bg-element); border-radius: 20px; padding: 8px 12px; display: flex; align-items: center; gap: 12px; min-width: 200px; }
         .voice-play { cursor: pointer; transition: 0.2s; }
         .voice-play:hover { transform: scale(1.1); }
-        .poll-container { background: var(--bg-element); border-radius: 16px; padding: 12px; margin-top: 6px; }
+        .poll-container { background: var(--bg-element); border-radius: 16px; padding: 12px; margin-top: 6px; transition: 0.2s; }
         .poll-question { font-weight: 800; margin-bottom: 10px; }
         .poll-option { padding: 8px; margin: 5px 0; background: rgba(0,0,0,0.2); border-radius: 12px; cursor: pointer; transition: 0.2s; display: flex; justify-content: space-between; }
-        .poll-option:hover { background: rgba(255,255,255,0.1); }
+        .poll-option:hover { background: rgba(255,255,255,0.1); transform: translateX(5px); }
         .sticker { font-size: 3rem; display: inline-block; transition: transform 0.2s; cursor: pointer; }
-        .sticker:hover { transform: scale(1.2); }
-        .location { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.2); border-radius: 16px; padding: 8px; cursor: pointer; }
-        .contact { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.2); border-radius: 16px; padding: 10px; margin-top: 6px; }
+        .sticker:hover { transform: scale(1.2) rotate(10deg); }
+        .location { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.2); border-radius: 16px; padding: 8px; cursor: pointer; transition: 0.2s; }
+        .location:hover { background: rgba(0,0,0,0.4); }
+        .contact { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.2); border-radius: 16px; padding: 10px; margin-top: 6px; transition: 0.2s; }
+        .contact:hover { background: rgba(0,0,0,0.4); }
 
         /* Подарки NFT в чате */
         .msg-gift { display: flex; flex-direction: column; align-items: center; background: var(--bg-element); border: 1px solid var(--glass-border); border-radius: 20px; padding: 15px; min-width: 150px; text-align: center; animation: floatPremiumNFT 3s infinite ease-in-out; }
@@ -335,11 +359,11 @@
 
         .dropdown-menu { position: absolute; right: 20px; top: 60px; background: var(--bg-element); border: 1px solid var(--glass-border); border-radius: 12px; padding: 5px; z-index: 1000; display: none; flex-direction: column; gap: 2px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .dropdown-item { padding: 10px 15px; cursor: pointer; border-radius: 8px; transition: 0.2s; font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 10px; }
-        .dropdown-item:hover { background: var(--bg-hover); color: var(--accent); }
+        .dropdown-item:hover { background: var(--bg-hover); color: var(--accent); transform: translateX(3px); }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: var(--z-modal); opacity: 0; transition: opacity var(--transition-normal); }
         .modal-overlay.active { opacity: 1; display: flex; }
-        .modal { background: var(--bg-sidebar); border: 1px solid var(--glass-border); border-radius: var(--border-radius-lg); padding: 30px; width: 400px; max-width: 90vw; box-shadow: 0 20px 50px rgba(0,0,0,0.5); transform: scale(0.95); transition: transform var(--transition-normal); }
+        .modal { background: var(--bg-sidebar); border: 1px solid var(--glass-border); border-radius: var(--border-radius-lg); padding: 30px; width: 400px; max-width: 90vw; box-shadow: 0 20px 50px rgba(0,0,0,0.5); transform: scale(0.95); transition: transform var(--transition-normal); animation: fadeInScale 0.3s; }
         .modal-overlay.active .modal { transform: scale(1); }
         .auth-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px; }
         .auth-tab { flex: 1; text-align: center; font-weight: 800; color: var(--text-muted); cursor: pointer; padding: 10px; transition: 0.2s; border-radius: 10px; }
@@ -499,6 +523,8 @@
                     <div class="dropdown-item" onclick="openCreateChannel()">📢 Создать канал</div>
                     <div class="dropdown-item" onclick="openCreateGroup()">👥 Создать группу</div>
                     <div class="dropdown-item" onclick="openPollCreator()">📊 Создать опрос</div>
+                    <div class="dropdown-item" onclick="sendLocation()">📍 Отправить геолокацию</div>
+                    <div class="dropdown-item" onclick="shareContact()">📇 Поделиться контактом</div>
                 </div>
             </div>
         </header>
@@ -602,6 +628,10 @@
                 <div class="sticker" onclick="sendSticker('😭')">😭</div>
                 <div class="sticker" onclick="sendSticker('🔥')">🔥</div>
                 <div class="sticker" onclick="sendSticker('✨')">✨</div>
+                <div class="sticker" onclick="sendSticker('❤️')">❤️</div>
+                <div class="sticker" onclick="sendSticker('💀')">💀</div>
+                <div class="sticker" onclick="sendSticker('🎉')">🎉</div>
+                <div class="sticker" onclick="sendSticker('🚀')">🚀</div>
             </div>
             <button class="btn btn-outline" style="margin-top: 20px;" onclick="closeModal('stickerModal')">Закрыть</button>
         </div>
@@ -916,20 +946,19 @@
     </div>
 
     <script>
-        // ==================== ПОЛНОЦЕННОЕ ПРИЛОЖЕНИЕ (3500+ строк) ====================
+        // ==================== ПОЛНОЦЕННОЕ ПРИЛОЖЕНИЕ (4000+ строк) ====================
         let USER = localStorage.getItem('auraUser') || null;
         let localSettings = JSON.parse(localStorage.getItem('auraSettings')) || { lang: 'ru', theme: 'dark', wallpaper: 'none', color: '#00d2ff' };
         let privacySettings = JSON.parse(localStorage.getItem('auraPrivacy_' + USER)) || { online: 'all', message: 'all' };
         
         let currentChatId = null;
-        let currentChatType = 'user'; // user, group, channel
+        let currentChatType = 'user';
         let contextMessageId = null;
         let tempSettingsAvatar = null;
         let localStream = null;
         let replyToMsg = null;
         let pinnedMessage = null;
         let notificationsEnabled = true;
-        let typingTimeout = null;
         let groups = JSON.parse(localStorage.getItem('auraGroups')) || [];
 
         const DICT = {
@@ -1085,7 +1114,6 @@
                 group.members.push(memberId);
                 localStorage.setItem('auraGroups', JSON.stringify(groups));
                 alert(`Пользователь ${memberId} добавлен в группу`);
-                // Отправляем системное сообщение
                 let key = getChatKey(groupId);
                 let history = JSON.parse(localStorage.getItem(key)) || [];
                 history.push({ id: 'msg_' + Date.now(), sender: 'system', text: `[system] ${memberId} присоединился к группе`, timestamp: Date.now(), read: false });
@@ -1125,7 +1153,6 @@
         // ---------- Чаты и сообщения (ИСПРАВЛЕННАЯ ЛОГИКА) ----------
         function getChatKey(chatId = currentChatId) {
             if (chatId === DICT.ru.fav) return 'auraFav_' + USER;
-            // Для групп и каналов ключ не сортируем
             let profile = getProfileData(chatId);
             if (profile.type === 'group' || profile.type === 'channel') return 'auraMsgs_' + chatId;
             let ids = [USER, chatId].sort();
@@ -1155,7 +1182,7 @@
             chats.forEach(chat => {
                 let profile = getProfileData(chat.id);
                 let item = document.createElement('div');
-                item.className = 'chat-item';
+                item.className = 'chat-item animate-slide-left';
                 if (chat.id === currentChatId) item.classList.add('active');
                 item.onclick = function() { openChat(chat.id, profile.type); };
                 let avatarHtml = profile.avatar ? `<div class="avatar-mini" style="background-image: url('${escapeHTML(profile.avatar)}')"></div>` : `<div class="avatar-mini">${profile.name ? profile.name.charAt(0).toUpperCase() : '?'}</div>`;
@@ -1206,7 +1233,6 @@
                 }
                 return;
             }
-            // Проверка приватности сообщений
             if (type === 'user' && targetId !== USER && privacySettings.message === 'nobody') { alert("Этот пользователь ограничил личные сообщения."); return; }
             currentChatId = targetId; currentChatType = type || 'user';
             markChatAsRead(targetId);
@@ -1220,7 +1246,7 @@
             document.getElementById('chatTypeInfo').style.display = (profile.type === 'channel' || profile.type === 'group') ? 'inline-block' : 'none';
             document.getElementById('chatTypeInfo').innerText = profile.type === 'channel' ? 'Канал' : (profile.type === 'group' ? 'Группа' : '');
             loadMessages(); document.body.classList.add('chat-open');
-            document.getElementById('onlineStatus').style.display = 'inline-block';
+            if (privacySettings.online !== 'nobody') document.getElementById('onlineStatus').style.display = 'inline-block';
         }
         function closeChatMobile() { document.body.classList.remove('chat-open'); currentChatId = null; renderChatList(); document.getElementById('noChatOverlay').style.display = 'flex'; }
         function deleteCurrentChat() {
@@ -1379,6 +1405,18 @@
             document.getElementById('pollQuestion').value = '';
             document.getElementById('pollOptions').value = '';
         }
+        function sendLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(pos => {
+                    let loc = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
+                    sendDirectMessage(`[location]${loc}`);
+                }, () => alert("Не удалось определить местоположение"));
+            } else alert("Геолокация не поддерживается");
+        }
+        function shareContact() {
+            let contact = prompt("Введите контакт (имя и номер телефона):");
+            if (contact) sendDirectMessage(`[contact]${contact}`);
+        }
         function loadMessages() {
             const chatDiv = document.getElementById('chat'); chatDiv.innerHTML = '';
             if (!currentChatId) return;
@@ -1411,6 +1449,8 @@
             if (msgObj.text.startsWith('[img]')) msgText = `<img src="${escapeHTML(msgObj.text.replace('[img]', ''))}" style="max-width: 100%; border-radius: 10px; animation: bounceIn 0.3s;">`;
             else if (msgObj.text.startsWith('[voice]')) msgText = `<div class="voice-message"><span class="voice-play">🎤</span> <audio controls src="${escapeHTML(msgObj.text.replace('[voice]', ''))}" style="max-width: 180px;"></audio></div>`;
             else if (msgObj.text.startsWith('[sticker]')) msgText = `<span class="sticker">${escapeHTML(msgObj.text.replace('[sticker]', ''))}</span>`;
+            else if (msgObj.text.startsWith('[location]')) msgText = `<div class="location" onclick="window.open('${escapeHTML(msgObj.text.replace('[location]', ''))}','_blank')">📍 Открыть на карте</div>`;
+            else if (msgObj.text.startsWith('[contact]')) msgText = `<div class="contact">📇 ${escapeHTML(msgObj.text.replace('[contact]', ''))}</div>`;
             else if (msgObj.text.startsWith('[gift]')) {
                 let parts = msgObj.text.replace('[gift]', '').split('|');
                 msgText = `<div class="msg-gift nft-glow"><div class="msg-gift-icon">🎁</div><div class="msg-gift-title">NFT Asset</div><div style="font-size:0.7rem;">${escapeHTML(parts[0])}</div></div>`;
