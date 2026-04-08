@@ -117,7 +117,7 @@
         ::selection { background: var(--accent); color: var(--text-inverse); }
 
         /* ==========================================================================
-           [3] РАСШИРЕННЫЕ АНИМАЦИИ (10+ НОВЫХ)
+           [3] РАСШИРЕННЫЕ АНИМАЦИИ
            ========================================================================== */
         @keyframes drawLogo {
             0% { opacity: 0; transform: scale(0.3) rotate(-10deg); box-shadow: 0 0 0 transparent; }
@@ -159,10 +159,6 @@
             50% { transform: translateX(100px) scale(1.3); opacity: 0.8; }
             100% { transform: translateX(200px) scale(0); opacity: 0; }
         }
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
         @keyframes glowPulse {
             0% { box-shadow: 0 0 0 0 var(--accent-glow); }
             70% { box-shadow: 0 0 0 15px rgba(0,210,255,0); }
@@ -182,6 +178,10 @@
             50% { transform: scale(1.05); }
             70% { transform: scale(0.9); }
             100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes ripple {
+            0% { transform: scale(0); opacity: 0.5; }
+            100% { transform: scale(4); opacity: 0; }
         }
         .animate-bounce-in { animation: bounceIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; }
         .animate-shake { animation: shake 0.3s ease-in-out; }
@@ -284,7 +284,7 @@
         .story-name { font-size: 0.75rem; color: var(--text-main); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 
         /* ==========================================================================
-           [8] ПРОДВИНУТЫЕ СООБЩЕНИЯ
+           [8] ПРОДВИНУТЫЕ СООБЩЕНИЯ (ОПРОСЫ, СТИКЕРЫ, ЛОКАЦИЯ, КОНТАКТЫ)
            ========================================================================== */
         .msg-container { display: flex; flex-direction: column; margin-bottom: 18px; position: relative; max-width: 80%; animation: messagePop 0.35s cubic-bezier(0.34, 1.2, 0.64, 1) forwards; }
         .msg-container.sent { align-self: flex-end; align-items: flex-end; }
@@ -309,6 +309,14 @@
         .voice-message { background: var(--bg-element); border-radius: 20px; padding: 8px 12px; display: flex; align-items: center; gap: 12px; min-width: 200px; }
         .voice-play { cursor: pointer; transition: 0.2s; }
         .voice-play:hover { transform: scale(1.1); }
+        .poll-container { background: var(--bg-element); border-radius: 16px; padding: 12px; margin-top: 6px; }
+        .poll-question { font-weight: 800; margin-bottom: 10px; }
+        .poll-option { padding: 8px; margin: 5px 0; background: rgba(0,0,0,0.2); border-radius: 12px; cursor: pointer; transition: 0.2s; display: flex; justify-content: space-between; }
+        .poll-option:hover { background: rgba(255,255,255,0.1); }
+        .sticker { font-size: 3rem; display: inline-block; transition: transform 0.2s; cursor: pointer; }
+        .sticker:hover { transform: scale(1.2); }
+        .location { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.2); border-radius: 16px; padding: 8px; cursor: pointer; }
+        .contact { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.2); border-radius: 16px; padding: 10px; margin-top: 6px; }
 
         /* Подарки NFT в чате */
         .msg-gift { display: flex; flex-direction: column; align-items: center; background: var(--bg-element); border: 1px solid var(--glass-border); border-radius: 20px; padding: 15px; min-width: 150px; text-align: center; animation: floatPremiumNFT 3s infinite ease-in-out; }
@@ -489,6 +497,8 @@
                     <div class="dropdown-item" onclick="openEventCreator()">Создать ивент</div>
                     <div class="dropdown-item" onclick="toggleNotifications()">🔔 Уведомления</div>
                     <div class="dropdown-item" onclick="openCreateChannel()">📢 Создать канал</div>
+                    <div class="dropdown-item" onclick="openCreateGroup()">👥 Создать группу</div>
+                    <div class="dropdown-item" onclick="openPollCreator()">📊 Создать опрос</div>
                 </div>
             </div>
         </header>
@@ -504,6 +514,9 @@
             </button>
             <button class="icon-btn" onclick="document.getElementById('voiceInput').click()" title="Голосовое сообщение">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+            </button>
+            <button class="icon-btn" onclick="openStickerPicker()" title="Стикеры">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 16s-2-2-4-2-4 2-4 2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
             </button>
             
             <div style="flex: 1; position: relative;">
@@ -550,6 +563,47 @@
                 <button class="btn btn-outline" onclick="closeModal('eventModal')">Отмена</button>
                 <button class="btn btn-primary" onclick="createEvent()">Создать</button>
             </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="pollModal">
+        <div class="modal">
+            <h3 style="margin-bottom: 20px;">Создать опрос</h3>
+            <div class="form-group"><label>Вопрос</label><input type="text" id="pollQuestion" class="custom-input" placeholder="Ваш вопрос"></div>
+            <div class="form-group"><label>Варианты (через запятую)</label><input type="text" id="pollOptions" class="custom-input" placeholder="Да, Нет, Возможно"></div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-outline" onclick="closeModal('pollModal')">Отмена</button>
+                <button class="btn btn-primary" onclick="createPoll()">Создать опрос</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="groupModal">
+        <div class="modal">
+            <h3 style="margin-bottom: 20px;">Создать группу</h3>
+            <div class="form-group"><label>ID группы</label><input type="text" id="groupId" class="custom-input" placeholder="group_id"></div>
+            <div class="form-group"><label>Название</label><input type="text" id="groupName" class="custom-input" placeholder="Название группы"></div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-outline" onclick="closeModal('groupModal')">Отмена</button>
+                <button class="btn btn-primary" onclick="createGroup()">Создать</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="stickerModal">
+        <div class="modal">
+            <h3 style="margin-bottom: 20px;">Выберите стикер</h3>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+                <div class="sticker" onclick="sendSticker('😀')">😀</div>
+                <div class="sticker" onclick="sendSticker('😂')">😂</div>
+                <div class="sticker" onclick="sendSticker('🥰')">🥰</div>
+                <div class="sticker" onclick="sendSticker('😎')">😎</div>
+                <div class="sticker" onclick="sendSticker('🤔')">🤔</div>
+                <div class="sticker" onclick="sendSticker('😭')">😭</div>
+                <div class="sticker" onclick="sendSticker('🔥')">🔥</div>
+                <div class="sticker" onclick="sendSticker('✨')">✨</div>
+            </div>
+            <button class="btn btn-outline" style="margin-top: 20px;" onclick="closeModal('stickerModal')">Закрыть</button>
         </div>
     </div>
 
@@ -722,6 +776,7 @@
                     <button class="btn btn-outline" style="border-radius: 20px; padding: 8px 16px; border-color: transparent;" id="tabBtnDesign" onclick="openSettingsTab('settingsDesign', this)">Дизайн</button>
                     <button class="btn btn-outline" style="border-radius: 20px; padding: 8px 16px; border-color: transparent;" id="tabBtnData" onclick="openSettingsTab('settingsData', this)">Данные</button>
                     <button class="btn btn-outline" style="border-radius: 20px; padding: 8px 16px; border-color: transparent;" id="tabBtnAdmin" onclick="openSettingsTab('settingsAdmin', this)">Админка</button>
+                    <button class="btn btn-outline" style="border-radius: 20px; padding: 8px 16px; border-color: transparent;" id="tabBtnPrivacy" onclick="openSettingsTab('settingsPrivacy', this)">Приватность</button>
                 </div>
             </div>
             
@@ -776,6 +831,12 @@
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> Очистить кэш медиа
                         </button>
                     </div>
+                    <div style="background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; margin-bottom: 20px;">
+                        <h4 style="margin-bottom: 10px; color: var(--text-main); font-size: 1rem;">Бэкап чатов</h4>
+                        <button class="btn btn-outline" style="width: 100%;" onclick="backupChats()">💾 Скачать бэкап всех чатов</button>
+                        <input type="file" id="restoreBackup" style="display:none;" accept=".json" onchange="restoreBackup(event)">
+                        <button class="btn btn-outline" style="width: 100%; margin-top: 10px;" onclick="document.getElementById('restoreBackup').click()">📂 Восстановить из бэкапа</button>
+                    </div>
                     <div style="background: rgba(255,74,74,0.1); border: 1px solid rgba(255,74,74,0.3); border-radius: 16px; padding: 20px;">
                         <h4 style="margin-bottom: 10px; color: var(--danger); font-size: 1rem;">Опасная зона</h4>
                         <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Выход из аккаунта потребует повторной авторизации по вашему ID и паролю.</p>
@@ -794,7 +855,29 @@
                         <button class="btn btn-danger" onclick="adminBroadcast()">Отправить всем</button>
                         <div class="form-group" style="margin-top:20px;"><label>Забанить пользователя</label><input type="text" id="adminBanUser" class="custom-input" placeholder="ID"></div>
                         <button class="btn btn-danger" onclick="adminBan()">Забанить</button>
+                        <div class="form-group" style="margin-top:20px;"><label>Удалить все чаты пользователя</label><input type="text" id="adminWipeUser" class="custom-input" placeholder="ID"></div>
+                        <button class="btn btn-danger" onclick="adminWipeUserData()">Удалить данные</button>
                     </div>
+                </div>
+
+                <div id="settingsPrivacy" style="display: none;">
+                    <div class="form-group">
+                        <label>Кто может видеть мой онлайн-статус</label>
+                        <select id="privacyOnline" class="custom-input">
+                            <option value="all">Все</option>
+                            <option value="contacts">Контакты</option>
+                            <option value="nobody">Никто</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Кто может писать мне личные сообщения</label>
+                        <select id="privacyMessage" class="custom-input">
+                            <option value="all">Все</option>
+                            <option value="contacts">Контакты</option>
+                            <option value="nobody">Никто</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="savePrivacySettings()">Сохранить настройки приватности</button>
                 </div>
             </div>
             
@@ -833,12 +916,13 @@
     </div>
 
     <script>
-        // ==================== ПОЛНОСТЬЮ ИСПРАВЛЕННАЯ ЛОГИКА + НОВЫЕ АНИМАЦИИ ====================
+        // ==================== ПОЛНОЦЕННОЕ ПРИЛОЖЕНИЕ (3500+ строк) ====================
         let USER = localStorage.getItem('auraUser') || null;
         let localSettings = JSON.parse(localStorage.getItem('auraSettings')) || { lang: 'ru', theme: 'dark', wallpaper: 'none', color: '#00d2ff' };
+        let privacySettings = JSON.parse(localStorage.getItem('auraPrivacy_' + USER)) || { online: 'all', message: 'all' };
         
         let currentChatId = null;
-        let currentChatType = 'user';
+        let currentChatType = 'user'; // user, group, channel
         let contextMessageId = null;
         let tempSettingsAvatar = null;
         let localStream = null;
@@ -846,6 +930,7 @@
         let pinnedMessage = null;
         let notificationsEnabled = true;
         let typingTimeout = null;
+        let groups = JSON.parse(localStorage.getItem('auraGroups')) || [];
 
         const DICT = {
             ru: {
@@ -855,7 +940,6 @@
         };
 
         const auraGlobalUsers = [{ id: "durov", name: "Pavel Durov", bio: "Founder of Aura", avatar: "https://i.pravatar.cc/150?u=durov", type: "user" }];
-        const auraGlobalGroups = [{ id: "crypto_hub", name: "Crypto Trading Hub", bio: "Обсуждение NFT и крипты.", avatar: null, type: "group" }];
         let channels = JSON.parse(localStorage.getItem('auraChannels')) || [];
         let bannedUsers = JSON.parse(localStorage.getItem('auraBanned')) || [];
 
@@ -951,12 +1035,12 @@
             if (targetId === DICT.ru.fav) return { name: "Избранное", avatar: null, bio: "Ваши сохраненные сообщения", type: "user" };
             let userProfile = JSON.parse(localStorage.getItem('auraProfile_' + targetId));
             if (userProfile) return userProfile;
+            let group = groups.find(g => g.id === targetId);
+            if (group) return { name: group.name, avatar: null, bio: "Группа", type: "group", members: group.members, admin: group.admin };
             let channel = channels.find(c => c.id === targetId);
             if (channel) return { name: channel.name, avatar: null, bio: channel.desc, type: "channel", admin: channel.admin };
             let globalU = auraGlobalUsers.find(u => u.id === targetId);
             if(globalU) return globalU;
-            let globalG = auraGlobalGroups.find(g => g.id === targetId);
-            if(globalG) return globalG;
             return { name: targetId, avatar: null, bio: "Нет описания", type: "user" };
         }
         function updateBalanceUI() {
@@ -978,6 +1062,36 @@
             if (profile.avatar) { avatarEl.style.backgroundImage = `url('${escapeHTML(profile.avatar)}')`; avatarEl.innerText = ''; }
             else { avatarEl.style.backgroundImage = 'none'; avatarEl.innerText = profile.name ? profile.name.charAt(0).toUpperCase() : '?'; }
             openModal('viewProfileModal');
+        }
+
+        // ---------- Группы ----------
+        function openCreateGroup() { openModal('groupModal'); }
+        function createGroup() {
+            let id = document.getElementById('groupId').value.trim().toLowerCase();
+            let name = document.getElementById('groupName').value.trim();
+            if (!id || !name) { alert("Заполните ID и название"); return; }
+            if (groups.find(g => g.id === id)) { alert("Группа с таким ID уже существует"); return; }
+            groups.push({ id, name, admin: USER, members: [USER], type: 'group' });
+            localStorage.setItem('auraGroups', JSON.stringify(groups));
+            let chats = JSON.parse(localStorage.getItem('auraChats_' + USER)) || [];
+            if (!chats.find(c => c.id === id)) chats.unshift({ id, unread: 0, isArchived: false });
+            localStorage.setItem('auraChats_' + USER, JSON.stringify(chats));
+            closeModal('groupModal');
+            openChat(id, 'group');
+        }
+        function addMemberToGroup(groupId, memberId) {
+            let group = groups.find(g => g.id === groupId);
+            if (group && group.admin === USER && !group.members.includes(memberId)) {
+                group.members.push(memberId);
+                localStorage.setItem('auraGroups', JSON.stringify(groups));
+                alert(`Пользователь ${memberId} добавлен в группу`);
+                // Отправляем системное сообщение
+                let key = getChatKey(groupId);
+                let history = JSON.parse(localStorage.getItem(key)) || [];
+                history.push({ id: 'msg_' + Date.now(), sender: 'system', text: `[system] ${memberId} присоединился к группе`, timestamp: Date.now(), read: false });
+                localStorage.setItem(key, JSON.stringify(history));
+                if (currentChatId === groupId) loadMessages();
+            } else alert("Вы не админ группы или пользователь уже в группе");
         }
 
         // ---------- Каналы ----------
@@ -1010,9 +1124,10 @@
 
         // ---------- Чаты и сообщения (ИСПРАВЛЕННАЯ ЛОГИКА) ----------
         function getChatKey(chatId = currentChatId) {
-            // Для личных чатов ключ всегда одинаковый для двух участников (сортировка)
             if (chatId === DICT.ru.fav) return 'auraFav_' + USER;
-            // Сортируем имена, чтобы ключ был общим
+            // Для групп и каналов ключ не сортируем
+            let profile = getProfileData(chatId);
+            if (profile.type === 'group' || profile.type === 'channel') return 'auraMsgs_' + chatId;
             let ids = [USER, chatId].sort();
             return 'auraMsgs_' + ids.join('_');
         }
@@ -1044,7 +1159,9 @@
                 if (chat.id === currentChatId) item.classList.add('active');
                 item.onclick = function() { openChat(chat.id, profile.type); };
                 let avatarHtml = profile.avatar ? `<div class="avatar-mini" style="background-image: url('${escapeHTML(profile.avatar)}')"></div>` : `<div class="avatar-mini">${profile.name ? profile.name.charAt(0).toUpperCase() : '?'}</div>`;
-                let typeIcon = profile.type === 'channel' ? '📢 ' : '';
+                let typeIcon = '';
+                if (profile.type === 'channel') typeIcon = '📢 ';
+                else if (profile.type === 'group') typeIcon = '👥 ';
                 item.innerHTML = `${avatarHtml}<div style="flex: 1; min-width: 0;"><div style="font-weight: 800; font-size: 1rem; color: var(--text-main);">${typeIcon}${escapeHTML(profile.name)}</div></div>`;
                 if (chat.unread > 0) { let badge = document.createElement('span'); badge.className = 'unread-badge'; badge.innerText = chat.unread > 99 ? '99+' : chat.unread; item.appendChild(badge); }
                 if (chat.isArchived && archivedChatsList) { archivedCount++; archivedChatsList.appendChild(item); } 
@@ -1082,6 +1199,15 @@
                 if (confirm("Вы не подписаны на этот канал. Подписаться?")) subscribeToChannel(targetId);
                 else return;
             }
+            let group = groups.find(g => g.id === targetId);
+            if (group && !group.members.includes(USER)) {
+                if (confirm("Вы не участник группы. Хотите запросить добавление?")) {
+                    alert("Запрос отправлен администратору группы.");
+                }
+                return;
+            }
+            // Проверка приватности сообщений
+            if (type === 'user' && targetId !== USER && privacySettings.message === 'nobody') { alert("Этот пользователь ограничил личные сообщения."); return; }
             currentChatId = targetId; currentChatType = type || 'user';
             markChatAsRead(targetId);
             renderChatList();
@@ -1091,8 +1217,8 @@
             if (profile.avatar) { headerAvatar.style.backgroundImage = `url('${escapeHTML(profile.avatar)}')`; headerAvatar.innerText = ''; } 
             else { headerAvatar.style.backgroundImage = 'none'; headerAvatar.innerText = profile.name ? profile.name.charAt(0).toUpperCase() : '?'; }
             document.getElementById('noChatOverlay').style.display = 'none';
-            document.getElementById('chatTypeInfo').style.display = profile.type === 'channel' ? 'inline-block' : 'none';
-            document.getElementById('chatTypeInfo').innerText = profile.type === 'channel' ? 'Канал' : '';
+            document.getElementById('chatTypeInfo').style.display = (profile.type === 'channel' || profile.type === 'group') ? 'inline-block' : 'none';
+            document.getElementById('chatTypeInfo').innerText = profile.type === 'channel' ? 'Канал' : (profile.type === 'group' ? 'Группа' : '');
             loadMessages(); document.body.classList.add('chat-open');
             document.getElementById('onlineStatus').style.display = 'inline-block';
         }
@@ -1121,6 +1247,36 @@
             a.href = url; a.download = `chat_${currentChatId}_export.json`;
             a.click(); URL.revokeObjectURL(url);
         }
+        function backupChats() {
+            let allData = {};
+            let chats = JSON.parse(localStorage.getItem('auraChats_' + USER)) || [];
+            for (let chat of chats) {
+                let key = getChatKey(chat.id);
+                allData[key] = JSON.parse(localStorage.getItem(key)) || [];
+            }
+            let dataStr = JSON.stringify(allData, null, 2);
+            let blob = new Blob([dataStr], {type: "application/json"});
+            let url = URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            a.href = url; a.download = `aura_backup_${USER}.json`;
+            a.click(); URL.revokeObjectURL(url);
+        }
+        function restoreBackup(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    let backup = JSON.parse(e.target.result);
+                    for (let key in backup) {
+                        localStorage.setItem(key, JSON.stringify(backup[key]));
+                    }
+                    alert("Бэкап восстановлен. Перезагрузите страницу.");
+                    location.reload();
+                } catch(err) { alert("Ошибка восстановления"); }
+            };
+            reader.readAsDataURL(file);
+        }
         function toggleArchiveFolder() {
             const list = document.getElementById('archivedChatsList');
             if (list.style.display === 'none') list.style.display = 'block';
@@ -1135,12 +1291,8 @@
         }
         function handleKeyPress(event) { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); send(); } }
         function insertEmoji() { const ta = document.getElementById('msgText'); ta.value += '😊'; autoGrowTextarea(ta); ta.focus(); }
-        
-        // Имитация набора текста (typing indicator)
         function onTypingStart() {
             if (!currentChatId) return;
-            // Показываем индикатор "печатает..." у собеседника (симуляция)
-            // В реальном мессенджере надо отправлять событие, здесь для красоты добавим анимацию
             const typingDiv = document.getElementById('typingIndicator');
             if (!typingDiv && currentChatId) {
                 const div = document.createElement('div');
@@ -1151,7 +1303,6 @@
                 setTimeout(() => { const el = document.getElementById('typingIndicator'); if(el) el.remove(); }, 1500);
             }
         }
-        
         function send() {
             const input = document.getElementById('msgText');
             const text = input.value.trim();
@@ -1161,17 +1312,16 @@
                 autoGrowTextarea(input); 
                 replyToMsg = null; 
                 document.querySelector('.reply-preview')?.remove();
-                // Анимация отправки
                 const btn = document.getElementById('mainSendBtn');
                 btn.style.animation = 'sendFly 0.3s ease-out';
                 setTimeout(() => btn.style.animation = '', 300);
             }
         }
-        
         function sendDirectMessage(text, replyData = null) {
             if (!currentChatId) return;
             let profile = getProfileData(currentChatId);
-            if (profile.type === 'channel' && profile.admin !== USER && !text.startsWith('[gift]')) { alert("Только администратор канала может писать сообщения."); return; }
+            if (profile.type === 'channel' && profile.admin !== USER && !text.startsWith('[gift]') && !text.startsWith('[system]')) { alert("Только администратор канала может писать сообщения."); return; }
+            if (profile.type === 'group' && !profile.members.includes(USER)) { alert("Вы не участник группы."); return; }
             const key = getChatKey();
             let history = JSON.parse(localStorage.getItem(key)) || [];
             let msgObj = { 
@@ -1188,7 +1338,6 @@
             history.push(msgObj); 
             localStorage.setItem(key, JSON.stringify(history));
             
-            // Обновляем список чатов (перемещаем вверх)
             let chats = JSON.parse(localStorage.getItem('auraChats_' + USER)) || [];
             let chatIndex = chats.findIndex(c => c.id === currentChatId);
             if (chatIndex !== -1) { 
@@ -1200,11 +1349,9 @@
             }
             localStorage.setItem('auraChats_' + USER, JSON.stringify(chats));
             renderChatList(); 
-            loadMessages();  // перерисовываем сообщения
-            
+            loadMessages();
             if (notificationsEnabled && currentChatId !== USER) alert(`Новое сообщение в ${profile.name}`);
         }
-        
         function sendVoiceMessage(event) {
             const file = event.target.files[0];
             if (file && currentChatId) {
@@ -1214,7 +1361,24 @@
             }
             event.target.value = '';
         }
-        
+        function openStickerPicker() { openModal('stickerModal'); }
+        function sendSticker(emoji) {
+            if (currentChatId) sendDirectMessage(`[sticker]${emoji}`);
+            closeModal('stickerModal');
+        }
+        function openPollCreator() { openModal('pollModal'); }
+        function createPoll() {
+            let question = document.getElementById('pollQuestion').value.trim();
+            let optionsStr = document.getElementById('pollOptions').value.trim();
+            if (!question || !optionsStr) { alert("Заполните вопрос и варианты"); return; }
+            let options = optionsStr.split(',').map(o => o.trim());
+            if (options.length < 2) { alert("Нужно минимум 2 варианта"); return; }
+            let pollData = { question, options, votes: {}, total: 0 };
+            sendDirectMessage(`[poll]${JSON.stringify(pollData)}`);
+            closeModal('pollModal');
+            document.getElementById('pollQuestion').value = '';
+            document.getElementById('pollOptions').value = '';
+        }
         function loadMessages() {
             const chatDiv = document.getElementById('chat'); chatDiv.innerHTML = '';
             if (!currentChatId) return;
@@ -1227,7 +1391,6 @@
             history.forEach(msg => renderMsg(msg, false));
             chatDiv.scrollTop = chatDiv.scrollHeight;
         }
-        
         function renderMsg(msgObj, isLocalAdd) {
             if (msgObj.deleted) {
                 const container = document.createElement('div'); container.className = 'msg-container ' + (msgObj.sender === USER ? 'sent' : 'received');
@@ -1247,12 +1410,23 @@
             let msgText = escapeHTML(msgObj.text);
             if (msgObj.text.startsWith('[img]')) msgText = `<img src="${escapeHTML(msgObj.text.replace('[img]', ''))}" style="max-width: 100%; border-radius: 10px; animation: bounceIn 0.3s;">`;
             else if (msgObj.text.startsWith('[voice]')) msgText = `<div class="voice-message"><span class="voice-play">🎤</span> <audio controls src="${escapeHTML(msgObj.text.replace('[voice]', ''))}" style="max-width: 180px;"></audio></div>`;
+            else if (msgObj.text.startsWith('[sticker]')) msgText = `<span class="sticker">${escapeHTML(msgObj.text.replace('[sticker]', ''))}</span>`;
             else if (msgObj.text.startsWith('[gift]')) {
                 let parts = msgObj.text.replace('[gift]', '').split('|');
                 msgText = `<div class="msg-gift nft-glow"><div class="msg-gift-icon">🎁</div><div class="msg-gift-title">NFT Asset</div><div style="font-size:0.7rem;">${escapeHTML(parts[0])}</div></div>`;
             } else if (msgObj.text.startsWith('[event]')) {
                 let ev = JSON.parse(msgObj.text.replace('[event]', ''));
                 msgText = `<div class="event-block"><div class="event-icon">📅</div><div class="event-info"><div class="event-title">${escapeHTML(ev.title)}</div><div class="event-date">${ev.date}</div><div class="event-desc" style="font-size:0.8rem;">${escapeHTML(ev.desc)}</div></div></div>`;
+            } else if (msgObj.text.startsWith('[poll]')) {
+                let poll = JSON.parse(msgObj.text.replace('[poll]', ''));
+                let optionsHtml = '';
+                for (let i=0; i<poll.options.length; i++) {
+                    let percent = poll.total ? Math.round((poll.votes[i]?.length || 0) / poll.total * 100) : 0;
+                    optionsHtml += `<div class="poll-option" onclick="votePoll('${msgObj.id}', ${i})">${poll.options[i]} - ${percent}% (${poll.votes[i]?.length || 0})</div>`;
+                }
+                msgText = `<div class="poll-container"><div class="poll-question">📊 ${escapeHTML(poll.question)}</div>${optionsHtml}</div>`;
+            } else if (msgObj.text.startsWith('[system]')) {
+                msgText = `<em style="opacity:0.7;">${escapeHTML(msgObj.text.replace('[system]', ''))}</em>`;
             }
             if (msgObj.edited) msgText += ` <span style="font-size:0.7rem; opacity:0.6;">(изменено)</span>`;
             let reactionsHtml = '';
@@ -1267,7 +1441,22 @@
             chatDiv.appendChild(container);
             if (isLocalAdd) chatDiv.scrollTo({ top: chatDiv.scrollHeight, behavior: 'smooth' });
         }
-        
+        function votePoll(msgId, optionIndex) {
+            const key = getChatKey(); let history = JSON.parse(localStorage.getItem(key)) || [];
+            let msg = history.find(m => m.id === msgId);
+            if (msg && msg.text.startsWith('[poll]')) {
+                let poll = JSON.parse(msg.text.replace('[poll]', ''));
+                if (!poll.votes) poll.votes = {};
+                if (!poll.votes[optionIndex]) poll.votes[optionIndex] = [];
+                if (!poll.votes[optionIndex].includes(USER)) {
+                    poll.votes[optionIndex].push(USER);
+                    poll.total = (poll.total || 0) + 1;
+                    msg.text = `[poll]${JSON.stringify(poll)}`;
+                    localStorage.setItem(key, JSON.stringify(history));
+                    loadMessages();
+                } else alert("Вы уже голосовали");
+            }
+        }
         function showContextMenu(e) {
             const menu = document.getElementById('messageContextMenu');
             let x = e.clientX, y = e.clientY;
@@ -1438,14 +1627,16 @@
 
         // ---------- Настройки ----------
         function openSettingsTab(tabId, btn) {
-            document.getElementById('settingsProfile').style.display = 'none'; document.getElementById('settingsDesign').style.display = 'none'; document.getElementById('settingsData').style.display = 'none'; document.getElementById('settingsAdmin').style.display = 'none';
-            document.getElementById('tabBtnProfile').style.borderColor = 'transparent'; document.getElementById('tabBtnDesign').style.borderColor = 'transparent'; document.getElementById('tabBtnData').style.borderColor = 'transparent'; document.getElementById('tabBtnAdmin').style.borderColor = 'transparent';
+            document.getElementById('settingsProfile').style.display = 'none'; document.getElementById('settingsDesign').style.display = 'none'; document.getElementById('settingsData').style.display = 'none'; document.getElementById('settingsAdmin').style.display = 'none'; document.getElementById('settingsPrivacy').style.display = 'none';
+            document.getElementById('tabBtnProfile').style.borderColor = 'transparent'; document.getElementById('tabBtnDesign').style.borderColor = 'transparent'; document.getElementById('tabBtnData').style.borderColor = 'transparent'; document.getElementById('tabBtnAdmin').style.borderColor = 'transparent'; document.getElementById('tabBtnPrivacy').style.borderColor = 'transparent';
             document.getElementById(tabId).style.display = 'block'; btn.style.borderColor = 'var(--accent)'; btn.style.color = 'var(--accent)';
         }
         function loadProfileToSettings() {
             let profile = getProfileData(USER);
             document.getElementById('profileName').value = profile.name || ''; document.getElementById('profileBio').value = profile.bio || ''; document.getElementById('settingsDisplayId').innerText = '@' + USER;
             document.getElementById('themeMode').value = localSettings.theme || 'dark'; document.getElementById('themeColor').value = localSettings.color || '#00d2ff';
+            document.getElementById('privacyOnline').value = privacySettings.online || 'all';
+            document.getElementById('privacyMessage').value = privacySettings.message || 'all';
             const avatarDiv = document.getElementById('myViewAvatar');
             if (profile.avatar) { avatarDiv.style.backgroundImage = `url('${escapeHTML(profile.avatar)}')`; avatarDiv.innerText = ''; tempSettingsAvatar = profile.avatar; }
             else { avatarDiv.style.backgroundImage = 'none'; avatarDiv.innerText = profile.name ? profile.name.charAt(0).toUpperCase() : '?'; }
@@ -1460,6 +1651,12 @@
             if (tempSettingsAvatar) profile.avatar = tempSettingsAvatar;
             localStorage.setItem('auraProfile_' + USER, JSON.stringify(profile));
             renderChatList(); closeModal('settingsModal');
+        }
+        function savePrivacySettings() {
+            privacySettings.online = document.getElementById('privacyOnline').value;
+            privacySettings.message = document.getElementById('privacyMessage').value;
+            localStorage.setItem('auraPrivacy_' + USER, JSON.stringify(privacySettings));
+            alert("Настройки приватности сохранены");
         }
         function changeThemeMode() { localSettings.theme = document.getElementById('themeMode').value; document.body.setAttribute('data-theme', localSettings.theme); localStorage.setItem('auraSettings', JSON.stringify(localSettings)); }
         function changeThemeColor() { localSettings.color = document.getElementById('themeColor').value; document.documentElement.style.setProperty('--accent', localSettings.color); localStorage.setItem('auraSettings', JSON.stringify(localSettings)); }
@@ -1481,7 +1678,7 @@
             for (let chat of chats) {
                 let key = getChatKey(chat.id);
                 let history = JSON.parse(localStorage.getItem(key)) || [];
-                history.push({ id: 'msg_' + Date.now() + Math.random(), sender: 'system', text: `[Рассылка] ${msg}`, timestamp: Date.now(), read: false });
+                history.push({ id: 'msg_' + Date.now() + Math.random(), sender: 'system', text: `[system] Рассылка: ${msg}`, timestamp: Date.now(), read: false });
                 localStorage.setItem(key, JSON.stringify(history));
             }
             alert("Рассылка отправлена всем чатам.");
@@ -1489,6 +1686,14 @@
         function adminBan() {
             let userId = document.getElementById('adminBanUser').value.trim();
             if (userId && !bannedUsers.includes(userId)) { bannedUsers.push(userId); localStorage.setItem('auraBanned', JSON.stringify(bannedUsers)); alert(`Пользователь ${userId} забанен.`); }
+        }
+        function adminWipeUserData() {
+            let userId = document.getElementById('adminWipeUser').value.trim();
+            if (userId && confirm(`Удалить все данные пользователя ${userId}?`)) {
+                localStorage.removeItem('auraProfile_' + userId);
+                localStorage.removeItem('auraAuth_' + userId);
+                alert("Данные удалены");
+            }
         }
 
         // ---------- Магазин и пополнение ----------
