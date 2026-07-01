@@ -1,4 +1,3 @@
-// js/ui/UIController.js
 
 export const UIController = {
     openModal: (id) => {
