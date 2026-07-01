@@ -1,5 +1,4 @@
-
-
+/* css/styles.css */
 :root {
     --bg-main-start: #090a0f;
     --bg-main-end: #151828;
@@ -27,13 +26,12 @@ body {
     display: flex;
 }
 
-/* Скроллбары */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(150, 150, 150, 0.2); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
-/* Splash Screen */
+/* Экраны и слои */
 .splash-screen {
     position: fixed; inset: 0;
     background: #000;
@@ -49,7 +47,6 @@ body {
 }
 .splash-subtitle { color: var(--text-muted); margin-top: 10px; }
 
-/* Layout каркас */
 .app-container { display: flex; width: 100%; height: 100%; }
 .sidebar { width: 380px; background: var(--glass-bg); border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; }
 .sidebar-header { padding: 20px; border-bottom: 1px solid var(--glass-border); }
@@ -59,15 +56,16 @@ body {
 .no-chat-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); z-index: 10; text-align: center; }
 .chat-header { padding: 20px; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; }
 .messages-area { flex: 1; overflow-y: auto; padding: 20px; }
-.input-area { padding: 20px; border-top: 1px solid var(--glass-border); display: flex; gap: 15px; }
 .input-area input { flex: 1; padding: 15px; border-radius: 12px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: #fff; outline: none; font-size: 1rem; }
 
-/* Кнопки и инпуты */
+/* Кнопки */
 .btn { padding: 12px 24px; border-radius: 12px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
 .btn-primary { background: var(--accent-grad); color: #fff; }
 .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 210, 255, 0.4); }
+.icon-btn { background: transparent; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; transition: 0.2s; }
+.icon-btn:hover { transform: scale(1.1); }
 
-/* Модальные окна */
+/* Модалки */
 .modal-overlay {
     position: fixed; inset: 0;
     background: rgba(0, 0, 0, 0.7);
