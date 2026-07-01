@@ -1,13 +1,16 @@
 // js/app.js
+import { Auth } from './auth/Auth.js';
 
-// Глобальное состояние приложения (заменяет хаотичные переменные)
 export const AppState = {
     currentUser: null,
     activeChatId: null
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Анимация загрузки
+    // Привязываем события к кнопкам
+    document.getElementById('btnLogin').addEventListener('click', Auth.login);
+
+    // Анимация Splash Screen
     setTimeout(() => {
         const splash = document.getElementById('splash');
         splash.style.opacity = '0';
@@ -15,8 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
             splash.style.display = 'none';
             document.getElementById('app').style.display = 'flex';
             
-            // Здесь мы скоро добавим вызов модуля Auth
-            console.log("Aura System Initialized");
+            // Запускаем систему авторизации
+            Auth.init();
         }, 800);
     }, 1500);
 });
