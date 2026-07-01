@@ -1,4 +1,4 @@
-// js/core/Storage.js
+
 
 export const Storage = {
     get: (key, defaultValue = null) => {
