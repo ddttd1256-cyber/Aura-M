@@ -1,4 +1,4 @@
-// js/auth/Auth.js
+
 import { Storage } from '../core/Storage.js';
 import { Security } from '../core/Security.js';
 import { UIController } from '../ui/UIController.js';
